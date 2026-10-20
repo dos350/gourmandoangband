@@ -350,7 +350,7 @@ extern uint8_t tile_height;
 extern bool bigcurs;
 extern bool smlcurs;
 extern term *angband_term[ANGBAND_TERM_MAX];
-extern char angband_term_name[ANGBAND_TERM_MAX][16];
+extern char angband_term_name[ANGBAND_TERM_MAX][32];
 extern uint32_t window_flag[ANGBAND_TERM_MAX];
 /**
  * Flags whether the terminals are in a "disconnecting" state.  Modifies the

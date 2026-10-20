@@ -1,18 +1,31 @@
-# Angband 4.2.6
+# gourmandoAngband 0.0.1
 
 <p align="center">
   <img src="screenshots/title.png" width="425"/>
   <img src="screenshots/game.png" width="425"/>
 </p>
 
+gourmandoAngband is an Angband fork with classic sensibilities. It
+starts from Angband 4.2.6, whose features and history are the baseline for this
+fork. [changes.txt](changes.txt) lists changes made specifically for this fork.
+
+This project is still early, and binary releases are not available yet.
+
 Angband is a graphical dungeon adventure game that uses textual characters to
 represent the walls and floors of a dungeon and the inhabitants therein, in the
-vein of games like NetHack and Rogue. If you need help in-game, press `?`.
+vein of games like NetHack and Rogue. For in-game help, press `?`.
 
-- **Installing Angband:** See the [Official Website](https://angband.github.io/angband/) or [compile it yourself](https://angband.readthedocs.io/en/latest/hacking/compiling.html).
-- **How to Play:** [The Angband Manual](https://angband.readthedocs.io/en/latest/)
-- **Getting Help:** [Angband Forums](https://angband.live/forums/)
+## Building
+
+See the [compiling guide](docs/hacking/compiling.rst).
+
+
+## Help
+
+If you need help in-game, press `?`. You can also read the
+[Angband manual](https://angband.readthedocs.io/en/latest/) or visit the
+[Angband Forums](https://angband.live/forums/).
 
 Enjoy!
 
--- The Angband Dev Team
+-- dos350

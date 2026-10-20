@@ -31,7 +31,7 @@
 #define VERSION_STRING XSTR(BUILD_ID)
 #endif
 #ifndef VERSION_STRING
-#define VERSION_STRING "4.2.6"
+#define VERSION_STRING "0.0.1"
 #endif
 
 const char *buildid = VERSION_NAME " " VERSION_STRING;

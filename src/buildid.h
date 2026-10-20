@@ -19,7 +19,8 @@
 #ifndef BUILDID
 #define BUILDID
 
-#define VERSION_NAME	"Angband"
+#define VERSION_NAME	"gourmandoAngband"
+#define USER_DIRECTORY_NAME	"Angband"
 
 extern const char *buildid;
 extern const char *buildver;

@@ -18,7 +18,7 @@ INTERFACE, false)
 OP(use_sound,             "Use sound",
 INTERFACE, false)
 OP(show_damage,           "Show damage player deals to monsters",
-INTERFACE, false)
+INTERFACE, true)
 OP(use_old_target,        "Use old target by default",
 INTERFACE, false)
 OP(pickup_always,         "Always pickup items",
@@ -38,9 +38,9 @@ INTERFACE, false)
 OP(hybrid_walls,          "Show walls with shaded background",
 INTERFACE, false)
 OP(view_yellow_light,     "Color: Illuminate torchlight in yellow",
-INTERFACE, false)
+INTERFACE, true)
 OP(animate_flicker,       "Color: Shimmer multi-colored things",
-INTERFACE, false)
+INTERFACE, true)
 OP(center_player,         "Center map continuously",
 INTERFACE, false)
 OP(purple_uniques,        "Color: Show unique monsters in purple",
@@ -50,7 +50,7 @@ INTERFACE, false)
 OP(hp_changes_color,      "Color: Player color indicates % hit points",
 INTERFACE, true)
 OP(mouse_movement,        "Allow mouse clicks to move the player",
-INTERFACE, true)
+INTERFACE, false)
 OP(notify_recharge,       "Notify on object recharge",
 INTERFACE, false)
 OP(effective_speed,       "Show effective speed as multiplier",
@@ -72,7 +72,7 @@ CHEAT, false)
 OP(score_live,            "Score: Allow player to avoid death",
 SCORE, false)
 OP(birth_randarts,        "Generate a new, random artifact set",
-BIRTH, false)
+BIRTH, true)
 OP(birth_connect_stairs,  "Generate connected stairs",
 BIRTH, true)
 OP(birth_force_descend,   "Force player descent (never make up stairs)",

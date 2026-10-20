@@ -1,3 +1,7 @@
+# the borg dont work with the oldclass.txt classes, 
+# so its not gonna work unless u paste over the newclass.txt contents to class.txt
+# note: it is in the pipleline of gourmandoAngband to fix him for the old classes.
+
 # This is the configuration file for the Borg. For a high-level overview
 # of the Borg and its features, see the official documentation in
 # docs/hacking/borg.rst.
@@ -334,7 +338,7 @@ borg_restore_ignore_settings = false
 # have more successful borgs by leaving this option as FALSE.
 # note: the dynamic calcs are slower than the internal calcs
 
-borg_uses_dynamic_calcs = FALSE
+borg_uses_dynamic_calcs = TRUE
 
 
 [BEGIN FORMULA SECTION]

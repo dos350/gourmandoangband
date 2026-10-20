@@ -286,7 +286,7 @@ term *angband_term[ANGBAND_TERM_MAX];
  *
  * ToDo: Make the names independent of ANGBAND_TERM_MAX.
  */
-char angband_term_name[ANGBAND_TERM_MAX][16] =
+char angband_term_name[ANGBAND_TERM_MAX][32] =
 {
 	VERSION_NAME,
 	"Term-1",

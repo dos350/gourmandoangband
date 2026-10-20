@@ -2268,8 +2268,8 @@ spell-freq:15
 spells:DRAIN_MANA | TPORT
 desc:It is almost insubstantial.
 
-name:eastern dwarf
-plural:eastern dwarves
+name:dark elf
+plural:dark elves
 base:humanoid
 color:D
 speed:110
@@ -2287,8 +2287,7 @@ flags:DROP_60
 flags:FORCE_SLEEP
 spell-freq:10
 spells:CONF | DARKNESS
-desc:A dwarf of one of the eastern kindreds who has fallen under the sway of
-desc: Morgoth.
+desc:An elf with midnight-dark skin and pale hair, its gaze twisted by evil.
 
 name:night lizard
 base:reptile
@@ -2856,7 +2855,7 @@ innate-freq:10
 spells:WEAVE
 desc:It is a vast black spider whose bulbous body is bloated with poison.
 
-name:blacklock mage
+name:dark elven mage
 base:humanoid
 color:r
 speed:120
@@ -2877,8 +2876,7 @@ spells:BLIND | CONF | DARKNESS | MISSILE
 spells:BA_POIS
 drop-base:magic book:10:1:1
 drop-base:magic book:10:1:1
-desc:A corrupted dwarf from the east, dressed in black mail, hurling spells
-desc: at you.
+desc:A dark elf in black mail, hurling spells at you.
 
 name:Orfax, Son of Boldor
 base:yeek
@@ -2908,7 +2906,7 @@ friends:50:1d3:Master yeek:servant
 desc:He's just like his daddy!  He knows mighty spells, but fortunately he is a
 desc: yeek.
 
-name:stonefoot warrior
+name:dark elven warrior
 base:humanoid
 color:u
 speed:110
@@ -2923,7 +2921,7 @@ blow:HIT:HURT:1d8
 blow:HIT:HURT:1d8
 flags:MALE | EVIL
 flags:DROP_60
-desc:A dwarf of the east in a coat of iron rings and wielding an axe.
+desc:An armored dark elf stands ready for battle, axe in hand.
 
 name:clear mushroom patch
 plural:clear mushroom patches
@@ -3219,7 +3217,7 @@ flags:ORC | EMPTY_MIND
 flags:NO_FEAR
 desc:It is a shambling orcish corpse leaving behind a trail of flesh.
 
-name:drúadan mage
+name:gnome mage
 base:person
 color:r
 speed:110
@@ -3241,7 +3239,7 @@ spells:S_MONSTER
 drop-base:magic book:5:1:1
 drop-base:magic book:5:1:1
 friends:100:4d4:Same
-desc:A mage of short stature with stumpy legs and a wispy beard.
+desc:A small, bearded gnome whose spells belie his stature.
 
 name:old forest tree
 base:tree
@@ -3423,7 +3421,7 @@ friends:50:1d2:warrior
 friends:50:1d2:Same
 desc:A robed man, dedicated to his god.
 
-name:ironfist priest
+name:dark elven priest
 base:humanoid
 color:P
 speed:120
@@ -3443,7 +3441,7 @@ spell-freq:5
 spells:BLIND | WOUND | CONF | DARKNESS | HEAL
 drop-base:shadow book:8:1:1
 drop-base:shadow book:8:1:1
-desc:A dwarf of the east, dressed all in black, chanting words of dark sorcery.
+desc:A dark elf in black robes, chanting curses and dark prayers.
 
 name:air spirit
 base:elemental
@@ -4963,6 +4961,27 @@ friends:100:4d4:Uruk:bodyguard
 desc:A large and powerful orc, he looks just like his father.  He is tall and
 desc: fast, but fortunately blessed with orcish brains.
 
+name:Ainsley Harriott, the Happy Chef
+base:person
+color:y
+speed:120
+hit-points:500
+hearing:20
+armor-class:55
+sleepiness:255
+depth:20
+rarity:1
+experience:750
+blow:HIT:HURT:3d6
+blow:HIT:HURT:3d6
+flags:UNIQUE | MALE | SMART
+flags:DROP_2 | DROP_GOOD | ONLY_ITEM
+flags:OPEN_DOOR | FORCE_SLEEP
+spell-freq:8
+spells:SCARE | HASTE
+desc:A cheerful, world-famous chef whose exuberant patter hides a quick hand
+desc: with a pair of kitchen knives.
+
 name:3-headed hydra
 base:hydra
 color:o
@@ -5156,7 +5175,7 @@ flags:EVIL
 flags:RAND_25 | OPEN_DOOR | BASH_DOOR | TAKE_ITEM
 desc:It is a huge wolf with eyes that glow with manly intelligence.
 
-name:dark dwarven lord
+name:dark elven lord
 base:humanoid
 color:s
 speed:120
@@ -5177,12 +5196,12 @@ spells:BLIND | CONF | DARKNESS | HASTE
 spells:BO_COLD | BO_FIRE
 drop-base:magic book:5:1:1
 drop-base:magic book:5:1:1
-friends:80:1d3:eastern dwarf:servant
-friends:70:1d2:stonefoot warrior:servant
-friends:50:1d1:blacklock mage:servant
-friends:50:1d1:ironfist priest:servant
-desc:A leader of Morgoth's eastern dwarf recruits, dressed in black chainmail
-desc: and radiating evil power.
+friends:80:1d3:dark elf:servant
+friends:70:1d2:dark elven warrior:servant
+friends:50:1d1:dark elven mage:servant
+friends:50:1d1:dark elven priest:servant
+desc:A leader of Morgoth's dark elves, dressed in black chainmail and radiating
+desc: evil power.
 
 name:ranger
 base:person
@@ -7671,7 +7690,7 @@ desc: flickering bright red flames.
 
 ### Dungeon level 33 ###
 
-name:drúadan druid
+name:dark elven druid
 base:person
 color:y
 speed:120
@@ -7696,7 +7715,7 @@ spells:SHAPECHANGE
 spells:S_ANIMAL | S_MONSTER | S_SPIDER
 drop-base:nature book:8:1:1
 drop-base:nature book:8:1:1
-desc:A short, stocky man with an uncanny connection with nature.
+desc:A powerful dark elf whose enchantments twist the natural world.
 
 name:stone giant
 base:giant
@@ -8034,8 +8053,8 @@ drop-base:prayer book:5:1:1
 drop-base:prayer book:5:1:1
 desc:A troll who is so bright he knows how to read.
 
-name:Maia
-plural:Maiar
+name:Archangel
+plural:Archangels
 base:ainu
 color:B
 speed:110
@@ -8054,11 +8073,10 @@ blow:HIT:HURT:3d5
 flags:DROP_2
 spell-freq:3
 spells:BLIND | CONF | HASTE | HEAL | SCARE
-desc:One of the first children of Eru, currently human-like in form, its body
-desc: shining with glorious light.  Whether this being has taken allegiance to
-desc: Morgoth or faces you in combat for some other reason is not clear; all
-desc: you know is that it stands before you, its eyes ablaze as it prepares its
-desc: next volley of spells.
+desc:An angel wreathed in holiness, its powerful form shining with glorious
+desc: light.  Whether it serves Morgoth or faces you for some other reason is
+desc: not clear; all you know is that it stands before you, eyes ablaze as it
+desc: prepares its next volley of spells.
 
 name:troll blackguard
 base:troll
@@ -8301,6 +8319,29 @@ friends:80:1d2:Ogre shaman:servant
 friends:50:1d2:Ogre chieftain:servant
 desc:An ogre renowned for acts of surpassing cruelty, Lokkak quickly became the
 desc: leader of a large band of violent ogres.
+
+name:Iron Chef
+base:humanoid
+color:s
+speed:110
+hit-points:1600
+hearing:20
+armor-class:125
+sleepiness:255
+depth:35
+rarity:1
+experience:5000
+blow:HIT:HURT:5d6
+blow:HIT:HURT:5d6
+blow:HIT:HURT:5d6
+flags:UNIQUE | MALE | SMART
+flags:DROP_2 | DROP_GOOD | ONLY_ITEM
+flags:OPEN_DOOR | BASH_DOOR | FORCE_SLEEP
+flags:IM_COLD | IM_FIRE | NO_CONF | NO_SLEEP | NO_HOLD
+spell-freq:7
+spells:HASTE | BO_FIRE
+desc:An armored master chef advances with a heavy cleaver, his iron cookware
+desc: glowing red-hot from the fires of his kitchen.
 
 name:hill troll
 base:troll
@@ -9896,7 +9937,7 @@ friends:50:1d4:Baby black dragon
 friends:50:1d2:Young black dragon
 desc:A large dragon, with scales of deepest black.
 
-name:stiffbeard sorcerer
+name:dark elven sorcerer
 base:humanoid
 color:R
 speed:130
@@ -9922,8 +9963,7 @@ spells:BO_ACID
 spells:S_DEMON | S_MONSTER | S_UNDEAD
 drop-base:magic book:8:1:1
 drop-base:shadow book:8:1:1
-desc:A dwarf with plaited beard and painted face, dressed in deepest black.
-desc:  Power seems to crackle from his stocky frame.
+desc:A dark elf in deepest black, power crackling around his slender frame.
 
 name:master lich
 plural:master liches
@@ -11817,6 +11857,32 @@ desc:Last and proudest king of ancient Númenor.  Corrupted by power and avarice
 desc: he fell victim to Sauron's wiles, tried to fight the Valar themselves, and
 desc: condemned Númenor to oblivion.
 
+name:Gordon Ramsay, the Kitchen Tyrant
+base:person
+color:R
+speed:130
+hit-points:3200
+hearing:30
+armor-class:80
+sleepiness:255
+depth:55
+rarity:1
+experience:25000
+blow:HIT:HURT:7d8
+blow:HIT:HURT:7d8
+blow:HIT:HURT:7d8
+blow:HIT:HURT:7d8
+flags:UNIQUE | MALE | SMART
+flags:DROP_3 | DROP_GOOD | DROP_GREAT | ONLY_ITEM
+flags:OPEN_DOOR | MOVE_BODY | TAKE_ITEM
+flags:NO_CONF | NO_SLEEP | NO_HOLD | FORCE_SLEEP
+spell-freq:7
+spells:CONF | SCARE | HASTE
+spells:BO_FIRE | BA_FIRE
+desc:A world-famous chef with a fearsome presence in the kitchen.  His
+desc: blistering critiques ring through the dungeon as he charges with a
+desc: cleaver in each hand.
+
 name:barbazu
 plural:barbazu
 base:major demon
@@ -13185,7 +13251,7 @@ desc:  Feared by foes and friends alike when it flies into one of its berserk
 desc: rages, the Horned Reaper will cut down anything in its path between it
 desc: and you - even the minions it has just summoned.
 
-name:Ossë, Herald of Ulmo
+name:Azriel, Angel of Death
 base:ainu
 color:w
 speed:130
@@ -13211,11 +13277,8 @@ spells:BA_WATE | STORM
 spells:BO_MANA | BO_WATE
 spells:BR_DISE
 spells:S_AINU
-desc:Encrusted with barnacles, slimy and dripping, the Maia of the untamed
-desc: sea has dragged himself down into Angband to send you to a watery grave.
-desc:  Ossë is the most powerful and heartless of Ulmo's servants and embodies
-desc: the untamed power of the ocean.  Terror grows in your heart with each
-desc: squelching step of his approach.
+desc:Azriel's terrible presence chills the heart.  The Angel of Death advances,
+desc: wielding powers that threaten body and soul.
 
 
 ### Dungeon level 73 ###

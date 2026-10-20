@@ -357,7 +357,8 @@ void init_file_paths(const char *configpath, const char *libpath, const char *da
 	if (strncmp(ANGBAND_SYS, "test", 4) == 0)
 		path_build(buf, sizeof(buf), PRIVATE_USER_PATH, "Test");
 	else
-		path_build(buf, sizeof(buf), PRIVATE_USER_PATH, VERSION_NAME);
+		path_build(buf, sizeof(buf), PRIVATE_USER_PATH,
+			USER_DIRECTORY_NAME);
 	ANGBAND_DIR_USER = string_make(buf);
 
 #else /* !PRIVATE_USER_PATH */
