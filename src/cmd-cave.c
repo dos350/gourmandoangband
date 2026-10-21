@@ -83,6 +83,12 @@ void do_cmd_go_up(struct command *cmd)
 	/* Take a turn */
 	player->upkeep->energy_use = z_info->move_energy;
 
+	if (player_has(player, PF_GOURMAND)) {
+		msg("You are very fat and wise, and going up stairs hurts!");
+		take_hit(player, damroll(1, 4), "climbing stairs");
+		if (player->is_dead) return;
+	}
+
 	/* Success */
 	msgt(MSG_STAIRS_UP, "You enter a maze of up staircases.");
 

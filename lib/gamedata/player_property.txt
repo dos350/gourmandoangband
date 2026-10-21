@@ -140,6 +140,7 @@ code:GOURMAND
 name:Gourmand
 desc:You digest food twice as quickly and lose health when hungry.
 desc:At level 5, you can sniff out nearby monsters.
+desc:Going up stairs hurts and deals 1d4 damage.
 
 
 # Object flags

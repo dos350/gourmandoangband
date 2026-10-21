@@ -28,25 +28,25 @@
 message:GENERIC:w
 
 # MSG_HIT
-message:HIT:w
+message:HIT:g
 
 # MSG_MISS
-message:MISS:w
+message:MISS:R
 
 # MSG_FLEE
-message:FLEE:w
+message:FLEE:G
 
 # MSG_DROP (sound only)
 message:DROP:w
 
 # MSG_KILL
-message:KILL:w
+message:KILL:G
 
 # MSG_LEVEL
-message:LEVEL:w
+message:LEVEL:G
 
 # MSG_DEATH
-message:DEATH:w
+message:DEATH:R
 
 # MSG_STUDY
 message:STUDY:w
@@ -112,7 +112,7 @@ message:LOCKPICK_FAIL:w
 message:STAIRS_DOWN:w
 
 # MSG_HITPOINT_WARN
-message:HITPOINT_WARN:o
+message:HITPOINT_WARN:R
 
 # MSG_ACT_ARTIFACT
 message:ACT_ARTIFACT:w
@@ -124,133 +124,133 @@ message:USE_STAFF:w
 message:DESTROY:w
 
 # MSG_MON_HIT
-message:MON_HIT:w
+message:MON_HIT:R
 
 # MSG_MON_TOUCH
-message:MON_TOUCH:w
+message:MON_TOUCH:R
 
 # MSG_MON_PUNCH
-message:MON_PUNCH:w
+message:MON_PUNCH:R
 
 # MSG_MON_KICK
-message:MON_KICK:w
+message:MON_KICK:R
 
 # MSG_MON_CLAW
-message:MON_CLAW:w
+message:MON_CLAW:R
 
 # MSG_MON_BITE
-message:MON_BITE:w
+message:MON_BITE:R
 
 # MSG_MON_STING
-message:MON_STING:w
+message:MON_STING:R
 
 # MSG_MON_BUTT 
-message:MON_BUTT:w
+message:MON_BUTT:R
 
 # MSG_MON_CRUSH
-message:MON_CRUSH:w
+message:MON_CRUSH:R
 
 # MSG_MON_ENGULF
-message:MON_ENGULF:w
+message:MON_ENGULF:R
 
 # MSG_MON_CRAWL
-message:MON_CRAWL:w
+message:MON_CRAWL:R
 
 # MSG_MON_DROOL
-message:MON_DROOL:w
+message:MON_DROOL:R
 
 # MSG_MON_SPIT
-message:MON_SPIT:w
+message:MON_SPIT:R
 
 # MSG_MON_GAZE
-message:MON_GAZE:w
+message:MON_GAZE:R
 
 # MSG_MON_WAIL
-message:MON_WAIL:w
+message:MON_WAIL:R
 
 # MSG_MON_SPORE
-message:MON_SPORE:w
+message:MON_SPORE:R
 
 # MSG_MON_BEG
-message:MON_BEG:w
+message:MON_BEG:R
 
 # MSG_MON_INSULT
-message:MON_INSULT:w
+message:MON_INSULT:R
 
 # MSG_MON_MOAN
-message:MON_MOAN:w
+message:MON_MOAN:R
 
 # MSG_RECOVER
-message:RECOVER:w
+message:RECOVER:G
 
 # MSG_BLIND
-message:BLIND:w
+message:BLIND:R
 
 # MSG_CONFUSED
-message:CONFUSED:w
+message:CONFUSED:R
 
 # MSG_POISONED
-message:POISONED:w
+message:POISONED:R
 
 # MSG_AFRAID
-message:AFRAID:o
+message:AFRAID:R
 
 # MSG_PARALYZED
-message:PARALYZED:w
+message:PARALYZED:R
 
 # MSG_DRUGGED
-message:DRUGGED:w
+message:DRUGGED:R
 
 # MSG_SPEED
-message:SPEED:w
+message:SPEED:G
 
 # MSG_SLOW
-message:SLOW:w
+message:SLOW:R
 
 # MSG_SHIELD
-message:SHIELD:w
+message:SHIELD:G
 
 # MSG_BLESSED
-message:BLESSED:w
+message:BLESSED:G
 
 # MSG_HERO
-message:HERO:w
+message:HERO:G
 
 # MSG_BERSERK
-message:BERSERK:w
+message:BERSERK:G
 
 # MSG_PROT_EVIL
-message:PROT_EVIL:w
+message:PROT_EVIL:G
 
 # MSG_INVULN
-message:INVULN:w
+message:INVULN:G
 
 # MSG_SEE_INVIS
-message:SEE_INVIS:w
+message:SEE_INVIS:G
 
 # MSG_INFRARED
-message:INFRARED:w
+message:INFRARED:G
 
 # MSG_RES_ACID
-message:RES_ACID:w
+message:RES_ACID:G
 
 # MSG_RES_ELEC
-message:RES_ELEC:w
+message:RES_ELEC:G
 
 # MSG_RES_FIRE
-message:RES_FIRE:w
+message:RES_FIRE:G
 
 # MSG_RES_COLD
-message:RES_COLD:w
+message:RES_COLD:G
 
 # MSG_RES_POIS
-message:RES_POIS:w
+message:RES_POIS:G
 
 # MSG_STUN
-message:STUN:w
+message:STUN:R
 
 # MSG_CUT
-message:CUT:w
+message:CUT:R
 
 # MSG_STAIRS_UP
 message:STAIRS_UP:w
@@ -265,16 +265,16 @@ message:STORE_LEAVE:w
 message:STORE_HOME:w
 
 # MSG_MONEY1
-message:MONEY1:w
+message:MONEY1:Y
 
 # MSG_MONEY2
-message:MONEY2:w
+message:MONEY2:Y
 
 # MSG_MONEY3
-message:MONEY3:w
+message:MONEY3:Y
 
 # MSG_SHOOT_HIT
-message:SHOOT_HIT:w
+message:SHOOT_HIT:g
 
 # MSG_STORE5
 message:STORE5:w
@@ -296,115 +296,115 @@ message:IDENT_ART:w
 
 # MSG_BR_ELEMENTS
 # This is used as a generic breath.Another message type should be defined.
-message:BR_ELEMENTS:w
+message:BR_ELEMENTS:W
 
 # MSG_BR_FROST
 message:BR_FROST:w
 
 # MSG_BR_ELEC
-message:BR_ELEC:w
+message:BR_ELEC:b
 
 # MSG_BR_ACID
-message:BR_ACID:w
+message:BR_ACID:s
 
 # MSG_BR_GAS
-message:BR_GAS:w
+message:BR_GAS:g
 
 # MSG_BR_FIRE
-message:BR_FIRE:w
+message:BR_FIRE:r
 
 # MSG_BR_DISEN
-message:BR_DISEN:w
+message:BR_DISEN:v
 
 # MSG_BR_CHAOS
-message:BR_CHAOS:w
+message:BR_CHAOS:v
 
 # MSG_BR_SHARDS
-message:BR_SHARDS:w
+message:BR_SHARDS:u
 
 # MSG_BR_SOUND
-message:BR_SOUND:w
+message:BR_SOUND:y
 
 # MSG_BR_LIGHT
-message:BR_LIGHT:w
+message:BR_LIGHT:o
 
 # MSG_BR_DARK
-message:BR_DARK:w
+message:BR_DARK:D
 
 # MSG_BR_NETHER
-message:BR_NETHER:w
+message:BR_NETHER:G
 
 # MSG_BR_NEXUS
-message:BR_NEXUS:w
+message:BR_NEXUS:R
 
 # MSG_BR_TIME
-message:BR_TIME:w
+message:BR_TIME:B
 
 # MSG_BR_INERTIA
-message:BR_INERTIA:w
+message:BR_INERTIA:W
 
 # MSG_BR_GRAVITY
-message:BR_GRAVITY:w
+message:BR_GRAVITY:W
 
 # MSG_BR_PLASMA
-message:BR_PLASMA:w
+message:BR_PLASMA:r
 
 # MSG_BR_FORCE
-message:BR_FORCE:w
+message:BR_FORCE:u
 
 # MSG_SUM_MONSTER
-message:SUM_MONSTER:w
+message:SUM_MONSTER:R
 
 # MSG_SUM_AINU
-message:SUM_AINU:w
+message:SUM_AINU:R
 
 # MSG_SUM_UNDEAD
-message:SUM_UNDEAD:w
+message:SUM_UNDEAD:R
 
 # MSG_SUM_ANIMAL
-message:SUM_ANIMAL:w
+message:SUM_ANIMAL:R
 
 # MSG_SUM_SPIDER
-message:SUM_SPIDER:w
+message:SUM_SPIDER:R
 
 # MSG_SUM_HOUND
-message:SUM_HOUND:w
+message:SUM_HOUND:R
 
 # MSG_SUM_HYDRA
-message:SUM_HYDRA:w
+message:SUM_HYDRA:R
 
 # MSG_SUM_DEMON
-message:SUM_DEMON:w
+message:SUM_DEMON:R
 
 # MSG_SUM_DRAGON
-message:SUM_DRAGON:w
+message:SUM_DRAGON:R
 
 # MSG_SUM_HI_UNDEAD
-message:SUM_HI_UNDEAD:w
+message:SUM_HI_UNDEAD:R
 
 # MSG_SUM_HI_DRAGON
-message:SUM_HI_DRAGON:w
+message:SUM_HI_DRAGON:R
 
 # MSG_SUM_HI_DEMON
-message:SUM_HI_DEMON:w
+message:SUM_HI_DEMON:R
 
 # MSG_SUM_WRAITH
-message:SUM_WRAITH:w
+message:SUM_WRAITH:R
 
 # MSG_SUM_UNIQUE
-message:SUM_UNIQUE:w
+message:SUM_UNIQUE:R
 
 # MSG_WIELD
 message:WIELD:w
 
 # MSG_CURSED
-message:CURSED:w
+message:CURSED:R
 
 # MSG_RUNE
 message:RUNE:w
 
 # MSG_HUNGRY
-message:HUNGRY:w
+message:HUNGRY:R
 
 # MSG_NOTICE
 message:NOTICE:w
@@ -431,28 +431,28 @@ message:AMBIENT_DNG4:w
 message:AMBIENT_DNG5:w
 
 # MSG_CREATE_TRAP
-message:CREATE_TRAP:w
+message:CREATE_TRAP:R
 
 # MSG_SHRIEK
-message:SHRIEK:w
+message:SHRIEK:R
 
 # MSG_CAST_FEAR
-message:CAST_FEAR:w
+message:CAST_FEAR:R
 
 # MSG_HIT_GOOD
-message:HIT_GOOD:w
+message:HIT_GOOD:G
 
 # MSG_HIT_GREAT
-message:HIT_GREAT:w
+message:HIT_GREAT:T
 
 # MSG_HIT_SUPERB
-message:HIT_SUPERB:w
+message:HIT_SUPERB:Y
 
 # MSG_HIT_HI_GREAT
-message:HIT_HI_GREAT:w
+message:HIT_HI_GREAT:o
 
 # MSG_HIT_HI_SUPERB
-message:HIT_HI_SUPERB:w
+message:HIT_HI_SUPERB:V
 
 # MSG_SPELL (sound only)
 message:SPELL:w
@@ -461,13 +461,13 @@ message:SPELL:w
 message:PRAYER:w
 
 # MSG_KILL_UNIQUE
-message:KILL_UNIQUE:w
+message:KILL_UNIQUE:G
 
 # MSG_KILL_KING
-message:KILL_KING:w
+message:KILL_KING:Y
 
 # MSG_DRAIN_STAT
-message:DRAIN_STAT:w
+message:DRAIN_STAT:R
 
 # MSG_MULTIPLY (sound only)
 message:MULTIPLY:w

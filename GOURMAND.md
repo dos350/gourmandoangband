@@ -3,6 +3,9 @@
 This file records the current Gourmand design and where its behavior is
 implemented. The game-data class record is in `lib/gamedata/class.txt`.
 
+the gourmand class is meant to be a fun warrior type class;
+he may be a bit overtuned but honestly it seems pretty fair
+
 ## Current mechanics
 
 - The class has a base speed adjustment of -3. That class penalty is removed
@@ -10,6 +13,7 @@ implemented. The game-data class record is in `lib/gamedata/class.txt`.
 - Gourmands digest food twice as quickly, including while `Full`. Below the
   `Hungry` threshold they take periodic hunger damage, with more damage below
   `Starving`.
+- Going up stairs deals 1d4 damage and displays a message about the strain.
 - After successfully eating a `TV_FOOD` item whose subtype value is higher
   than Ration of Food's, a Gourmand gets one random benefit: 3-8 healing, 11-20
   turns of speed, or clearing one active harmful timed effect. If there is no
@@ -18,8 +22,7 @@ implemented. The game-data class record is in `lib/gamedata/class.txt`.
   in `lib/gamedata/object.txt`.
 - At level 5, press **N** to sniff out visible monsters up to 8 tiles away.
   Range increases by 1 tile for every 2 levels above level 5. This is a class
-  ability, not a spell, and uses a turn. **V** remains reserved for version
-  information.
+  ability, not a spell, and uses a turn.
 
 ## Implementation map
 
@@ -31,6 +34,7 @@ implemented. The game-data class record is in `lib/gamedata/class.txt`.
 - `src/player-calcs.c`: apply class speed and remove the penalty when Fed or
   Full.
 - `src/game-world.c`: faster digestion and periodic hunger damage.
+- `src/cmd-cave.c`: damage from climbing upstairs.
 - `src/cmd-obj.c`: food bonuses and the monster-sensing command.
 - `src/cmd-core.c`, `src/cmd-core.h`, `src/cmds.h`, `src/player-util.c`,
   `src/player-util.h`, and `src/ui-game.c`: command registration, level
