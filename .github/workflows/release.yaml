@@ -418,6 +418,9 @@ jobs:
     if: github.event_name == 'push'
     needs: [ setup, source, windows, mac ]
     name: Create GitHub Release
+    # gh release create needs write access; the default token is read-only.
+    permissions:
+      contents: write
     runs-on: ubuntu-latest
     steps:
       - name: Clone Project

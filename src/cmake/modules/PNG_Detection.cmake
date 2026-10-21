@@ -26,6 +26,13 @@ function(determine_png PNG_TARGET PNG_DLLS USE_BUNDLED)
         return()
     endif()
 
+    if(WIN32)
+        find_package(PNG REQUIRED)
+        set(${PNG_TARGET} PNG::PNG PARENT_SCOPE)
+        set(${PNG_DLLS} "" PARENT_SCOPE)
+        return()
+    endif()
+
     find_package(PkgConfig REQUIRED)
     pkg_check_modules(PNG QUIET IMPORTED_TARGET libpng)
     if(NOT PNG_FOUND)

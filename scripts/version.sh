@@ -35,9 +35,12 @@ if head=$(git rev-parse --verify --short HEAD 2>/dev/null); then
 	if atag="$(git describe 2>/dev/null)"; then
 		printf "$atag"
 
-	# If we don't have a tag at all we print {VERSION}-g{commitish}.
+	# If we don't have a tag at all we print
+	# {VERSION}-{commit count}-g{commitish}, so the number rises with
+	# every commit (like git describe does past a tag).
 	else
-		printf '%s%s%s' "$base_version" -g $head
+		count=$(git rev-list --count HEAD 2>/dev/null)
+		printf '%s-%s-g%s' "$base_version" "${count:-0}" $head
 	fi
 
 	# Check for uncommitted changes
