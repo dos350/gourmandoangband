@@ -19,6 +19,13 @@ usage() {
 	exit 1
 }
 
+# The top-level VERSION file is the single place the base version is set.
+# It is used when git has no tag to describe.
+base_version=
+if test -r "$(dirname "$0")/../VERSION" ; then
+	base_version="$(tr -d '\r\n ' < "$(dirname "$0")/../VERSION")"
+fi
+
 cd "${1:-.}" || usage
 
 # Check for git and a git repo.
@@ -28,9 +35,9 @@ if head=$(git rev-parse --verify --short HEAD 2>/dev/null); then
 	if atag="$(git describe 2>/dev/null)"; then
 		printf "$atag"
 
-	# If we don't have a tag at all we print -g{commitish}.
+	# If we don't have a tag at all we print {VERSION}-g{commitish}.
 	else
-		printf '%s%s' -g $head
+		printf '%s%s%s' "$base_version" -g $head
 	fi
 
 	# Check for uncommitted changes

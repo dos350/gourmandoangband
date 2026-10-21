@@ -496,7 +496,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           release_tag="${{ steps.store_config.outputs.version }}"
-          options="-t $release_tag"
+          options="-t $release_tag --target ${{ github.sha }}"
           test x"${{ steps.store_config.outputs.draft }}" = xtrue && options="$options -d"
           test x"${{ steps.store_config.outputs.prerelease }}" = xtrue && options="$options -p"
           gh release create $release_tag ${{ steps.store_src.outputs.archive_path }} ${{ steps.store_win.outputs.archive_path }} ${{ steps.store_mac.outputs.archive_path }} $options
