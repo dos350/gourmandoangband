@@ -41,24 +41,6 @@ env:
     # Used as the name when uploading or downloading the artifact holding
     # the Mac archive.
     MAC_ARCHIVE_ARTIFACT: release-mac-archive
-    # Used as the name when uploading or downloading the artifact for passing
-    # the name of the Nintendo NDS archive.
-    NIN_DS_ARTIFACT: release-ds
-    # Used as the path for the file with the name of the Nintendo NDS archive
-    # in it.
-    NIN_DS_ARTIFACT_PATH: release-ds.txt
-    # Used as the name when uploading or downloading the artifact holding
-    # the Nintendo DS archive.
-    NIN_DS_ARCHIVE_ARTIFACT: release-ds-archive
-    # Used as the name when uploading or downloading the artifact for passing
-    # the name of the Nintendo 3DS archive.
-    NIN_3DS_ARTIFACT: release-3ds
-    # Used as the path for the file with the name of the Nintendo 3DS archive
-    # in it.
-    NIN_3DS_ARTIFACT_PATH: release-3ds.txt
-    # Used as the name when uploading or downloading the artifact holding
-    # the Nintendo 3DS archive.
-    NIN_3DS_ARCHIVE_ARTIFACT: release-3ds-archive
 
 jobs:
   setup:
@@ -432,192 +414,9 @@ jobs:
           path: ${{ steps.create_mac_archive.outputs.archive_file }}
           retention-days: 1
 
-  _3ds:
-    needs: [setup, docconvert]
-    name: Nintendo 3DS
-    runs-on: ubuntu-latest
-    container: devkitpro/devkitarm
-    steps:
-      - name: Download Artifact with Configuration Information
-        uses: actions/download-artifact@v8
-        with:
-          name: ${{ env.CONFIG_ARTIFACT }}
-
-      - name: Extract Configuration Information and Store in Step Outputs
-        id: store_config
-        run: |
-          name=`sed -E -n -e 's/name= //p' $CONFIG_ARTIFACT_PATH`
-          echo "name=$name" >> $GITHUB_OUTPUT
-          prog=`sed -E -n -e 's/prog= //p' $CONFIG_ARTIFACT_PATH`
-          echo "prog=$prog" >> $GITHUB_OUTPUT
-          version=`sed -E -n -e 's/version= //p' $CONFIG_ARTIFACT_PATH`
-          echo "version=$version" >> $GITHUB_OUTPUT
-
-      - name: Clone Project
-        uses: actions/checkout@v6
-        with:
-          fetch-depth: 0
-
-      - name: Download Artifact with Converted Documents
-        uses: actions/download-artifact@v8
-        with:
-          name: ${{ env.DOC_ARTIFACT }}
-
-      - name: Extract Converted Documents
-        run: |
-          tar -xf ${{ env.DOC_ARTIFACT_PATH }}
-
-      - name: Build Nintendo 3DS (3dsx)
-        id: create_nintendo_3ds_3dsx
-        shell: bash
-        run: |
-          pushd src/
-          make -f Makefile.3ds -j$(nproc)
-          popd
-          test -e src/${{ steps.store_config.outputs.prog }}.3dsx
-
-      - name: Setup cxitool
-        shell: bash
-        run: |
-          apt-get update && apt-get install -y build-essential automake autoconf autotools-dev
-          git clone -b cxi-stuff https://github.com/devkitPro/3dstools/
-          pushd 3dstools/
-          ./autogen.sh
-          ./configure
-          make -j$(nproc) install
-          popd
-
-      - name: Setup makerom
-        shell: bash
-        run: |
-          apt-get update && apt-get install -y build-essential libmbedtls-dev liblzma-dev libyaml-dev
-          git clone https://github.com/3DSGuy/Project_CTR/
-          pushd Project_CTR/makerom
-          make -j$(nproc) deps
-          make -j$(nproc)
-          cp -rv bin/makerom /usr/local/bin
-          popd
-
-      # The quoting to get prog may be too simple-minded:  what if there
-      # are single quotes in the steps.*.outputs.* stuff.  Restrict what's
-      # passed to cxitool's --name option to at most 8 characters since that
-      # is a limitation of that tool.
-      - name: Build Nintendo 3DS (cia)
-        id: create_nintendo_3ds_cia
-        shell: bash
-        run: |
-          pushd src/
-          prog='${{ steps.store_config.outputs.prog }}'
-          procname=`echo "$prog" | head -c 8`
-          test -e "$prog".3dsx
-          cxitool --name="$procname" --code=CTR-P-`echo "$procname" | tr [:lower:] [:upper:]` --tid=000400000616E600 "$prog".3dsx "$prog".cxi
-          makerom -v -f cia -o "$prog".cia -target t -i "$prog".cxi:0:0 -ignoresign -icon icon.smdh  
-          test -e "$prog".cia
-          popd
-
-      - name: Create Nintendo 3DS Archive
-        id: create_nintendo_3ds_archive
-        shell: bash
-        run: |
-          archive_prefix=${{ steps.store_config.outputs.name }}-${{ steps.store_config.outputs.version }}
-          echo "archive_file=${archive_prefix}-3ds.zip" >> $GITHUB_OUTPUT
-          mkdir -v ${{ steps.store_config.outputs.prog }}/
-          cp -v src/${{ steps.store_config.outputs.prog }}.3dsx ${archive_prefix}.3dsx
-          cp -v src/${{ steps.store_config.outputs.prog }}.cia ${archive_prefix}.cia
-          cp -rv lib ${{ steps.store_config.outputs.prog }}/
-          zip -r ${archive_prefix}-3ds.zip ${archive_prefix}.3dsx ${archive_prefix}.cia ${{ steps.store_config.outputs.prog }}/
-
-      - name: Create Artifact with Nintendo 3DS Archive Path
-        run: |
-          echo archive_path= '${{ steps.create_nintendo_3ds_archive.outputs.archive_file }}' > $NIN_3DS_ARTIFACT_PATH
-
-      - name: Upload Artifact with Nintendo 3DS Archive Path
-        uses: actions/upload-artifact@v6
-        with:
-          name: ${{ env.NIN_3DS_ARTIFACT }}
-          path: ${{ env.NIN_3DS_ARTIFACT_PATH }}
-          retention-days: 1
-
-      - name: Upload Nintendo 3DS Archive as Artifact
-        uses: actions/upload-artifact@v6
-        with:
-          name: ${{ env.NIN_3DS_ARCHIVE_ARTIFACT }}
-          path: ${{ steps.create_nintendo_3ds_archive.outputs.archive_file }}
-          retention-days: 1
-
-  nds:
-    needs: [setup, docconvert]
-    name: Nintendo DS
-    runs-on: ubuntu-latest
-    container: skylyrac/blocksds:slim-latest
-    steps:
-      - name: Download Artifact with Configuration Information
-        uses: actions/download-artifact@v8
-        with:
-          name: ${{ env.CONFIG_ARTIFACT }}
-
-      - name: Extract Configuration Information and Store in Step Outputs
-        id: store_config
-        run: |
-          name=`sed -E -n -e 's/name= //p' $CONFIG_ARTIFACT_PATH`
-          echo "name=$name" >> $GITHUB_OUTPUT
-          prog=`sed -E -n -e 's/prog= //p' $CONFIG_ARTIFACT_PATH`
-          echo "prog=$prog" >> $GITHUB_OUTPUT
-          version=`sed -E -n -e 's/version= //p' $CONFIG_ARTIFACT_PATH`
-          echo "version=$version" >> $GITHUB_OUTPUT
-
-      - name: Clone Project
-        uses: actions/checkout@v6
-        with:
-          fetch-depth: 0
-
-      - name: Download Artifact with Converted Documents
-        uses: actions/download-artifact@v8
-        with:
-          name: ${{ env.DOC_ARTIFACT }}
-
-      - name: Extract Converted Documents
-        run: |
-          tar -xf ${{ env.DOC_ARTIFACT_PATH }}
-
-      - name: Create Nintendo DS Archive
-        id: create_nintendo_ds_archive
-        shell: bash
-        run: |
-          apt-get update && apt-get install -y zip
-          pushd src/
-          make -f Makefile.blocksds -j$(nproc)
-          popd
-          test -e src/${{ steps.store_config.outputs.prog }}.nds
-
-          archive_prefix=${{ steps.store_config.outputs.name }}-${{ steps.store_config.outputs.version }}
-          echo "archive_file=${archive_prefix}-nds.zip" >> $GITHUB_OUTPUT
-          mkdir -v ${{ steps.store_config.outputs.prog }}/
-          cp -v src/${{ steps.store_config.outputs.prog }}.nds ${archive_prefix}.nds
-          cp -rv lib ${{ steps.store_config.outputs.prog }}/
-          zip -r ${archive_prefix}-nds.zip ${archive_prefix}.nds ${{ steps.store_config.outputs.prog }}/
-
-      - name: Create Artifact with Nintendo DS Archive Path
-        run: |
-          echo archive_path= '${{ steps.create_nintendo_ds_archive.outputs.archive_file }}' > $NIN_DS_ARTIFACT_PATH
-
-      - name: Upload Artifact with Nintendo DS Archive Path
-        uses: actions/upload-artifact@v6
-        with:
-          name: ${{ env.NIN_DS_ARTIFACT }}
-          path: ${{ env.NIN_DS_ARTIFACT_PATH }}
-          retention-days: 1
-
-      - name: Upload Nintendo DS Archive as Artifact
-        uses: actions/upload-artifact@v6
-        with:
-          name: ${{ env.NIN_DS_ARCHIVE_ARTIFACT }}
-          path: ${{ steps.create_nintendo_ds_archive.outputs.archive_file }}
-          retention-days: 1
-
   release:
     if: github.event_name == 'push'
-    needs: [ setup, source, windows, mac, _3ds, nds ]
+    needs: [ setup, source, windows, mac ]
     name: Create GitHub Release
     runs-on: ubuntu-latest
     steps:
@@ -689,38 +488,6 @@ jobs:
         with:
           name: ${{ env.MAC_ARCHIVE_ARTIFACT }}
 
-      - name: Download Artifact with Nintendo 3DS Archive Path
-        uses: actions/download-artifact@v8
-        with:
-          name: ${{ env.NIN_3DS_ARTIFACT }}
-
-      - name: Extract Nintendo 3DS Archive Path and Store in Step Outputs
-        id: store_3ds
-        run: |
-          archive_path=`sed -E -n -e 's/archive_path= //p' $NIN_3DS_ARTIFACT_PATH`
-          echo "archive_path=$archive_path" >> $GITHUB_OUTPUT
-
-      - name: Download Artifact with Nintendo 3DS Archive
-        uses: actions/download-artifact@v8
-        with:
-          name: ${{ env.NIN_3DS_ARCHIVE_ARTIFACT }}
-
-      - name: Download Artifact with Nintendo DS Archive Path
-        uses: actions/download-artifact@v8
-        with:
-          name: ${{ env.NIN_DS_ARTIFACT }}
-
-      - name: Extract Nintendo DS Archive Path and Store in Step Outputs
-        id: store_ds
-        run: |
-          archive_path=`sed -E -n -e 's/archive_path= //p' $NIN_DS_ARTIFACT_PATH`
-          echo "archive_path=$archive_path" >> $GITHUB_OUTPUT
-
-      - name: Download Artifact with Nintendo DS Archive
-        uses: actions/download-artifact@v8
-        with:
-          name: ${{ env.NIN_DS_ARCHIVE_ARTIFACT }}
-
       # Use the gh CLI,  https://cli.github.com/manual/gh_release_create , to
       # create the release.  Requires a checked out repository, thus the
       # checkout step prior to retrieving the artifacts.
@@ -732,4 +499,4 @@ jobs:
           options="-t $release_tag"
           test x"${{ steps.store_config.outputs.draft }}" = xtrue && options="$options -d"
           test x"${{ steps.store_config.outputs.prerelease }}" = xtrue && options="$options -p"
-          gh release create $release_tag ${{ steps.store_src.outputs.archive_path }} ${{ steps.store_win.outputs.archive_path }} ${{ steps.store_mac.outputs.archive_path }} ${{ steps.store_3ds.outputs.archive_path }} ${{ steps.store_ds.outputs.archive_path }} $options
+          gh release create $release_tag ${{ steps.store_src.outputs.archive_path }} ${{ steps.store_win.outputs.archive_path }} ${{ steps.store_mac.outputs.archive_path }} $options
