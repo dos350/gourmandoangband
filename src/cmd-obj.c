@@ -410,7 +410,7 @@ static void gourmand_food_bonus(void)
 	};
 	int active[TMD_MAX];
 	int active_count = 0;
-	int i;
+	size_t i;
 
 	switch (randint0(3)) {
 	case 0:
