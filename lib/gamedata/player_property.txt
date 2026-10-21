@@ -135,6 +135,12 @@ desc:  When you spend SP by casting a spell you regain some health, and
 desc: fading SP replenish your health more efficiently.  The more damaged
 desc: you are, the bigger these health gains will be.
 
+type:player
+code:GOURMAND
+name:Gourmand
+desc:You digest food twice as quickly and lose health when hungry.
+desc:At level 5, you can sniff out nearby monsters.
+
 
 # Object flags
 

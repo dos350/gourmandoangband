@@ -1,4 +1,4 @@
-# File: newclass.txt
+# File: newclass.txt ~unused just for ur convenience to copy bakc;
 
 # copy the contents of this file over class.txt or rename it to class.txt to use the new classes of angband 4.2.6
 # This file is used to initialize the "player class" information for Angband.

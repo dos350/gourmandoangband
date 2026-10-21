@@ -591,6 +591,21 @@ blow:STING:COLD:1d2
 flags:RAND_50 | BASH_DOOR
 desc:It is about four feet long and carnivorous.
 
+name:angry escargot
+base:centipede
+color:y
+speed:110
+hit-points:10
+hearing:8
+smell:20
+armor-class:14
+sleepiness:30
+depth:1
+rarity:1
+experience:2
+blow:BITE:HURT:1d2
+desc:A small snail with an unusually bad temper.
+
 name:white icky thing
 base:icky thing
 color:w
@@ -4978,7 +4993,9 @@ flags:UNIQUE | MALE | SMART
 flags:DROP_2 | DROP_GOOD | ONLY_ITEM
 flags:OPEN_DOOR | FORCE_SLEEP
 spell-freq:8
-spells:SCARE | HASTE
+spells:SCARE | HASTE | SHRIEK
+message-vis:SHRIEK:{name} shouts, 'Yea boi!'
+message-invis:SHRIEK:You hear a voice shout, 'Yea boi!'
 desc:A cheerful, world-famous chef whose exuberant patter hides a quick hand
 desc: with a pair of kitchen knives.
 
@@ -6070,6 +6087,27 @@ flags:IM_POIS
 friends:100:2d4:Same
 desc:A hideous centipede covered in slime and with glowing tentacles around its
 desc: head.
+
+name:Anthony Bourdain, the Wandering Chef
+base:ghost
+color:U
+speed:120
+hit-points:500
+hearing:20
+armor-class:55
+sleepiness:0
+depth:25
+rarity:1
+experience:1200
+blow:WAIL:TERRIFY
+blow:TOUCH:EXP_10
+blow:HIT:HURT:3d6
+flags:UNIQUE | MALE | NAME_COMMA | SMART
+flags:DROP_2 | DROP_GOOD | ONLY_ITEM
+spell-freq:8
+spells:BLIND | CONF | SCARE
+desc:A restless culinary spirit, still searching the world for one more great
+desc: meal and telling anyone nearby exactly what is on the menu.
 
 name:killer red beetle
 base:killer beetle
@@ -11877,7 +11915,9 @@ flags:DROP_3 | DROP_GOOD | DROP_GREAT | ONLY_ITEM
 flags:OPEN_DOOR | MOVE_BODY | TAKE_ITEM
 flags:NO_CONF | NO_SLEEP | NO_HOLD | FORCE_SLEEP
 spell-freq:7
-spells:CONF | SCARE | HASTE
+spells:CONF | SCARE | HASTE | SHRIEK
+message-vis:SHRIEK:{name} screams, 'Where's the lamb sauce?'
+message-invis:SHRIEK:You hear someone scream, 'Where's the lamb sauce?'
 spells:BO_FIRE | BA_FIRE
 desc:A world-famous chef with a fearsome presence in the kitchen.  His
 desc: blistering critiques ring through the dungeon as he charges with a

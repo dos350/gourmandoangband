@@ -64,6 +64,7 @@ void do_cmd_use_staff(struct command *cmd);
 void do_cmd_aim_wand(struct command *cmd);
 void do_cmd_zap_rod(struct command *cmd);
 void do_cmd_activate(struct command *cmd);
+void do_cmd_gourmand_sense(struct command *cmd);
 void do_cmd_eat_food(struct command *cmd);
 void do_cmd_quaff_potion(struct command *cmd);
 void do_cmd_use(struct command *cmd);

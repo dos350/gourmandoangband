@@ -326,6 +326,22 @@ dice:15
 desc:A strange fungal growth, prone to moving if not observed.  Not very tasty
 desc: but quite filling.
 
+name:& Escargot~
+type:food
+graphics:,:y
+level:1
+weight:2
+cost:5
+alloc:40:1 to 100
+pile:40:1d2
+power:2
+msg:That tastes good.
+effect:NOURISH:INC_BY
+dice:15
+effect:HEAL_HP
+dice:1d4
+desc:A tender snail dish.  It's surprisingly restorative.
+
 name:& Ration~ of Food
 type:food
 graphics:,:U
@@ -416,6 +432,27 @@ effect:HEAL_HP
 dice:4d8
 desc:Food of the elves is always good; their waybread is no exception.  These
 desc: thin cakes are wrapped in leaves and keep their tastiness for months.
+
+name:& Cheeseburger~
+type:food
+graphics:,:y
+level:5
+weight:3
+cost:10
+alloc:20:30 to 100
+pile:10:1d3
+power:4
+msg:That tastes great.
+effect:NOURISH:INC_TO
+dice:75
+effect:RANDOM
+dice:5
+effect:CURE:BLIND
+effect:CURE:CUT
+effect:CURE:POISONED
+effect:CURE:STUN
+effect:CURE:CONFUSED
+desc:A hearty cheeseburger that leaves you feeling refreshed.
 
 name:& Flask~ of Whisky
 type:food

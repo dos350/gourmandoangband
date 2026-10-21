@@ -140,6 +140,8 @@ static void show_obj(int obj_num, int row, int col, bool cursor,
 					 olist_detail_t mode)
 {
 	int attr;
+	int glyph_width = ((mode & OLIST_GLYPH) &&
+		(tile_width == 1) && (tile_height == 1)) ? 2 : 0;
 	int label_attr = cursor ? COLOUR_L_BLUE : COLOUR_WHITE;
 	int ex_offset_ctr;
 	char buf[80];
@@ -163,9 +165,10 @@ static void show_obj(int obj_num, int row, int col, bool cursor,
 			  col + label_size);
 
 	/* Limit object name */
-	if (label_size + equip_label_size + strlen(items[obj_num].o_name) >
-		(size_t)ex_offset) {
-		int truncate = ex_offset - label_size - equip_label_size;
+	if (label_size + equip_label_size + glyph_width +
+		strlen(items[obj_num].o_name) > (size_t)ex_offset) {
+		int truncate = ex_offset - label_size - equip_label_size -
+			glyph_width;
 
 		if (truncate < 0) truncate = 0;
 		if ((size_t)truncate > sizeof(items[obj_num].o_name) - 1)
@@ -188,8 +191,12 @@ static void show_obj(int obj_num, int row, int col, bool cursor,
 	}
 
 	/* Object name */
+	if (obj && glyph_width) {
+		Term_putch(col + label_size + equip_label_size, row + obj_num,
+			object_attr(obj), object_char(obj));
+	}
 	c_put_str(attr, items[obj_num].o_name, row + obj_num,
-			  col + label_size + equip_label_size);
+			  col + label_size + equip_label_size + glyph_width);
 
 	/* If we don't have an object, we can skip the rest of the output */
 	if (!obj) return;
@@ -398,6 +405,10 @@ static void show_obj_list(olist_detail_t mode)
 
 	/* Set the names and get the max length */
 	set_obj_names(terse, player);
+	if (!in_term && (mode & OLIST_GLYPH) &&
+		(tile_width == 1) && (tile_height == 1)) {
+		max_len += 2;
+	}
 
 	/* Take the quiver message into consideration */
 	if (mode & OLIST_QUIVER && player->upkeep->quiver[0] != NULL)
@@ -480,6 +491,8 @@ void show_inven(int mode, item_tester tester)
 
 	bool in_term = (mode & OLIST_WINDOW) ? true : false;
 
+	mode |= OLIST_GLYPH;
+
 	/* Initialize */
 	wipe_obj_list();
 
@@ -545,6 +558,8 @@ void show_equip(int mode, item_tester tester)
 {
 	int i;
 	bool in_term = (mode & OLIST_WINDOW) ? true : false;
+
+	mode |= OLIST_GLYPH;
 
 	/* Initialize */
 	wipe_obj_list();
@@ -940,8 +955,16 @@ static int get_item_validity(struct menu *menu, int oid)
 static void get_item_display(struct menu *menu, int oid, bool cursor, int row,
 					  int col, int width)
 {
+	olist_detail_t mode = olist_mode;
+
+	if (((player->upkeep->command_wrk == USE_INVEN) ||
+		 (player->upkeep->command_wrk == USE_EQUIP)) &&
+		(tile_width == 1) && (tile_height == 1)) {
+		mode |= OLIST_GLYPH;
+	}
+
 	/* Print it */
-	show_obj(oid, row - oid, col, cursor, olist_mode);
+	show_obj(oid, row - oid, col, cursor, mode);
 }
 
 /**
@@ -1179,6 +1202,12 @@ static struct object *item_menu(cmd_code cmd, int prompt_size, int mode)
 	/* Set up the item list variables */
 	selection = NULL;
 	set_obj_names(false, player);
+
+	if (((player->upkeep->command_wrk == USE_INVEN) ||
+		 (player->upkeep->command_wrk == USE_EQUIP)) &&
+		(tile_width == 1) && (tile_height == 1)) {
+		max_len += 2;
+	}
 
 	if (mode & OLIST_QUIVER && player->upkeep->quiver[0] != NULL)
 		max_len = MAX(max_len, 24);

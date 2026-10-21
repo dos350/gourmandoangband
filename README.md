@@ -11,6 +11,8 @@ fork. [changes.txt](changes.txt) lists changes made specifically for this fork.
 
 This project is still early, and binary releases are not available yet.
 
+The current custom class mechanics are documented in [GOURMAND.md](GOURMAND.md).
+
 Angband is a graphical dungeon adventure game that uses textual characters to
 represent the walls and floors of a dungeon and the inhabitants therein, in the
 vein of games like NetHack and Rogue. For in-game help, press `?`.

@@ -1248,6 +1248,11 @@ bool player_can_cast_prereq(void)
 	return player_can_cast(player, true);
 }
 
+bool player_can_gourmand_sense_prereq(void)
+{
+	return player_has(player, PF_GOURMAND) && player->lev >= 5;
+}
+
 /**
  * Prerequisite function for command. See struct cmd_info in ui-input.h and
  * it's use in ui-game.c.

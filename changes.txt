@@ -6,10 +6,12 @@ im testing on windows default build and i aint using sound or any tiles so yeah 
 
 changes for the initial release of gourmandoAngband:
 
+added Gourmand class [dev note - its a food powered warrior type class]
 oldclass.txt is now default [dev note - the new classes were unneeded and yeah kind of whatever]
 scooped monster names and lore to pre-3.4 style; [dev note - the traditional names/lore were superior]
 some tweaks to default interface options [dev note - these options should have been default 15 years ago]
 randarts is default [dev note - its more fun this way]
-added some gourmand themed uniques
+added some gourmand themed uniques and food
+
 
 

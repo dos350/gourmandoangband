@@ -150,6 +150,8 @@ struct cmd_info cmd_action[] =
 	{ "Close a door", { 'c' }, CMD_CLOSE, NULL, NULL, 0, NULL, NULL, NULL, 0 },
 	{ "Fire at nearest target", { 'h', KC_TAB }, CMD_NULL, do_cmd_fire_at_nearest, NULL, 0, NULL, NULL, NULL, 0 },
 	{ "Throw an item", { 'v' }, CMD_THROW, NULL, NULL, 0, NULL, NULL, NULL, 0 },
+	{ "Sniff out nearby monsters", { 'N' }, CMD_GOURMAND_SENSE, NULL,
+		player_can_gourmand_sense_prereq, 0, NULL, NULL, NULL, 0 },
 	{ "Walk into a trap", { 'W', '-' }, CMD_JUMP, NULL, NULL, 0, NULL, NULL, NULL, 0 },
 };
 

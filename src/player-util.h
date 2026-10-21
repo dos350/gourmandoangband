@@ -95,6 +95,7 @@ bool player_can_read(const struct player *p, bool show_msg);
 bool player_can_fire(struct player *p, bool show_msg);
 bool player_can_refuel(struct player *p, bool show_msg);
 bool player_can_cast_prereq(void);
+bool player_can_gourmand_sense_prereq(void);
 bool player_can_study_prereq(void);
 bool player_can_read_prereq(void);
 bool player_can_fire_prereq(void);

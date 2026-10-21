@@ -400,6 +400,46 @@ enum use {
 };
 
 /**
+ * Apply one of the Gourmand's benefits for eating especially good food.
+ */
+static void gourmand_food_bonus(void)
+{
+	static const int curable[] = {
+		TMD_BLIND, TMD_PARALYZED, TMD_CONFUSED, TMD_AFRAID, TMD_IMAGE,
+		TMD_POISONED, TMD_CUT, TMD_STUN, TMD_SLOW, TMD_AMNESIA
+	};
+	int active[TMD_MAX];
+	int active_count = 0;
+	int i;
+
+	switch (randint0(3)) {
+	case 0:
+		effect_simple(EF_HEAL_HP, source_player(),
+			format("%d", 2 + randint1(6)), 0, 0, 0, 0, 0, NULL);
+		break;
+	case 1:
+		(void)player_inc_timed(player, TMD_FAST, 10 + randint1(10),
+			true, true, false);
+		break;
+	default:
+		for (i = 0; i < N_ELEMENTS(curable); ++i) {
+			if (player->timed[curable[i]]) {
+				active[active_count++] = curable[i];
+			}
+		}
+		if (active_count) {
+			(void)player_clear_timed(player,
+				active[randint0(active_count)], true, true);
+		} else {
+			effect_simple(EF_HEAL_HP, source_player(),
+				format("%d", 2 + randint1(6)), 0, 0, 0, 0, 0,
+				NULL);
+		}
+		break;
+	}
+}
+
+/**
  * Use an object the right way.
  *
  * Returns true if repeated commands may continue.
@@ -574,6 +614,12 @@ static bool use_aux(struct command *cmd, struct object *obj, enum use use,
 							boost,
 							cmd);
 		target_release();
+
+		if (used && use == USE_SINGLE && obj->tval == TV_FOOD
+				&& obj->sval > lookup_sval(TV_FOOD, "Ration of Food")
+				&& player_has(player, PF_GOURMAND)) {
+			gourmand_food_bonus();
+		}
 
 		if (!used) {
 			if (deduct_before) {
@@ -892,6 +938,28 @@ void do_cmd_activate(struct command *cmd)
 	if (!use_aux(cmd, obj, USE_TIMEOUT, MSG_ACT_ARTIFACT)) {
 		cmd_set_repeat(0);
 	}
+}
+
+/**
+ * Detect nearby visible monsters with the Gourmand's trained sense of smell.
+ */
+void do_cmd_gourmand_sense(struct command *cmd)
+{
+	int range;
+
+	if (!player_get_resume_normal_shape(player, cmd)) {
+		return;
+	}
+	if (!player_can_gourmand_sense_prereq()) {
+		msg("You are not yet able to sniff out monsters.");
+		return;
+	}
+
+	msg("You sniff the air around you.");
+	range = 8 + (player->lev - 5) / 2;
+	effect_simple(EF_DETECT_VISIBLE_MONSTERS, source_player(), "0",
+		0, 0, 0, range, range, NULL);
+	player->upkeep->energy_use = z_info->move_energy;
 }
 
 /**

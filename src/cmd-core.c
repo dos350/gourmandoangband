@@ -109,6 +109,8 @@ static const struct command_info game_cmds[] =
 	{ CMD_INSCRIBE, "inscribe", do_cmd_inscribe, false, false, 0 },
 	{ CMD_STUDY, "study", do_cmd_study, false, true, 0 },
 	{ CMD_CAST, "cast", do_cmd_cast, false, true, 0 },
+	{ CMD_GOURMAND_SENSE, "sniff out monsters", do_cmd_gourmand_sense,
+		false, true, 0 },
 	{ CMD_SELL, "sell", do_cmd_sell, false, false, 0 },
 	{ CMD_STASH, "stash", do_cmd_stash, false, false, 0 },
 	{ CMD_BUY, "buy", do_cmd_buy, false, false, 0 },

@@ -1897,6 +1897,13 @@ void calc_bonuses(struct player *p, struct player_state *state, bool known_only,
 
 	/* Set various defaults */
 	state->speed = 110;
+	state->speed += p->class->speed;
+	if (pf_has(p->class->pflags, PF_GOURMAND)
+			&& (player_timed_grade_eq(p, TMD_FOOD, "Fed")
+				|| player_timed_grade_eq(p, TMD_FOOD, "Full"))
+			&& (p->class->speed < 0)) {
+		state->speed -= p->class->speed;
+	}
 	state->num_blows = 100;
 
 	/* Extract race/class info */
@@ -2731,4 +2738,3 @@ void handle_stuff(struct player *p)
 	if (p->upkeep->update) update_stuff(p);
 	if (p->upkeep->redraw) redraw_stuff(p);
 }
-
