@@ -618,7 +618,7 @@ static bool use_aux(struct command *cmd, struct object *obj, enum use use,
 
 		if (used && use == USE_SINGLE && player_has(player, PF_GOURMAND)
 				&& tval_is_edible(obj)) {
-			static const char *const flavors[] = {
+			static const char *const gourmand_messages[] = {
 				"You learn something new with every bite.",
 				"Each flavor reveals a little more culinary wisdom.",
 				"You feel incredible.",
@@ -635,7 +635,8 @@ static bool use_aux(struct command *cmd, struct object *obj, enum use use,
 				if (food_exp < 1) food_exp = 1;
 				player_exp_gain(player, food_exp);
 				if (player->exp > old_exp) {
-					msg("%s", flavors[randint0(N_ELEMENTS(flavors))]);
+					msg("%s", gourmand_messages[
+						randint0(N_ELEMENTS(gourmand_messages))]);
 				}
 			}
 		}
