@@ -8,11 +8,15 @@ he may be a bit overtuned but honestly it seems pretty fair
 
 ## Current mechanics
 
-- The class has a base speed adjustment of -3. That class penalty is removed
+- The class has a base speed adjustment of -4. That class penalty is removed
   while the food status is `Fed` or `Full`; other speed modifiers still apply.
+- The class has a one-point stealth penalty.
 - Gourmands digest food twice as quickly, including while `Full`. Below the
   `Hungry` threshold they take periodic hunger damage, with more damage below
   `Starving`.
+- After successfully eating food or a mushroom, a Gourmand gains experience
+  based on the item's gold value. The amount gently decreases with character
+  level, but is at least 1 for food with a positive value.
 - Going up stairs deals 1d4 damage and displays a message about the strain.
 - After successfully eating a `TV_FOOD` item whose subtype value is higher
   than Ration of Food's, a Gourmand gets one random benefit: 3-8 healing, 11-20
@@ -35,7 +39,8 @@ he may be a bit overtuned but honestly it seems pretty fair
   Full.
 - `src/game-world.c`: faster digestion and periodic hunger damage.
 - `src/cmd-cave.c`: damage from climbing upstairs.
-- `src/cmd-obj.c`: food bonuses and the monster-sensing command.
+- `src/cmd-obj.c`: food experience, food bonuses, and the monster-sensing
+  command.
 - `src/cmd-core.c`, `src/cmd-core.h`, `src/cmds.h`, `src/player-util.c`,
   `src/player-util.h`, and `src/ui-game.c`: command registration, level
   prerequisite, and **N** key binding.

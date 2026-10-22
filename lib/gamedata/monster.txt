@@ -595,15 +595,16 @@ name:angry escargot
 base:centipede
 color:y
 speed:110
-hit-points:10
+hit-points:12
 hearing:8
 smell:20
-armor-class:14
+armor-class:16
 sleepiness:30
 depth:1
 rarity:1
 experience:2
-blow:BITE:HURT:1d2
+blow:BITE:HURT:1d3
+blow:TOUCH:POISON:1d2
 desc:A small snail with an unusually bad temper.
 
 name:white icky thing
@@ -4976,6 +4977,7 @@ friends:100:4d4:Uruk:bodyguard
 desc:A large and powerful orc, he looks just like his father.  He is tall and
 desc: fast, but fortunately blessed with orcish brains.
 
+# Celebrity chef
 name:Ainsley Harriott, the Happy Chef
 base:person
 color:y
@@ -4989,6 +4991,7 @@ rarity:1
 experience:750
 blow:HIT:HURT:3d6
 blow:HIT:HURT:3d6
+blow:TOUCH:EAT_FOOD:2d6
 flags:UNIQUE | MALE | SMART
 flags:DROP_2 | DROP_GOOD | ONLY_ITEM
 flags:OPEN_DOOR | FORCE_SLEEP
@@ -6088,6 +6091,7 @@ friends:100:2d4:Same
 desc:A hideous centipede covered in slime and with glowing tentacles around its
 desc: head.
 
+# Celebrity chef
 name:Anthony Bourdain, the Wandering Chef
 base:ghost
 color:U
@@ -6102,6 +6106,7 @@ experience:1200
 blow:WAIL:TERRIFY
 blow:TOUCH:EXP_10
 blow:HIT:HURT:3d6
+blow:TOUCH:EAT_FOOD:2d8
 flags:UNIQUE | MALE | NAME_COMMA | SMART
 flags:DROP_2 | DROP_GOOD | ONLY_ITEM
 spell-freq:8
@@ -7432,6 +7437,30 @@ friends:100:1d1:Bill the Stone Troll
 desc:Big, brawny, powerful and with a taste for hobbit.  He has friends called
 desc: Bert and Bill.
 
+# Celebrity chef
+name:Nigella Lawson, the Domestic Goddess
+base:person
+color:y
+speed:120
+hit-points:900
+hearing:20
+armor-class:95
+sleepiness:255
+depth:30
+rarity:1
+experience:3000
+blow:HIT:HURT:4d6
+blow:HIT:HURT:4d6
+blow:HIT:HURT:4d6
+blow:TOUCH:EAT_FOOD:3d6
+flags:UNIQUE | FEMALE | SMART
+flags:DROP_2 | DROP_GOOD | ONLY_ITEM
+flags:OPEN_DOOR | BASH_DOOR | FORCE_SLEEP
+spell-freq:7
+spells:CONF | SCARE | HASTE
+desc:A formidable celebrity chef who moves with poise and strikes with
+desc: impeccable precision, always ready to help herself to your provisions.
+
 ### Dungeon level 31 ###
 
 name:ghost
@@ -8358,6 +8387,7 @@ friends:50:1d2:Ogre chieftain:servant
 desc:An ogre renowned for acts of surpassing cruelty, Lokkak quickly became the
 desc: leader of a large band of violent ogres.
 
+# Celebrity chef
 name:Iron Chef
 base:humanoid
 color:s
@@ -8372,6 +8402,7 @@ experience:5000
 blow:HIT:HURT:5d6
 blow:HIT:HURT:5d6
 blow:HIT:HURT:5d6
+blow:TOUCH:EAT_FOOD:3d6
 flags:UNIQUE | MALE | SMART
 flags:DROP_2 | DROP_GOOD | ONLY_ITEM
 flags:OPEN_DOOR | BASH_DOOR | FORCE_SLEEP
@@ -11895,6 +11926,7 @@ desc:Last and proudest king of ancient Númenor.  Corrupted by power and avarice
 desc: he fell victim to Sauron's wiles, tried to fight the Valar themselves, and
 desc: condemned Númenor to oblivion.
 
+# Celebrity chef
 name:Gordon Ramsay, the Kitchen Tyrant
 base:person
 color:R
@@ -11910,6 +11942,7 @@ blow:HIT:HURT:7d8
 blow:HIT:HURT:7d8
 blow:HIT:HURT:7d8
 blow:HIT:HURT:7d8
+blow:TOUCH:EAT_FOOD:4d8
 flags:UNIQUE | MALE | SMART
 flags:DROP_3 | DROP_GOOD | DROP_GREAT | ONLY_ITEM
 flags:OPEN_DOOR | MOVE_BODY | TAKE_ITEM

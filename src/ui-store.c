@@ -290,7 +290,7 @@ static void store_display_entry(struct menu *menu, int oid, bool cursor, int row
 	}
 	object_desc(o_name, sizeof(o_name), obj, desc, player);
 	if (store->feat == FEAT_STORE_DINER)
-		my_strcpy(o_name, "Mystery Meal", sizeof(o_name));
+		my_strcpy(o_name, diner_offer_name(obj), sizeof(o_name));
 
 	/* Display the object */
 	c_put_str(obj->kind->base->attr, o_name, row, col);
@@ -617,7 +617,7 @@ static bool store_purchase(struct store_context *ctx, int item, bool single)
 
 	/*** Check the player can get any at all ***/
 
-	/* One mystery meal per order */
+	/* One diner order per purchase */
 	if (store->feat == FEAT_STORE_DINER) single = true;
 
 	/* Get an amount if we weren't given one */
@@ -695,7 +695,7 @@ static bool store_purchase(struct store_context *ctx, int item, bool single)
 	object_copy_amt(dummy, obj, amt);
 
 	/* Ensure we have room */
-	if (!inven_carry_okay(dummy)) {
+	if (store->feat != FEAT_STORE_DINER && !inven_carry_okay(dummy)) {
 		msg("You cannot carry that many items.");
 		object_delete(NULL, NULL, &dummy);
 		return false;
@@ -712,7 +712,8 @@ static bool store_purchase(struct store_context *ctx, int item, bool single)
 		object_desc(o_name, sizeof(o_name), dummy,
 			ODESC_PREFIX | ODESC_FULL | ODESC_STORE, player);
 		if (store->feat == FEAT_STORE_DINER)
-			my_strcpy(o_name, "a mystery meal", sizeof(o_name));
+			strnfmt(o_name, sizeof(o_name), "a %s",
+				diner_offer_name(obj));
 
 		/* Extract the price for the entire stack */
 		price = price_item(store, dummy, false, dummy->number);
@@ -771,8 +772,9 @@ static void store_examine(struct store_context *ctx, int item)
 
 	/* The diner's real meal is a secret */
 	if (ctx->store->feat == FEAT_STORE_DINER) {
-		msg("The cook winks. It's a mystery meal, %d gold a plate.",
-			DINER_MEAL_COST);
+		msg("The cook winks. It's a %s, %d gold.",
+			diner_offer_name(obj),
+			price_item(ctx->store, obj, false, 1));
 		return;
 	}
 

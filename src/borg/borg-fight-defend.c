@@ -570,6 +570,7 @@ static int borg_defend_aux_resist_f(int p1)
                 fail_allowed += 10;
 
     if (!borg_spell_okay_fail(RESISTANCE, fail_allowed)
+        && !borg_spell_okay_fail(RESIST_FIRE_SPELL, fail_allowed)
         && !borg_equips_item(act_resist_all, true)
         && !borg_equips_item(act_resist_fire, true)
         && !borg_equips_item(act_rage_bless_resist, true)
@@ -618,6 +619,7 @@ static int borg_defend_aux_resist_f(int p1)
             || borg_activate_item(act_resist_fire)
             || borg_activate_item(act_rage_bless_resist)
             || borg_spell_fail(RESISTANCE, fail_allowed)
+            || borg_spell_fail(RESIST_FIRE_SPELL, fail_allowed)
             || borg_quaff_potion(sv_potion_resist_heat))
 
             /* No resting to recoup mana */
@@ -659,6 +661,7 @@ static int borg_defend_aux_resist_c(int p1)
                 fail_allowed += 10;
 
     if (!borg_spell_okay_fail(RESISTANCE, fail_allowed)
+        && !borg_spell_okay_fail(RESIST_COLD_SPELL, fail_allowed)
         && !borg_equips_item(act_resist_all, true)
         && !borg_equips_item(act_rage_bless_resist, true)
         && !borg_equips_item(act_resist_cold, true)
@@ -709,6 +712,7 @@ static int borg_defend_aux_resist_c(int p1)
             || borg_activate_item(act_rage_bless_resist)
             || borg_activate_item(act_resist_cold)
             || borg_spell_fail(RESISTANCE, fail_allowed)
+            || borg_spell_fail(RESIST_COLD_SPELL, fail_allowed)
             || borg_quaff_potion(sv_potion_resist_cold))
 
             /* No resting to recoup mana */
@@ -1054,7 +1058,8 @@ static int borg_defend_aux_prot_evil(int p1)
 /* shield */
 static int borg_defend_aux_shield(int p1)
 {
-    int p2 = 0;
+    int p2           = 0;
+    int fail_allowed = 25;
 
     /* if already protected */
     if (borg.temp.shield)
@@ -1065,8 +1070,16 @@ static int borg_defend_aux_shield(int p1)
         || borg.trait[BI_ISFORGET])
         return 0;
 
+    if (p1 > borg.avoidance)
+        fail_allowed -= 19;
+    else if (p1 > (borg.avoidance * 2) / 3)
+        fail_allowed -= 10;
+    else if (p1 < borg.avoidance / 3)
+        fail_allowed += 10;
+
     if (borg.has[kv_mush_stoneskin] <= 0
-        && !borg_equips_item(act_shroom_stone, true))
+        && !borg_equips_item(act_shroom_stone, true)
+        && !borg_spell_okay_fail(SHIELD_SPELL, fail_allowed))
         return 0;
 
     /* pretend we are protected and look again */
@@ -1088,10 +1101,11 @@ static int borg_defend_aux_shield(int p1)
         if (borg_simulate)
             return (p1 - p2);
 
-        borg_note("# Attempting to eat a stone skin");
+        borg_note("# Attempting to use Shield");
 
         /* do it! */
-        if (borg_eat(TV_MUSHROOM, sv_mush_stoneskin)
+        if (borg_spell_fail(SHIELD_SPELL, fail_allowed)
+            || borg_eat(TV_MUSHROOM, sv_mush_stoneskin)
             || borg_activate_item(act_shroom_stone)) {
             /* No resting to recoup mana */
             borg.no_rest_prep = 2000;

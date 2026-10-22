@@ -345,6 +345,7 @@ extern bool borg_sleep_spell_ii;
 extern bool borg_crush_spell;
 extern bool borg_slow_spell; /* borg is about to cast the spell */
 extern bool borg_confuse_spell;
+extern bool borg_hold_spell;
 extern bool borg_fear_mon_spell;
 
 extern int16_t borg_game_ratio; /* the ratio of borg time to game time */

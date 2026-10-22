@@ -241,8 +241,8 @@ priority:20
 flags:SHOP | LOS | PROJECT | PASSABLE | PERMANENT | INTERESTING | EASY
 look-prefix:the entrance to the
 look-in-preposition:at
-desc:A tiny roadside diner north of town.  The cook serves a mystery meal and
-desc: will not say what is in it.
+desc:A tiny roadside diner tucked along one of the town's streets.  The cook
+desc: serves mystery meals but will not say what is in them.
 
 code:HOME
 name:Home
@@ -362,4 +362,3 @@ digging:1
 desc:Ends LOS, stops missiles, bolts, and beams, and reduces the radius of ball
 desc: spells.  May dissolve or be tunnelled to normal floor, and can be walked
 desc: through by the player and monsters.
-

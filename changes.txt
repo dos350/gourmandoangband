@@ -1,7 +1,5 @@
 gourmandoAngband is based off Angband 4.2.6
 
-im testing on windows default build and i aint using sound or any tiles so yeah thats not tested sirs;
-
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 changes for the initial release of gourmandoAngband:
@@ -16,3 +14,4 @@ changes to message log text colors
 added character display to inventory and equip page (visual reference)
 wrestled the borg into running with the classic (+ gourmand) classes
 added the mystery diner shop [dev note - to help satisfy the gourmand's appetite]
+did a pass on the tiles to account for the new (old) monster names [dev note - i dont play with tiles so i wont be testing this]

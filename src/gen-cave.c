@@ -2251,7 +2251,7 @@ struct chunk *cavern_gen(struct player *p, int min_height, int min_width,
 
 /**
  * Get the bounds of a town lot.
- * @param xroads - the location of the town crossroads
+ * @param xroads - the origin used for the town street and lot layout
  * @param lot - the lot location, indexed from the nw corner
  * @param lot_wid - lot width for the town
  * @param lot_hgt - lot height for the town
@@ -2334,7 +2334,7 @@ static bool lot_has_shop(struct chunk *c, struct loc xroads, struct loc lot,
  * Builds a store at a given pseudo-location
  * \param c is the current chunk
  * \param n is which shop it is
- * \param xroads is the location of the town crossroads
+ * \param xroads is the origin used for the town street and lot layout
  * \param lot the upper left corner of this store in the town layout
  * \param lot_wid is the width, in grids, for the store
  * \param lot_hgt is the height, in grids, for the store
@@ -2528,10 +2528,10 @@ static void build_ruin(struct chunk *c, struct loc xroads, struct loc lot, int l
 }
 
 /**
- * Pick a clear lot for the Mystery Diner: never more than three lots north
- * of the crossroads, on either street.
+ * Pick a clear lot beside one of the town streets. The diner can go north of
+ * the east-west street or up to three lots north along the north-south street.
  * \param c is the current chunk
- * \param xroads is the location of the town crossroads
+ * \param xroads is the origin used for the town street and lot layout
  * \param lot is filled in with the chosen lot
  * \return true if a lot was found
  */
@@ -2687,7 +2687,7 @@ static void town_gen_layout(struct chunk *c, struct player *p)
 			int store_idx = n;
 
 			if (n < 0) {
-				/* The diner is placed first, always north of the crossroads */
+				/* Reserve a street-side lot for the diner before other shops. */
 				store_idx = diner_n;
 				if (!find_diner_lot(c, xroads, lot_min_x, lot_max_x,
 						lot_min_y, lot_wid, lot_hgt, &store_lot)) {

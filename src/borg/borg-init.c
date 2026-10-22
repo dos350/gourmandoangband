@@ -485,6 +485,32 @@ void borg_prepare_race_class_info(void)
     event_add_handler(EVENT_LEAVE_GAME, borg_leave_game, NULL);
 }
 
+static bool borg_class_ids_match(void)
+{
+    static const struct {
+        int id;
+        const char *name;
+    } expected[] = {
+        { CLASS_MAGE, "Mage" },
+        { CLASS_PRIEST, "Priest" },
+        { CLASS_ROGUE, "Rogue" },
+        { CLASS_RANGER, "Ranger" },
+        { CLASS_PALADIN, "Paladin" },
+        { CLASS_WARRIOR, "Warrior" },
+        { CLASS_GOURMAND, "Gourmand" }
+    };
+    size_t i;
+
+    for (i = 0; i < N_ELEMENTS(expected); i++) {
+        struct player_class *class = player_id2class(expected[i].id);
+
+        if (!class || !streq(class->name, expected[i].name))
+            return false;
+    }
+
+    return true;
+}
+
 /*
  * Initialize the Borg
  */
@@ -594,15 +620,7 @@ void borg_init(void)
     /* Reset the clock */
     borg.time.now = 10;
 
-    /* note: I would check if player_id2class returns null but it */
-    /* never does, even on a bad class */
-    if (!streq(player_id2class(CLASS_WARRIOR)->name, "Warrior")
-        || !streq(player_id2class(CLASS_MAGE)->name, "Mage")
-        || !streq(player_id2class(CLASS_PRIEST)->name, "Priest")
-        || !streq(player_id2class(CLASS_PALADIN)->name, "Paladin")
-        || !streq(player_id2class(CLASS_ROGUE)->name, "Rogue")
-        || !streq(player_id2class(CLASS_RANGER)->name, "Ranger")
-        || !streq(player_id2class(CLASS_GOURMAND)->name, "Gourmand")) {
+    if (!borg_class_ids_match()) {
         borg_note("**STARTUP FAILURE** classes do not match");
         borg_init_failure = true;
     }

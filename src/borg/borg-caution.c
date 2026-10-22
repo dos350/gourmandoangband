@@ -158,6 +158,9 @@ static bool borg_heal(int danger)
                 || borg_quaff_potion(sv_potion_cure_serious)
                 || borg_quaff_crit(false)
                 || borg_quaff_potion(sv_potion_healing)
+                || borg_spell(CURE_SERIOUS_WOUNDS)
+                || borg_spell(CURE_CRITICAL_WOUNDS)
+                || borg_spell(CURE_MORTAL_WOUNDS)
                 || borg_use_staff_fail(sv_staff_healing)
                 || borg_activate_item(act_cure_confusion)
                 || borg_use_staff_fail(sv_staff_curing))) {
@@ -220,6 +223,9 @@ static bool borg_heal(int danger)
                 || borg_quaff_potion(sv_potion_cure_light)
                 || borg_quaff_potion(sv_potion_cure_serious)
                 || borg_quaff_crit(true)
+                || borg_spell(CURE_SERIOUS_WOUNDS)
+                || borg_spell(CURE_CRITICAL_WOUNDS)
+                || borg_spell(CURE_MORTAL_WOUNDS)
                 || borg_use_staff_fail(sv_staff_healing)
                 || borg_use_staff_fail(sv_staff_curing)
                 || borg_quaff_potion(sv_potion_healing)) {
@@ -364,7 +370,8 @@ static bool borg_heal(int danger)
     if (pct_down >= 40 && (pct_down <= 50 || borg.trait[BI_CLEVEL] < 20)
         && ((danger) < borg.trait[BI_CURHP] + csw_heal)
         && (csw_heal > danger / 3) && /* No rope-a-doping */
-        (borg_quaff_potion(sv_potion_cure_serious)
+        (borg_spell_fail(CURE_SERIOUS_WOUNDS, allow_fail)
+            || borg_quaff_potion(sv_potion_cure_serious)
             || borg_activate_item(act_cure_serious))) {
         borg_note("# Healing Level 2.");
         return true;
@@ -374,8 +381,18 @@ static bool borg_heal(int danger)
     if (pct_down >= 50 && pct_down <= 55
         && ((danger) < borg.trait[BI_CURHP] + ccw_heal)
         && (ccw_heal > danger / 3) && /* No rope-a-doping */
-        (borg_activate_item(act_cure_critical) || borg_quaff_crit(false))) {
+        (borg_spell_fail(CURE_CRITICAL_WOUNDS, allow_fail)
+            || borg_activate_item(act_cure_critical)
+            || borg_quaff_crit(false))) {
         borg_note("# Healing Level 3.");
+        return true;
+    }
+
+    /* Cure Mortal Wounds */
+    if (pct_down >= 55 && danger < borg.trait[BI_CURHP] + cmw_heal
+        && cmw_heal > danger / 3
+        && borg_spell_fail(CURE_MORTAL_WOUNDS, allow_fail)) {
+        borg_note("# Healing Level 4.");
         return true;
     }
 
@@ -549,6 +566,8 @@ static bool borg_heal(int danger)
         borg.trait[BI_CURSP] = borg.trait[BI_MAXSP];
 
         if (borg_spell(CURE_POISON) || borg_spell(HERBAL_CURING)
+            || borg_spell(CURE_CRITICAL_WOUNDS)
+            || borg_spell(CURE_MORTAL_WOUNDS)
             || borg_spell(HOLY_WORD) || borg_spell(HEALING)) {
             /* verify use of spell */
             /* borg_keypress('y'); */
@@ -577,7 +596,8 @@ static bool borg_heal(int danger)
         if (borg.trait[BI_CURHP] < borg.trait[BI_MAXHP] / 20
             && (borg_quaff_potion(sv_potion_star_healing)
                 || borg_quaff_potion(sv_potion_life)
-                || borg_quaff_potion(sv_potion_healing))) {
+                || borg_quaff_potion(sv_potion_healing)
+                || borg_spell(CURE_MORTAL_WOUNDS))) {
             borg_note("# Healing. Curing section.");
             return true;
         }
@@ -599,7 +619,10 @@ static bool borg_heal(int danger)
     if (borg.trait[BI_ISCUT]
         && (borg.trait[BI_CURHP] < borg.trait[BI_MAXHP] / 3
             || randint0(100) < 20)) {
-        if (borg_quaff_potion(sv_potion_cure_serious)
+        if (borg_spell(CURE_SERIOUS_WOUNDS)
+            || borg_spell(CURE_CRITICAL_WOUNDS)
+            || borg_spell(CURE_MORTAL_WOUNDS)
+            || borg_quaff_potion(sv_potion_cure_serious)
             || borg_quaff_potion(sv_potion_cure_light)
             || borg_quaff_crit(borg.trait[BI_CURHP] < 10)
             || borg_spell(MINOR_HEALING)
@@ -638,7 +661,10 @@ static bool borg_heal(int danger)
         }
 
         /* Cast a spell, go into negative mana */
-        if (borg_spell(MINOR_HEALING)) {
+        if (borg_spell(CURE_SERIOUS_WOUNDS)
+            || borg_spell(CURE_CRITICAL_WOUNDS)
+            || borg_spell(CURE_MORTAL_WOUNDS)
+            || borg_spell(MINOR_HEALING)) {
             /* verify use of spell */
             /* borg_keypress('y'); */
 

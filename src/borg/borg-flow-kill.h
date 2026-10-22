@@ -42,6 +42,7 @@ struct borg_kill {
     bool         awake; /* Probably awake */
 
     bool         confused; /* Probably confused */
+    bool         held; /* Currently held */
     bool         afraid; /* Probably afraid */
     bool         quiver; /* Probably quivering */
     bool         stunned;

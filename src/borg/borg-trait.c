@@ -732,6 +732,7 @@ bool borg_sleep_spell_ii;
 bool borg_crush_spell;
 bool borg_slow_spell; /* borg is about to cast the spell */
 bool borg_confuse_spell;
+bool borg_hold_spell;
 bool borg_fear_mon_spell;
 
 int16_t borg_game_ratio; /* the ratio of borg time to game time */
@@ -2834,8 +2835,14 @@ void borg_notice(bool notice_swap)
     /* Start with a single blow per turn */
     borg.trait[BI_BLOWS] = 1;
 
-    /* speed starts at 110 */
-    borg.trait[BI_SPEED] = 110;
+    /* Match the class speed handling in player-calcs.c. */
+    borg.trait[BI_SPEED] = 110 + player->class->speed;
+    if (pf_has(player->class->pflags, PF_GOURMAND)
+        && (player_timed_grade_eq(player, TMD_FOOD, "Fed")
+            || player_timed_grade_eq(player, TMD_FOOD, "Full"))
+        && (player->class->speed < 0)) {
+        borg.trait[BI_SPEED] -= player->class->speed;
+    }
 
     /* Reset the "ammo" attributes */
     borg.trait[BI_AMMO_TVAL] = -1;

@@ -122,21 +122,21 @@ suddenly be 42 hit points better off.)
 Each character has spell points, or mana, which limits how many spells (or
 prayers) a character can cast (or pray). The maximum number of spell points
 is derived from your class, level, and the class's spellcasting stat
-(intelligence for mages, rogues, necromancers, and blackguards, and wisdom
-for priests, paladins, druids, and rangers), and you can never have more spell
-points than the maximum.  Spell points may be regained by resting, or by
-magical means. Warriors never have any spell points. If a character gains
-enough wisdom or intelligence to get more spell points, the result is
-calculated right back to first level, just as with constitution and hit points.
+(intelligence for mages and rogues, and wisdom for priests, paladins, and
+rangers), and you can never have more spell points than the maximum. Spell
+points may be regained by resting, or by magical means. Warriors and
+Gourmands never have any spell points. If a character gains enough wisdom or
+intelligence to get more spell points, the result is calculated right back to
+first level, just as with constitution and hit points.
 
 Lastly, each character has a base speed. Speed determines the amount of
 "energy" your character acquires in the game, and therefore how often you
-can take actions which use up energy (like moving or attacking). All
-beginning characters move at normal speed and the only way to increase
-speed is by magical means and equipment bonuses. Characters who are
-carrying too much weight will move more slowly. Extra speed is one of the
-most important boons in the game and therefore one of the rarest and most
-sought after.
+can take actions which use up energy (like moving or attacking). Most
+beginning characters move at normal speed; a Gourmand's speed depends on
+their food status. Speed can also be increased by magical means and
+equipment bonuses. Characters who are carrying too much weight will move
+more slowly. Extra speed is one of the most important boons in the game and
+therefore one of the rarest and most sought after.
 
 Races
 =====
@@ -284,6 +284,17 @@ Warrior
   throwing, but bad at most other skills. A warrior has bad stealth and
   cannot learn any spells.
 
+.. _Gourmand:
+
+Gourmand
+  A Gourmand is a hearty warrior who relies on strength and a good appetite
+  rather than spellcasting. They digest food quickly, and going hungry can
+  hurt them. Eating food or mushrooms earns experience, while better food
+  can also grant a random benefit, such as healing, speed, or relief from a
+  harmful effect. Climbing upstairs also strains them. From level 5,
+  Gourmands can press ``N`` to sniff out visible nearby monsters; the range
+  grows as they gain levels.
+
 .. _Mage:
 
 Mage
@@ -300,18 +311,6 @@ Mage
   are their true realm and they will get fewer blows with melee weapons than
   other classes.
 
-.. _Druid:
-
-Druid
-  A Druid is a lover of nature, and at one with the natural world.  Druids
-  have control of their environment and direct power over creatures, leading
-  even to the ability to take their forms. Druid skills are moderate, and
-  they have some fighting ability, especially when transformed.  A druid will
-  usually seek to shape the flow of events to their purpose rather than
-  using devices or missiles, but at high levels they do gain access to
-  potent nature-based magic.  Druids rely on their wisdom, and have good
-  saving throws.
-
 .. _Priest:
 
 Priest
@@ -325,18 +324,6 @@ Priest
   fighters, better if they can find a hafted or blessed weapon.  Wisdom is
   the priest's primary stat and at high enough levels they can cast many
   prayers without a chance of failure. Priests have poor stealth.
-
-.. _Necromancer:
-
-Necromancer
-  A Necromancer seeks to master the spirits of sentient creatures, creating
-  servants of their own will. They have chosen a dark and wicked path, and
-  run a continual risk of harm to their own body and mind. Necromancers love
-  shadows and hate light, automatically shrouding themselves in darkness.
-  Their spells require high intelligence, and frequently harm the caster or
-  place them in danger.  In return they achieve awesome power at high levels.
-  The ultimate aim of the necromancer is to supplant the Dark Enemy and set
-  up a tyranny in his place.
 
 .. _Paladin:
 
@@ -376,16 +363,6 @@ Ranger
   good searching, a good saving throw, and is good with magical devices.
   Their primary stats are strength, wisdom and dexterity.
 
-.. _Blackguard:
-
-Blackguard
-  A Blackguard is a brawler of no principle, who lives for the joy of maiming
-  and killing. Blackguards prefer heavy weapons and shields, and learn a few
-  spells for the purpose of wreaking more destruction. Their lust for blood
-  is legendary, with a blackguard in full cry nigh on impossible to kill.
-  Blackguards scorn skills apart from slaughter, and require strength and
-  intelligence (or rat-cunning) to thrive in the dungeon.
-
 Stats
 =====
 
@@ -415,11 +392,10 @@ Strength
    see: INT; intelligence
 
 Intelligence
-  Intelligence affects the spellcasting abilities of spellcasters from the
-  arcane and shadow realms: mages, rogues, necromancers and blackguards.
+  Intelligence affects the spellcasting abilities of mages and rogues.
   Intelligence will affect the number of spells you may learn each level as
   well as the number of spell points you receive. Intelligence is the most
-  important stat for mages and necromancers. A high intelligence may also
+  important stat for mages and rogues. A high intelligence may also
   improve your chances of successfully casting a spell. A good intelligence
   can also help with using magic devices, picking locks, and disarming magic
   traps.
@@ -429,8 +405,8 @@ Intelligence
    see: WIS; wisdom
 
 Wisdom
-  The primary function of wisdom is to determine the ability of a priest or
-  paladin to use prayers, and druids and rangers to use verses, just like
+  The primary function of wisdom is to determine the ability of priests and
+  paladins to use prayers, and rangers to use verses, just like
   intelligence affects spellcasting. Again, high wisdom will increase the
   number of mana points you have and increase the number of prayers or verses
   you can learn each level, while improving your chance of success. A good
@@ -621,14 +597,12 @@ adjusted for constitution).
       Class       STR  INT  WIS  DEX  CON  HD (bonus)
 ================= ===  ===  ===  ===  ===  ==========
       Warrior      +3   -2   -2   +2   +2       9
+      Gourmand     +3   -2   +2   +2   +2       9
       Mage         -3   +3   +0   +0   -2       0
-      Druid        -2   +0   +3   -2   +0       2
       Priest       -1   -3   +3   -1   +1       2
-      Necromancer  -3   +3   +0   +0   -2       2
       Paladin      +1   -3   +1   -1   +2       6
       Rogue        +0   +1   -3   +3   -1       4
       Ranger       +0   +0   +2   +1   -1       5
-      Blackguard   +2   +0   -3   +0   +2       8
 ================= ===  ===  ===  ===  ===  ==========
  
 Ability Tables
@@ -675,14 +649,12 @@ Ability Tables
  Class         DisarmP DisarmM Device   Save   Stealth Search    Fight   Bows
 ============   ======= ======= ======= ======= ======= =======  ======= =======
  Warrior       25(+15) 20(+10) 18(+7)  18(+10)  0(+0)  10(+12)  70(+45) 55(+45)
+ Gourmand      25(+15) 20(+10) 18(+7)  18(+10) -1(+0)  10(+12)  70(+45) 55(+45)
  Mage          30(+10) 35(+12) 36(+13) 30(+9)   2(+0)  10(+12)  35(+15) 20(+15)
- Druid         30(+10) 30(+10) 24(+10) 30(+10)  3(+0)  12(+12)  45(+20) 40(+30)
  Priest        25(+12) 25(+12) 30(+10) 32(+12)  2(+0)  10(+14)  45(+20) 35(+20)
- Necromancer   30(+10) 35(+12) 36(+13) 30(+9)   2(+0)  10(+12)  35(+25) 20(+15)
  Paladin       20(+15) 20(+10) 24(+10) 25(+11)  0(+0)  10(+12)  65(+40) 50(+30)
  Rogue         45(+20) 45(+20) 32(+10) 28(+10)  3(+1)  20(+16)  35(+45) 66(+30)
  Ranger        40(+15) 30(+10) 28(+10) 32(+10)  3(+0)  15(+15)  60(+40) 72(+45)
- Blackguard    20(+15) 20(+10) 24(+10) 18(+10) -1(-1)   8(+10)  65(+40) 35(+15)
 ============   ======= ======= ======= ======= ======= =======  ======= =======
 
 For character classes, there are two figures: the first figure is the base
@@ -691,8 +663,8 @@ that the character gains to this skill every ten levels. So, to find out
 the total skill value of any character's skills, add the race value to the
 class value, and then the bonus once for every ten levels that the
 character has. Throwing skill is not shown as its adjustments for race
-and class are the same as for the shooting skill except for rogues (72(+45)),
-rangers (66(+30)), and blackguards (40(+30)).
+and class are the same as for the shooting skill except for rogues (72(+45))
+and rangers (66(+30)).
 
 Please note, however, that these numbers are only good for comparing
 characters to each other in the absence of other bonuses from high stats
@@ -737,4 +709,3 @@ score list.
 You can play a dynasty of characters. If you use a Roman numeral at the end
 of your character name (like "Fred I" or "Pimplesnarg XVI"), the game will
 automatically increment the numeral each time you die (or win!).
-

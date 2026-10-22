@@ -30,6 +30,7 @@
 #include "obj-info.h"
 #include "obj-knowledge.h"
 #include "obj-make.h"
+#include "obj-power.h"
 #include "obj-pile.h"
 #include "obj-tval.h"
 #include "obj-util.h"
@@ -614,6 +615,30 @@ static bool use_aux(struct command *cmd, struct object *obj, enum use use,
 							boost,
 							cmd);
 		target_release();
+
+		if (used && use == USE_SINGLE && player_has(player, PF_GOURMAND)
+				&& tval_is_edible(obj)) {
+			static const char *const flavors[] = {
+				"You learn something new with every bite.",
+				"Each flavor reveals a little more culinary wisdom.",
+				"You feel incredible.",
+				"Ah, a delicacy!"
+			};
+			int food_value = object_value_real(obj, 1);
+			int level_scale = 20 + player->lev;
+
+			if (food_value > 0) {
+				int food_exp = (food_value / level_scale) * 20
+					+ (food_value % level_scale) * 20 / level_scale;
+				int32_t old_exp = player->exp;
+
+				if (food_exp < 1) food_exp = 1;
+				player_exp_gain(player, food_exp);
+				if (player->exp > old_exp) {
+					msg("%s", flavors[randint0(N_ELEMENTS(flavors))]);
+				}
+			}
+		}
 
 		if (used && use == USE_SINGLE && obj->tval == TV_FOOD
 				&& obj->sval > lookup_sval(TV_FOOD, "Ration of Food")

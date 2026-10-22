@@ -944,6 +944,21 @@ static int borg_launch_damage_one(int i, int dam, int typ, int ammo_location)
         dam                = (p1 - p2);
         break;
 
+    case BORG_ATTACK_OLD_HOLD:
+        dam = 0;
+        if (rf_has(r_ptr->flags, RF_NO_HOLD))
+            break;
+        if (kill->held || !kill->awake)
+            break;
+        dam = -999;
+        borg_hold_spell = false;
+        p1 = borg_danger_one_kill(borg.c.y, borg.c.x, 1, i, true, true);
+        borg_hold_spell = true;
+        p2 = borg_danger_one_kill(borg.c.y, borg.c.x, 1, i, true, true);
+        borg_hold_spell = false;
+        dam = p1 - p2;
+        break;
+
     case BORG_ATTACK_TURN_ALL:
         dam = 0;
         if (kill->speed < r_ptr->speed - 5)
@@ -2390,7 +2405,6 @@ int borg_attack_aux_spell_bolt(const enum borg_spells spell, int rad, int dam,
     int typ, int max_range, bool is_arc)
 {
     int b_n;
-    int penalty = 0;
 
     /* No firing while blind, confused, or hallucinating */
     if (borg.trait[BI_ISBLIND] || borg.trait[BI_ISCONFUSED]
@@ -2471,29 +2485,8 @@ int borg_attack_aux_spell_bolt(const enum borg_spells spell, int rad, int dam,
             b_n = b_n - (spell_power * 5);
     }
 
-    /* Really penalize use of mana needed for final teleport */
-    switch (borg.trait[BI_CLASS]) {
-    case CLASS_MAGE:
-        penalty = 6;
-        break;
-    case CLASS_RANGER:
-        penalty = 22;
-        break;
-    case CLASS_ROGUE:
-        penalty = 20;
-        break;
-    case CLASS_PRIEST:
-        penalty = 8;
-        break;
-    case CLASS_PALADIN:
-        penalty = 20;
-        break;
-    case CLASS_NECROMANCER:
-        penalty = 10;
-        break;
-    }
     if ((borg.trait[BI_MAXSP] > 30)
-        && (borg.trait[BI_CURSP] - spell_power < penalty))
+        && (borg.trait[BI_CURSP] - spell_power < borg_get_mana_reserve()))
         b_n = b_n - (spell_power * 750);
 
     /* Simulation */
@@ -2645,7 +2638,6 @@ static int borg_attack_aux_spell_dispel(
     const enum borg_spells spell, int dam, int typ)
 {
     int b_n;
-    int penalty = 0;
 
     /* No firing while blind, confused, or hallucinating */
     if (borg.trait[BI_ISBLIND] || borg.trait[BI_ISCONFUSED]
@@ -2683,34 +2675,8 @@ static int borg_attack_aux_spell_dispel(
     if (borg.trait[BI_CURSP] - spell_power < borg.trait[BI_MAXSP] / 3)
         b_n = b_n - (spell_power * 5);
 
-    /* Really penalize use of mana needed for final teleport */
-    switch (borg.trait[BI_CLASS]) {
-    case CLASS_MAGE:
-        penalty = 6;
-        break;
-    case CLASS_RANGER:
-        penalty = 22;
-        break;
-    case CLASS_ROGUE:
-        penalty = 20;
-        break;
-    case CLASS_PRIEST:
-        penalty = 8;
-        break;
-    case CLASS_PALADIN:
-        penalty = 20;
-        break;
-    case CLASS_NECROMANCER:
-        penalty = 10;
-        break;
-    }
     if ((borg.trait[BI_MAXSP] > 30)
-        && (borg.trait[BI_CURSP] - spell_power < penalty))
-        b_n = b_n - (spell_power * 750);
-
-    /* Really penalize use of mana needed for final teleport */
-    /* (6 pts for mage) */
-    if ((borg.trait[BI_MAXSP] > 30) && (borg.trait[BI_CURSP] - spell_power) < 6)
+        && (borg.trait[BI_CURSP] - spell_power < borg_get_mana_reserve()))
         b_n = b_n - (spell_power * 750);
 
     /* never tap if we previously missed a tap */
@@ -3814,6 +3780,12 @@ int borg_calculate_attack_effectiveness(int attack_type)
         dam = 10;
         return (borg_attack_aux_spell_bolt(CONFUSE_MONSTER, rad, dam,
             BORG_ATTACK_OLD_CONF, z_info->max_range, false));
+
+    case BF_SPELL_HOLD_MONSTER:
+        rad = 0;
+        dam = 10;
+        return (borg_attack_aux_spell_bolt(
+            HOLD_MONSTER, rad, dam, BORG_ATTACK_OLD_HOLD, z_info->max_range, false));
 
     case BF_SPELL_SLEEP_III:
         dam = 10;

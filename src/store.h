@@ -22,6 +22,8 @@
 
 /** Flat price of one meal at the Mystery Diner */
 #define DINER_MEAL_COST 350
+#define DINER_MEAL_DEAL_COST 500
+#define DINER_SUPER_SIZE_COST 1000
 
 #include "cave.h"
 #include "cmd-core.h"
@@ -83,6 +85,7 @@ void store_shuffle(struct store *store);
 void store_update(void);
 int price_item(struct store *store, const struct object *obj,
 			   bool store_buying, int qty);
+const char *diner_offer_name(const struct object *obj);
 
 bool store_will_buy_tester(const struct object *obj);
 bool store_check_num(struct store *store, const struct object *obj);

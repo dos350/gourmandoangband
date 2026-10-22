@@ -63,6 +63,9 @@ enum borg_spells {
     TELEPORT_SELF,
     TELEPORT_OTHER,
     RESISTANCE,
+    RESIST_COLD_SPELL,
+    RESIST_FIRE_SPELL,
+    SHIELD_SPELL,
     TAP_MAGICAL_ENERGY,
     MANA_CHANNEL,
     DOOR_CREATION,
@@ -81,6 +84,7 @@ enum borg_spells {
     REMOVE_HUNGER,
     STINKING_CLOUD,
     CONFUSE_MONSTER,
+    HOLD_MONSTER,
     SLOW_MONSTER,
     CURE_POISON,
     RESIST_POISON,
@@ -106,6 +110,9 @@ enum borg_spells {
     CALL_LIGHT,
     DETECT_EVIL,
     MINOR_HEALING,
+    CURE_SERIOUS_WOUNDS,
+    CURE_CRITICAL_WOUNDS,
+    CURE_MORTAL_WOUNDS,
     BLESS,
     SENSE_INVISIBLE,
     HEROISM,
@@ -264,6 +271,11 @@ extern bool borg_spell_okay(const enum borg_spells spell);
  * Find the power (cost in sp) value for a given spell
  */
 extern int borg_get_spell_power(const enum borg_spells spell);
+
+/*
+ * Get the mana reserve used by spell availability and attack scoring
+ */
+extern int borg_get_mana_reserve(void);
 
 /*
  * find the index in the books array given the books sval

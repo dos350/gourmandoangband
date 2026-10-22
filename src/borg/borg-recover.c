@@ -100,8 +100,11 @@ bool borg_recover(void)
             || borg_activate_item(act_cure_full)
             || borg_activate_item(act_cure_full2)
             || borg_activate_item(act_cure_temp)
-            || borg_activate_item(act_heal3) || borg_spell(MINOR_HEALING)
-            || borg_spell(HEALING) || borg_spell(HERBAL_CURING)
+            || borg_activate_item(act_heal3) || borg_spell(HEALING)
+            || borg_spell(CURE_MORTAL_WOUNDS)
+            || borg_spell(CURE_CRITICAL_WOUNDS)
+            || borg_spell(CURE_SERIOUS_WOUNDS)
+            || borg_spell(MINOR_HEALING) || borg_spell(HERBAL_CURING)
             || borg_spell(HOLY_WORD))
 
         {
@@ -120,8 +123,11 @@ bool borg_recover(void)
             || borg_activate_item(act_cure_full)
             || borg_activate_item(act_cure_full2)
             || borg_activate_item(act_cure_temp)
-            || borg_activate_item(act_heal3) || borg_spell(MINOR_HEALING)
-            || borg_spell(HEALING) || borg_spell(HERBAL_CURING)
+            || borg_activate_item(act_heal3) || borg_spell(HEALING)
+            || borg_spell(CURE_MORTAL_WOUNDS)
+            || borg_spell(CURE_CRITICAL_WOUNDS)
+            || borg_spell(CURE_SERIOUS_WOUNDS)
+            || borg_spell(MINOR_HEALING) || borg_spell(HERBAL_CURING)
             || borg_spell(HOLY_WORD)) {
             /* Take note */
             borg_note(format("# Cure Heavy Stun - danger %d", p));
@@ -185,7 +191,9 @@ bool borg_recover(void)
         && (borg.trait[BI_CURSP] > borg.trait[BI_MAXSP] / 4)) {
         if (borg_activate_item(act_heal1) || borg_activate_item(act_heal2)
             || borg_activate_item(act_heal3) || borg_spell(HEALING)
-            || borg_spell(HOLY_WORD) || borg_spell(MINOR_HEALING)
+            || borg_spell(HOLY_WORD) || borg_spell(CURE_MORTAL_WOUNDS)
+            || borg_spell(CURE_CRITICAL_WOUNDS)
+            || borg_spell(CURE_SERIOUS_WOUNDS) || borg_spell(MINOR_HEALING)
             || borg_spell(HEROISM)) {
             /* Take note */
             borg_note(format("# heal damage (recovering)"));

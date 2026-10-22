@@ -2316,6 +2316,12 @@ int borg_danger_one_kill(
     if (kill->r_idx >= z_info->r_max - 1)
         return 100;
 
+    /* Held monsters cannot act, and a hold spell affects non-immune targets. */
+    if (kill->held
+        || (borg_hold_spell && kill->awake
+            && !rf_has(r_ptr->flags, RF_NO_HOLD)))
+        return 0;
+
     /* Skip certain monster indexes.
      * These have been listed mainly in Teleport Other
      * checks in borg6.c in the defense maneuvers.

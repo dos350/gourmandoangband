@@ -58,6 +58,10 @@ static borg_spell_rating borg_spell_ratings_MAGE[] =
     { "Teleport Self", 95, TELEPORT_SELF },
     { "Teleport Other", 75, TELEPORT_OTHER },
     { "Resistance", 90, RESISTANCE },
+    { "Resist Cold", 85, RESIST_COLD_SPELL },
+    { "Resist Fire", 85, RESIST_FIRE_SPELL },
+    { "Shield", 85, SHIELD_SPELL },
+    { "Hold Monster", 55, HOLD_MONSTER },
     { "Tap Magical Energy", 5, TAP_MAGICAL_ENERGY }, /* need to figure out when to cast this one */
     { "Mana Channel", 95, MANA_CHANNEL },
     { "Door Creation", 65, DOOR_CREATION },
@@ -114,6 +118,9 @@ static borg_spell_rating borg_spell_ratings_PRIEST[] =
     { "Call Light", 65, CALL_LIGHT },
     { "Detect Evil", 85, DETECT_EVIL },
     { "Minor Healing", 65, MINOR_HEALING },
+    { "Cure Serious Wounds", 65, CURE_SERIOUS_WOUNDS },
+    { "Cure Critical Wounds", 75, CURE_CRITICAL_WOUNDS },
+    { "Cure Mortal Wounds", 85, CURE_MORTAL_WOUNDS },
     { "Bless", 85, BLESS },
     { "Sense Invisible", 75, SENSE_INVISIBLE },
     { "Heroism", 75, HEROISM },
@@ -146,6 +153,9 @@ static borg_spell_rating borg_spell_ratings_PALADIN[] =
     { "Detect Evil", 85, DETECT_EVIL },
     { "Call Light", 85, CALL_LIGHT },
     { "Minor Healing", 95, MINOR_HEALING },
+    { "Cure Serious Wounds", 85, CURE_SERIOUS_WOUNDS },
+    { "Cure Critical Wounds", 90, CURE_CRITICAL_WOUNDS },
+    { "Cure Mortal Wounds", 95, CURE_MORTAL_WOUNDS },
     { "Sense Invisible", 65, SENSE_INVISIBLE },
     { "Heroism", 85, HEROISM },
     { "Protection from Evil", 85, PROTECTION_FROM_EVIL },
@@ -173,7 +183,10 @@ static borg_spell_rating borg_spell_ratings_ROGUE[] =
     { "Teleport Level", 75, TELEPORT_LEVEL },
     { "Spear of Light", 75, SPEAR_OF_LIGHT },
     { "Heroism", 75, HEROISM },
-    { "Berserker", 75, BERSERK_STRENGTH }
+    { "Berserker", 75, BERSERK_STRENGTH },
+    { "Resist Cold", 75, RESIST_COLD_SPELL },
+    { "Resist Fire", 75, RESIST_FIRE_SPELL },
+    { "Shield", 75, SHIELD_SPELL }
 };
 static borg_spell_rating borg_spell_ratings_RANGER[] =
 {
@@ -190,7 +203,10 @@ static borg_spell_rating borg_spell_ratings_RANGER[] =
     { "Brand Ammunition", 95, BRAND_AMMUNITION },
     { "Spear of Light", 75, SPEAR_OF_LIGHT },
     { "Heroism", 85, HEROISM },
-    { "Berserker", 75, BERSERK_STRENGTH }
+    { "Berserker", 75, BERSERK_STRENGTH },
+    { "Resist Cold", 85, RESIST_COLD_SPELL },
+    { "Resist Fire", 85, RESIST_FIRE_SPELL },
+    { "Shield", 85, SHIELD_SPELL }
 };
 
 /*
@@ -304,17 +320,28 @@ borg_magic *borg_get_spell_entry(int book, int entry)
  */
 static int borg_get_spell_number(const enum borg_spells spell)
 {
+    int first_match = -1;
+
     /* The borg must be able to "cast" spells */
     if (borg_magics == NULL)
         return -1;
 
     int total_spells = player->class->magic.total_spells;
     for (int spell_num = 0; spell_num < total_spells; spell_num++) {
-        if (borg_magics[spell_num].spell_enum == spell)
+        borg_magic *as = &borg_magics[spell_num];
+
+        if (as->spell_enum != spell)
+            continue;
+
+        if (first_match < 0)
+            first_match = spell_num;
+
+        if (borg.book_idx[as->book] >= 0
+            && as->status >= BORG_MAGIC_TEST)
             return spell_num;
     }
 
-    return -1;
+    return first_match;
 }
 
 /*
@@ -334,9 +361,8 @@ int borg_get_spell_power(const enum borg_spells spell)
 /*
  * Determine if borg can cast a given spell (when fully rested)
  */
-bool borg_spell_legal(const enum borg_spells spell)
+static bool borg_spell_entry_legal(int spell_num)
 {
-    int spell_num = borg_get_spell_number(spell);
     if (spell_num < 0)
         return false;
 
@@ -358,6 +384,11 @@ bool borg_spell_legal(const enum borg_spells spell)
     return true;
 }
 
+bool borg_spell_legal(const enum borg_spells spell)
+{
+    return borg_spell_entry_legal(borg_get_spell_number(spell));
+}
+
 /*
  * check a spell for a given effect
  */
@@ -374,23 +405,13 @@ static bool borg_spell_has_effect(int spell_num, uint16_t effect)
 }
 
 /*
- * Determine if borg can cast a given spell (right now)
+ * Get the mana reserve used by spell availability and attack scoring.
  */
-bool borg_spell_okay(const enum borg_spells spell)
+int borg_get_mana_reserve(void)
 {
     int reserve_mana = 0;
+    int teleport_spell_num;
 
-    int spell_num    = borg_get_spell_number(spell);
-    if (spell_num < 0)
-        return false;
-
-    borg_magic *as = &borg_magics[spell_num];
-
-    /* Dark */
-    if (no_light(player))
-        return false;
-
-    /* Define reserve_mana for each class */
     switch (borg.trait[BI_CLASS]) {
     case CLASS_MAGE:
         reserve_mana = 6;
@@ -409,12 +430,37 @@ bool borg_spell_okay(const enum borg_spells spell)
         break;
     }
 
-    /* Low level spell casters should not worry about this */
+    /* Low-level spellcasters should not reserve mana yet. */
     if (borg.trait[BI_CLEVEL] < 35)
-        reserve_mana = 0;
+        return 0;
+
+    /* Prefer the live cost when Teleport Self is available. */
+    teleport_spell_num = borg_get_spell_number(TELEPORT_SELF);
+    if (borg_spell_entry_legal(teleport_spell_num))
+        return borg_magics[teleport_spell_num].power;
+
+    return reserve_mana;
+}
+
+/*
+ * Determine if borg can cast a given spell (right now)
+ */
+bool borg_spell_okay(const enum borg_spells spell)
+{
+    int spell_num    = borg_get_spell_number(spell);
+    if (spell_num < 0)
+        return false;
+
+    borg_magic *as = &borg_magics[spell_num];
+
+    /* Dark */
+    if (no_light(player))
+        return false;
+
+    int reserve_mana = borg_get_mana_reserve();
 
     /* Require ability (when rested) */
-    if (!borg_spell_legal(spell))
+    if (!borg_spell_entry_legal(spell_num))
         return false;
 
     /* Blind/confused/amnesia */

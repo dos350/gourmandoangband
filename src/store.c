@@ -46,6 +46,54 @@
 
 static void store_maint(struct store *s);
 
+enum diner_offer {
+	DINER_OFFER_MEAL,
+	DINER_OFFER_MEAL_DEAL,
+	DINER_OFFER_SUPER_SIZE,
+	DINER_OFFER_INVALID
+};
+
+static enum diner_offer diner_menu_offer(const struct object *obj)
+{
+	if (streq(obj->kind->name, "Ration of Food"))
+		return DINER_OFFER_MEAL;
+	if (streq(obj->kind->name, "Hard Biscuit"))
+		return DINER_OFFER_MEAL_DEAL;
+	if (streq(obj->kind->name, "Slime Mold"))
+		return DINER_OFFER_SUPER_SIZE;
+
+	return DINER_OFFER_INVALID;
+}
+
+const char *diner_offer_name(const struct object *obj)
+{
+	switch (diner_menu_offer(obj)) {
+	case DINER_OFFER_MEAL:
+		return "Mystery Meal";
+	case DINER_OFFER_MEAL_DEAL:
+		return "Meal Deal (1-3 random potions)";
+	case DINER_OFFER_SUPER_SIZE:
+		return "Super Size (1-6 food, 1-6 random potions)";
+	default:
+		return "Mystery Meal";
+	}
+}
+
+static int diner_offer_price(const struct object *obj)
+{
+	switch (diner_menu_offer(obj)) {
+	case DINER_OFFER_MEAL:
+		return DINER_MEAL_COST;
+	case DINER_OFFER_MEAL_DEAL:
+		return DINER_MEAL_DEAL_COST;
+	case DINER_OFFER_SUPER_SIZE:
+		return DINER_SUPER_SIZE_COST;
+	default:
+		return DINER_MEAL_COST;
+	}
+}
+
+
 /**
  * ------------------------------------------------------------------------
  * Constants and definitions
@@ -602,9 +650,9 @@ int price_item(struct store *store, const struct object *obj,
 
 	proprietor = store->owner;
 
-	/* Flat-rate mystery meals: one price however many are on the plate */
+	/* The diner charges a fixed price for each menu option. */
 	if (store->feat == FEAT_STORE_DINER) {
-		return store_buying ? 0 : DINER_MEAL_COST;
+		return store_buying ? 0 : diner_offer_price(obj);
 	}
 
 	/* Get the value of the stack of wands, or a single item */
@@ -1663,19 +1711,21 @@ int find_inven(const struct object *obj)
 
 
 /**
- * Cook up a random food for the Mystery Diner.
+ * Cook up a random food or potion for the Mystery Diner.
  */
-static struct object *diner_make_meal(void)
+static struct object *diner_make_random_item(int tval)
 {
 	struct object_kind *kind = NULL;
 	struct object *obj, *known_obj;
 	int i, n = 0;
 
-	/* Pick uniformly among all edible kinds, mushrooms (and the bad ones) included */
+	/* Pick uniformly among all edible kinds, or potions when requested. */
 	for (i = 0; i < z_info->k_max; i++) {
 		struct object_kind *k = &k_info[i];
 
-		if (!k->name || !(tval_is_food_k(k) || tval_is_mushroom_k(k)))
+		if (!k->name || (tval ?
+				k->tval != tval :
+				!(tval_is_food_k(k) || tval_is_mushroom_k(k))))
 			continue;
 		if (one_in_(++n)) kind = k;
 	}
@@ -1683,7 +1733,6 @@ static struct object *diner_make_meal(void)
 
 	obj = object_new();
 	object_prep(obj, kind, 0, RANDOMISE);
-	obj->number = randint1(3);
 
 	known_obj = object_new();
 	obj->known = known_obj;
@@ -1696,13 +1745,91 @@ static struct object *diner_make_meal(void)
 }
 
 /**
+ * Cook a diner order, with additional random potions for larger options.
+ */
+static struct object *diner_make_meal(enum diner_offer offer,
+	struct object **potions)
+{
+	struct object *meal;
+	int potion_count = 0;
+
+	meal = diner_make_random_item(0);
+	if (!meal) return NULL;
+
+	meal->number = (offer == DINER_OFFER_SUPER_SIZE) ?
+		randint1(6) : randint1(3);
+	if (offer == DINER_OFFER_MEAL_DEAL)
+		potion_count = randint1(3);
+	else if (offer == DINER_OFFER_SUPER_SIZE)
+		potion_count = randint1(6);
+
+	while (potion_count--) {
+		struct object *potion = diner_make_random_item(TV_POTION);
+		struct object *current;
+
+		if (!potion) {
+			object_delete(NULL, NULL, &meal);
+			object_pile_free(NULL, NULL, *potions);
+			*potions = NULL;
+			return NULL;
+		}
+
+		for (current = *potions; current; current = current->next) {
+			if (object_mergeable(current, potion, OSTACK_PACK)) {
+				object_absorb(current->known, potion->known);
+				potion->known = NULL;
+				object_absorb(current, potion);
+				potion = NULL;
+				break;
+			}
+		}
+		if (potion)
+			pile_insert(potions, potion);
+	}
+
+	return meal;
+}
+
+static bool diner_can_carry(const struct object *meal,
+	const struct object *potions)
+{
+	int free_slots = z_info->pack_size - pack_slots_used(player);
+	const struct object *obj;
+
+	for (obj = meal; obj; obj = (obj == meal) ? potions : obj->next) {
+		int stack_capacity = 0;
+		int remaining;
+		int i;
+
+		for (i = 0; i < z_info->pack_size; i++) {
+			struct object *inven_obj = player->upkeep->inven[i];
+
+			if (inven_obj && object_stackable(inven_obj, obj, OSTACK_PACK))
+				stack_capacity += inven_obj->kind->base->max_stack -
+					inven_obj->number;
+		}
+
+		remaining = obj->number - stack_capacity;
+		if (remaining > 0) {
+			int slots = (remaining + obj->kind->base->max_stack - 1) /
+				obj->kind->base->max_stack;
+			if (slots > free_slots) return false;
+			free_slots -= slots;
+		}
+	}
+
+	return true;
+}
+
+/**
  * Buy the item with the given index from the current store's inventory.
  */
 void do_cmd_buy(struct command *cmd)
 {
 	int amt;
 
-	struct object *obj, *bought, *known_obj;
+	struct object *obj, *bought, *known_obj, *potions = NULL;
+	enum diner_offer offer = DINER_OFFER_INVALID;
 
 	char o_name[80];
 	int price;
@@ -1729,9 +1856,14 @@ void do_cmd_buy(struct command *cmd)
 
 	/* Get desired object */
 	if (store->feat == FEAT_STORE_DINER) {
-		/* One mystery meal per order */
+		/* One diner order per purchase. */
 		amt = 1;
-		bought = diner_make_meal();
+		offer = diner_menu_offer(obj);
+		if (offer == DINER_OFFER_INVALID) {
+			msg("The cook cannot serve that menu item.");
+			return;
+		}
+		bought = diner_make_meal(offer, &potions);
 		if (!bought) {
 			msg("The cook has nothing to serve.");
 			return;
@@ -1742,9 +1874,13 @@ void do_cmd_buy(struct command *cmd)
 	}
 
 	/* Ensure we have room */
-	if (bought->number > inven_carry_num(player, bought)) {
+	if ((store->feat == FEAT_STORE_DINER &&
+			!diner_can_carry(bought, potions)) ||
+			(store->feat != FEAT_STORE_DINER &&
+			bought->number > inven_carry_num(player, bought))) {
 		msg("You cannot carry that many items.");
 		object_delete(NULL, NULL, &bought);
+		object_pile_free(NULL, NULL, potions);
 		return;
 	}
 
@@ -1753,11 +1889,13 @@ void do_cmd_buy(struct command *cmd)
 		player);
 
 	/* Extract the price for the entire stack */
-	price = price_item(store, bought, false, bought->number);
+	price = price_item(store, (store->feat == FEAT_STORE_DINER) ? obj :
+		bought, false, bought->number);
 
 	if (price > player->au) {
 		msg("You cannot afford that purchase.");
 		object_delete(NULL, NULL, &bought);
+		object_pile_free(NULL, NULL, potions);
 		return;
 	}
 
@@ -1775,11 +1913,23 @@ void do_cmd_buy(struct command *cmd)
 		player);
 
 	/* Message */
-	if (store->feat == FEAT_STORE_DINER)
+	if (store->feat == FEAT_STORE_DINER) {
+		int potion_count = 0;
+		struct object *potion;
+
 		msgt(MSG_STORE5, "%s", ONE_OF(comment_diner));
-	else if (one_in_(3))
-		msgt(MSG_STORE5, "%s", ONE_OF(comment_accept));
-	msg("You bought %s for %d gold.", o_name, price);
+		for (potion = potions; potion; potion = potion->next)
+			potion_count += potion->number;
+		if (potion_count)
+			msg("You bought %s and %d random potions for %d gold.",
+				o_name, potion_count, price);
+		else
+			msg("You bought %s for %d gold.", o_name, price);
+	} else {
+		if (one_in_(3))
+			msgt(MSG_STORE5, "%s", ONE_OF(comment_accept));
+		msg("You bought %s for %d gold.", o_name, price);
+	}
 
 	/* Erase the inscription */
 	bought->note = 0;
@@ -1809,6 +1959,21 @@ void do_cmd_buy(struct command *cmd)
 
 	/* Give it to the player */
 	inven_carry(player, bought, true, true);
+
+	while (potions) {
+		struct object *potion = potions;
+
+		potions = potions->next;
+		potion->next = NULL;
+		potion->origin = ORIGIN_STORE;
+		object_flavor_aware(player, potion);
+		potion->known->effect = potion->effect;
+		while (!object_fully_known(potion)) {
+			object_learn_unknown_rune(player, potion);
+			player_know_object(player, potion);
+		}
+		inven_carry(player, potion, true, true);
+	}
 
 	/* Handle stuff */
 	handle_stuff(player);

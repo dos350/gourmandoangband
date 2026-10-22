@@ -18,7 +18,8 @@ vein of games like NetHack and Rogue. For in-game help, press `?`.
 ## Building
 
 See the [compiling guide](docs/hacking/compiling.rst).
-
+my personal testing is mainly done for windows x64 native, but i have also validated the build for mac arm64 (cocoa);
+other platforms == not tested and outside my scope~ but they should work normally;
 
 ## Help
 
@@ -26,6 +27,6 @@ If you need help in-game, press `?`. You can also read the
 [Angband manual](https://angband.readthedocs.io/en/latest/) or visit the
 [Angband Forums](https://angband.live/forums/).
 
-Enjoy!
+Bon appetit!
 
 -- dos350

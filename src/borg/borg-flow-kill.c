@@ -179,6 +179,8 @@ static void borg_update_kill_new(int i)
     else
         kill->confused = true;
 
+    kill->held = (m_ptr->m_timed[MON_TMD_HOLD] != 0);
+
     /* Is it stunned*/
     if (m_ptr->m_timed[MON_TMD_STUN] == 0)
         kill->stunned = false;
@@ -299,6 +301,8 @@ static void borg_update_kill_old(int i)
         kill->confused = false;
     else
         kill->confused = true;
+
+    kill->held = (m_ptr->m_timed[MON_TMD_HOLD] != 0);
 
     /* Is it stunned*/
     if (m_ptr->m_timed[MON_TMD_STUN] == 0)

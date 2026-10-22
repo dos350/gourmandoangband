@@ -231,10 +231,7 @@ static int32_t borg_power_equipment(void)
     /*** Reward various things ***/
 
     /* Reward light radius */
-    /* necromancers like the dark */
-    if (borg.trait[BI_CLASS] == CLASS_NECROMANCER)
-        value -= ((borg.trait[BI_LIGHT] - 1) * 10000L);
-    else if (borg.trait[BI_LIGHT] <= 3)
+    if (borg.trait[BI_LIGHT] <= 3)
         value += (borg.trait[BI_LIGHT] * 10000L);
     else if (borg.trait[BI_LIGHT] > 3)
         value += (30000L) + (borg.trait[BI_LIGHT] * 1000);
@@ -612,9 +609,7 @@ static int32_t borg_power_equipment(void)
     if (!CLASS_IS_FIGHTER(borg.trait[BI_CLASS]) && borg.trait[BI_CRSMPIMP])
         value -= 15000;
     if ((borg.trait[BI_CLASS] == CLASS_MAGE
-            || borg.trait[BI_CLASS] == CLASS_PRIEST
-            || borg.trait[BI_CLASS] == CLASS_DRUID
-            || borg.trait[BI_CLASS] == CLASS_NECROMANCER)
+            || borg.trait[BI_CLASS] == CLASS_PRIEST)
         && borg.trait[BI_CRSMPIMP])
         value -= 15000;
     if (borg.trait[BI_CRSFEAR])
@@ -777,8 +772,7 @@ static int32_t borg_power_equipment(void)
             activation_bonus += (500 + (150));
         else if (act_rem_fear_pois == act) {
             if (borg.trait[BI_CLASS] == CLASS_MAGE
-                || borg.trait[BI_CLASS] == CLASS_PRIEST
-                || borg.trait[BI_CLASS] == CLASS_DRUID)
+                || borg.trait[BI_CLASS] == CLASS_PRIEST)
                 activation_bonus += 500;
             else
                 activation_bonus += (500 + (200));
@@ -809,10 +803,7 @@ static int32_t borg_power_equipment(void)
                 activation_bonus += 25000;
         } else if (act_sleepii == act) {
             activation_bonus += 500;
-            /* extra bonus if you can't cast a sleep type spell */
-            if ((borg.trait[BI_CLASS] != CLASS_DRUID)
-                && (borg.trait[BI_CLASS] != CLASS_NECROMANCER))
-                activation_bonus += 200;
+            activation_bonus += 200;
         } else if (act_recharge == act) {
             activation_bonus += 500;
             /* extra bonus if you can't cast a charge type spell */
@@ -1345,8 +1336,7 @@ static int32_t borg_power_inventory(void)
     /*** Healing ***/
     /* !TODO !FIX make sure these numbers make sense for the new classes */
     if (CLASS_IS_FIGHTER(borg.trait[BI_CLASS])
-        || borg.trait[BI_CLASS] == CLASS_ROGUE
-        || borg.trait[BI_CLASS] == CLASS_BLACKGUARD) {
+        || borg.trait[BI_CLASS] == CLASS_ROGUE) {
         k = 0;
         for (; k < 15 && k < borg.trait[BI_AHEAL]; k++)
             value += 8000L;
@@ -1368,7 +1358,6 @@ static int32_t borg_power_inventory(void)
             value += 20000L;
     } else if (borg.trait[BI_CLASS] == CLASS_RANGER
                || borg.trait[BI_CLASS] == CLASS_PALADIN
-               || borg.trait[BI_CLASS] == CLASS_NECROMANCER
                || borg.trait[BI_CLASS] == CLASS_MAGE) {
         k = 0;
         for (; k < 10 && k < borg.trait[BI_AHEAL]; k++)
@@ -1397,8 +1386,7 @@ static int32_t borg_power_inventory(void)
         for (; k < 4 && k < borg.has[kv_rod_healing]; k++)
             value += 20000L;
 
-    } else if (borg.trait[BI_CLASS] == CLASS_PRIEST
-               || borg.trait[BI_CLASS] == CLASS_DRUID) {
+    } else if (borg.trait[BI_CLASS] == CLASS_PRIEST) {
         /* Level 1 priests are given a Potion of Healing.  It is better
          * for them to sell that potion and buy equipment or several
          * Cure Crits with it.
@@ -1560,11 +1548,9 @@ static int32_t borg_power_inventory(void)
         value += 4000L;
 
     /* Reward call lite */
-    if (borg.trait[BI_CLASS] != CLASS_NECROMANCER) {
-        k = 0;
-        for (; k < 1 && k < borg.trait[BI_ALITE]; k++)
-            value += 1000L;
-    }
+    k = 0;
+    for (; k < 1 && k < borg.trait[BI_ALITE]; k++)
+        value += 1000L;
 
     /* Genocide scrolls. Just scrolls, mainly used for Morgoth */
     if (borg.trait[BI_MAXDEPTH] >= 100) {
