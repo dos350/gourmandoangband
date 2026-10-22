@@ -580,7 +580,7 @@ static int32_t borg_power_equipment(void)
     if (borg.trait[BI_RDARK] && (borg.trait[BI_MAXDEPTH] + 1 >= 80))
         value += 25000L;
     if ((borg.trait[BI_SPEED] >= 140) && (borg.trait[BI_MAXDEPTH] + 1 >= 80)
-        && borg.trait[BI_CLASS] == CLASS_WARRIOR)
+        && CLASS_IS_FIGHTER(borg.trait[BI_CLASS]))
         value += 100000L;
 
     /*** Reward powerful armor ***/
@@ -609,7 +609,7 @@ static int32_t borg_power_equipment(void)
         value -= 800000L;
     if (borg.trait[BI_CRSHPIMP])
         value -= 35000;
-    if (borg.trait[BI_CLASS] != CLASS_WARRIOR && borg.trait[BI_CRSMPIMP])
+    if (!CLASS_IS_FIGHTER(borg.trait[BI_CLASS]) && borg.trait[BI_CRSMPIMP])
         value -= 15000;
     if ((borg.trait[BI_CLASS] == CLASS_MAGE
             || borg.trait[BI_CLASS] == CLASS_PRIEST
@@ -1191,7 +1191,7 @@ static int32_t borg_power_inventory(void)
     }
 
     /* Reward Resistance Potions for Warriors */
-    if (borg.trait[BI_CLASS] == CLASS_WARRIOR && borg.trait[BI_MAXDEPTH] > 20) {
+    if (CLASS_IS_FIGHTER(borg.trait[BI_CLASS]) && borg.trait[BI_MAXDEPTH] > 20) {
         k = 0;
         /* Not if munchkin starting */
         if (borg_cfg[BORG_MUNCHKIN_START]
@@ -1344,7 +1344,7 @@ static int32_t borg_power_inventory(void)
 
     /*** Healing ***/
     /* !TODO !FIX make sure these numbers make sense for the new classes */
-    if (borg.trait[BI_CLASS] == CLASS_WARRIOR
+    if (CLASS_IS_FIGHTER(borg.trait[BI_CLASS])
         || borg.trait[BI_CLASS] == CLASS_ROGUE
         || borg.trait[BI_CLASS] == CLASS_BLACKGUARD) {
         k = 0;
@@ -1442,7 +1442,7 @@ static int32_t borg_power_inventory(void)
         for (; k < 99 && k < borg.trait[BI_ALIFE]; k++)
             value += 10000L;
         k = 0;
-        if (borg.trait[BI_CLASS] != CLASS_WARRIOR) {
+        if (!CLASS_IS_FIGHTER(borg.trait[BI_CLASS])) {
             for (; k < 99 && k < borg.has[kv_potion_restore_mana]; k++)
                 value += 5000L;
         }
@@ -1593,7 +1593,7 @@ static int32_t borg_power_inventory(void)
 
     /* Reward missiles */
     if (borg.trait[BI_CLASS] == CLASS_RANGER
-        || borg.trait[BI_CLASS] == CLASS_WARRIOR) {
+        || CLASS_IS_FIGHTER(borg.trait[BI_CLASS])) {
         k = 0;
         for (; k < 40 && k < borg.trait[BI_AMISSILES]; k++)
             value += 100L;
@@ -1645,7 +1645,7 @@ static int32_t borg_power_inventory(void)
     if (borg.trait[BI_ATPORTOTHER])
         value += 5000L;
     /* Much greater reward for Warrior */
-    if (borg.trait[BI_CLASS] == CLASS_WARRIOR && borg.trait[BI_ATPORTOTHER])
+    if (CLASS_IS_FIGHTER(borg.trait[BI_CLASS]) && borg.trait[BI_ATPORTOTHER])
         value += 50000L;
     /* reward per charge */
     k = 0;
@@ -1660,7 +1660,7 @@ static int32_t borg_power_inventory(void)
     if (borg.has[kv_wand_annihilation] && borg.trait[BI_CDEPTH] < 30)
         value += 5000L;
     /* Much greater reward for Warrior or lower level  */
-    if ((borg.trait[BI_CLASS] == CLASS_WARRIOR || borg.trait[BI_CLEVEL] <= 20)
+    if ((CLASS_IS_FIGHTER(borg.trait[BI_CLASS]) || borg.trait[BI_CLEVEL] <= 20)
         && (borg.has[kv_wand_magic_missile] || borg.has[kv_wand_annihilation]
             || borg.has[kv_wand_stinking_cloud]))
         value += 10000L;

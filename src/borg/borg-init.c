@@ -598,13 +598,11 @@ void borg_init(void)
     /* never does, even on a bad class */
     if (!streq(player_id2class(CLASS_WARRIOR)->name, "Warrior")
         || !streq(player_id2class(CLASS_MAGE)->name, "Mage")
-        || !streq(player_id2class(CLASS_DRUID)->name, "Druid")
         || !streq(player_id2class(CLASS_PRIEST)->name, "Priest")
-        || !streq(player_id2class(CLASS_NECROMANCER)->name, "Necromancer")
         || !streq(player_id2class(CLASS_PALADIN)->name, "Paladin")
         || !streq(player_id2class(CLASS_ROGUE)->name, "Rogue")
         || !streq(player_id2class(CLASS_RANGER)->name, "Ranger")
-        || !streq(player_id2class(CLASS_BLACKGUARD)->name, "Blackguard")) {
+        || !streq(player_id2class(CLASS_GOURMAND)->name, "Gourmand")) {
         borg_note("**STARTUP FAILURE** classes do not match");
         borg_init_failure = true;
     }

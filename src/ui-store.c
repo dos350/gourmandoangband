@@ -289,6 +289,8 @@ static void store_display_entry(struct menu *menu, int oid, bool cursor, int row
 		desc |= ODESC_FULL | ODESC_STORE;
 	}
 	object_desc(o_name, sizeof(o_name), obj, desc, player);
+	if (store->feat == FEAT_STORE_DINER)
+		my_strcpy(o_name, "Mystery Meal", sizeof(o_name));
 
 	/* Display the object */
 	c_put_str(obj->kind->base->attr, o_name, row, col);
@@ -296,7 +298,10 @@ static void store_display_entry(struct menu *menu, int oid, bool cursor, int row
 	/* Show weights */
 	colour = curs_attrs[CURS_KNOWN][(int)cursor];
 	obj_weight = object_weight_one(obj);
-	strnfmt(out_val, sizeof out_val, "%3d.%d lb", obj_weight / 10,
+	if (store->feat == FEAT_STORE_DINER)
+		out_val[0] = '\0';
+	else
+		strnfmt(out_val, sizeof out_val, "%3d.%d lb", obj_weight / 10,
 			obj_weight % 10);
 	c_put_str(colour, out_val, row, ctx->scr_places_x[LOC_WEIGHT]);
 
@@ -612,6 +617,9 @@ static bool store_purchase(struct store_context *ctx, int item, bool single)
 
 	/*** Check the player can get any at all ***/
 
+	/* One mystery meal per order */
+	if (store->feat == FEAT_STORE_DINER) single = true;
+
 	/* Get an amount if we weren't given one */
 	if (single) {
 		amt = 1;
@@ -703,6 +711,8 @@ static bool store_purchase(struct store_context *ctx, int item, bool single)
 		/* Describe the object (fully) */
 		object_desc(o_name, sizeof(o_name), dummy,
 			ODESC_PREFIX | ODESC_FULL | ODESC_STORE, player);
+		if (store->feat == FEAT_STORE_DINER)
+			my_strcpy(o_name, "a mystery meal", sizeof(o_name));
 
 		/* Extract the price for the entire stack */
 		price = price_item(store, dummy, false, dummy->number);
@@ -758,6 +768,13 @@ static void store_examine(struct store_context *ctx, int item)
 
 	/* Get the actual object */
 	obj = ctx->list[item];
+
+	/* The diner's real meal is a secret */
+	if (ctx->store->feat == FEAT_STORE_DINER) {
+		msg("The cook winks. It's a mystery meal, %d gold a plate.",
+			DINER_MEAL_COST);
+		return;
+	}
 
 	/* Items in the home get less description */
 	if (ctx->store->feat == FEAT_HOME) {

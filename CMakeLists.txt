@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.7...3.26 FATAL_ERROR)
-project(Angband LANGUAGES C)
+project(gourmandoAngband LANGUAGES C)
 string(TOLOWER ${PROJECT_NAME} OUR_EXECUTABLE_NAME)
 
 # Append the custom modules to the search path.
@@ -125,7 +125,9 @@ if(SUPPORT_WINDOWS_FRONTEND)
         set(SUPPORT_SDL2_SOUND OFF)
     endif()
     # Set up the path for the source of the resource file.
-    string(CONCAT OUR_WINDOWS_RC src/win/ ${OUR_EXECUTABLE_NAME} .rc)
+    # The resource file keeps its upstream name, independent of the
+    # executable's name.
+    set(OUR_WINDOWS_RC src/win/angband.rc)
     # Enable compilation of resource files.
     enable_language(RC)
 endif()

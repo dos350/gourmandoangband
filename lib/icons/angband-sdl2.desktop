@@ -2,7 +2,7 @@
 Name=Angband (SDL2)
 Type=Application
 Comment=A roguelike dungeon exploration game based on the books of J.R.R.Tolkien
-Exec=angband -msdl2
-TryExec=angband
+Exec=gourmandoangband -msdl2
+TryExec=gourmandoangband
 Icon=angband
 Categories=Game;RolePlaying;

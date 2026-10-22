@@ -52,6 +52,11 @@ endif
 # Note that Makefile.inc sets VERSION, and so we must run version.sh after including Makefile.inc
 include Makefile.inc
 
+# This fork's Mac bundle and executable names; NAME also selects the
+# cocoa/$(NAME)-Cocoa.xml and cocoa/$(NAME)_Icons.icns files.
+NAME = gourmandoAngband
+PROGNAME = gourmandoangband
+
 APPNAME = $(NAME).app
 EXE = $(PROGNAME)
 

@@ -982,7 +982,7 @@ bool borg_think_shop_sell_useless(void)
                 && borg.has[kv_rod_healing] <= 3)
                 continue;
 
-            if (borg.trait[BI_CLASS] == CLASS_WARRIOR && item->tval == TV_ROD
+            if (CLASS_IS_FIGHTER(borg.trait[BI_CLASS]) && item->tval == TV_ROD
                 && item->sval == sv_rod_mapping && item->iqty <= 2)
                 continue;
 

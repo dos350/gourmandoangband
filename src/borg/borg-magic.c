@@ -39,9 +39,6 @@
 borg_magic *borg_magics = NULL;
 
 
-static borg_spell_rating *borg_spell_ratings;
-// !FIX !TODO for now put this in the code.  It should probably end up in borg.txt or a new borg.cfg
-// I also gave low ratings to spells that are new since the borg doesn't know when to use them yet.
 static borg_spell_rating borg_spell_ratings_MAGE[] =
 {
     { "Magic Missile", 95, MAGIC_MISSILE },
@@ -73,7 +70,13 @@ static borg_spell_rating borg_spell_ratings_MAGE[] =
     { "Explosion", 85, EXPLOSION },
     { "Banishment", 75, BANISHMENT },
     { "Mass Banishment", 65, MASS_BANISHMENT },
-    { "Mana Storm", 75, MANA_STORM }
+    { "Mana Storm", 75, MANA_STORM },
+    { "Lightning Bolt", 85, LIGHTNING_BOLT },
+    { "Fire Bolt", 85, FIRE_BOLT },
+    { "Acid Bolt", 85, ACID_BOLT },
+    { "Frost Ball", 80, FROST_BALL },
+    { "Acid Ball", 80, ACID_BALL },
+    { "Cloud Kill", 75, CLOUD_KILL }
 };
 static borg_spell_rating borg_spell_ratings_DRUID[] =
 {
@@ -137,35 +140,6 @@ static borg_spell_rating borg_spell_ratings_PRIEST[] =
     { "Spear of Orom\xC3\xab", 85, SPEAR_OF_OROME }, /* "Spear of Orom(e + diaresis)" */
     { "Light of Varda", 85, LIGHT_OF_VARDA } /* "Light of Varda"*/
 };
-static borg_spell_rating borg_spell_ratings_NECROMANCER[] =
-{
-    { "Nether Bolt", 95, NETHER_BOLT },
-    { "Sense Invisible", 85, SENSE_INVISIBLE },
-    { "Create Darkness", 5, CREATE_DARKNESS },
-    { "Bat Form", 5, BAT_FORM }, // !FIX !TODO shapechange
-    { "Read Minds", 85, READ_MINDS },
-    { "Tap Unlife", 85, TAP_UNLIFE },
-    { "Crush", 95, CRUSH },
-    { "Sleep Evil", 85, SLEEP_EVIL },
-    { "Shadow Shift", 95, SHADOW_SHIFT },
-    { "Disenchant", 25, DISENCHANT },
-    { "Frighten", 85, FRIGHTEN },
-    { "Vampire Strike", 75, VAMPIRE_STRIKE },
-    { "Dispel Life", 65, DISPEL_LIFE },
-    { "Dark Spear", 65, DARK_SPEAR },
-    { "Warg Form", 5, WARG_FORM }, // !FIX !TODO shapechange
-    { "Banish Spirits", 65, BANISH_SPIRITS },
-    { "Annihilate", 95, ANNIHILATE },
-    { "Grond's Blow", 85, GRONDS_BLOW },
-    { "Unleash Chaos", 85, UNLEASH_CHAOS },
-    { "Fume of Mordor", 75, FUME_OF_MORDOR },
-    { "Storm of Darkness", 65, STORM_OF_DARKNESS },
-    { "Power Sacrifice", 5, POWER_SACRIFICE },  /* not sure if this is borg happy. */
-    { "Zone of Unmagic", 5, ZONE_OF_UNMAGIC },  // !FIX !TODO defense?  not sure how to code.
-    { "Vampire Form", 5, VAMPIRE_FORM }, // !FIX !TODO shapechange
-    { "Curse", 65, CURSE },
-    { "Command", 5, COMMAND } // !FIX !TODO defense?  not sure how to code.
-};
 static borg_spell_rating borg_spell_ratings_PALADIN[] =
 {
     { "Bless", 95, BLESS },
@@ -196,7 +170,10 @@ static borg_spell_rating borg_spell_ratings_ROGUE[] =
     { "Teleport Self", 95, TELEPORT_SELF },
     { "Hit and Run", 15, HIT_AND_RUN }, // !FIX !TODO not sure how to code this
     { "Teleport Other", 85, TELEPORT_OTHER },
-    { "Teleport Level", 75, TELEPORT_LEVEL }
+    { "Teleport Level", 75, TELEPORT_LEVEL },
+    { "Spear of Light", 75, SPEAR_OF_LIGHT },
+    { "Heroism", 75, HEROISM },
+    { "Berserker", 75, BERSERK_STRENGTH }
 };
 static borg_spell_rating borg_spell_ratings_RANGER[] =
 {
@@ -210,25 +187,10 @@ static borg_spell_rating borg_spell_ratings_RANGER[] =
     { "Create Arrows", 85, CREATE_ARROWS }, // !FIX !TODO
     { "Haste Self", 95, HASTE_SELF },
     { "Decoy", 5, DECOY }, // !FIX !TODO not sure what to do with this
-    { "Brand Ammunition", 95, BRAND_AMMUNITION }
-};
-static borg_spell_rating borg_spell_ratings_BLACKGUARD[] =
-{
-    { "Seek Battle", 55, SEEK_BATTLE },
-    { "Berserk Strength", 95, BERSERK_STRENGTH },
-    { "Whirlwind Attack", 85, WHIRLWIND_ATTACK },
-    { "Shatter Stone", 95, SHATTER_STONE },
-    { "Leap into Battle", 65, LEAP_INTO_BATTLE },
-    { "Grim Purpose", 65, GRIM_PURPOSE },
-    { "Maim Foe", 75, MAIM_FOE },
-    { "Howl of the Damned", 55, HOWL_OF_THE_DAMNED },
-    { "Relentless Taunting", 5, RELENTLESS_TAUNTING }, /* seems to dangerous for borg right now */
-    { "Venom", 55, VENOM },
-    { "Werewolf Form", 5, WEREWOLF_FORM }, // !FIX !TODO shapechange
-    { "Bloodlust", 5, BLOODLUST }, /* seems to dangerous for borg right now */
-    { "Unholy Reprieve", 95, UNHOLY_REPRIEVE },
-    { "Forceful Blow", 5, FORCEFUL_BLOW }, // !FIX !TODO need to code this
-    { "Quake", 95, QUAKE }
+    { "Brand Ammunition", 95, BRAND_AMMUNITION },
+    { "Spear of Light", 75, SPEAR_OF_LIGHT },
+    { "Heroism", 85, HEROISM },
+    { "Berserker", 75, BERSERK_STRENGTH }
 };
 
 /*
@@ -269,14 +231,12 @@ bool borg_primarily_caster(void)
 
 /*
  * get the level at which Heroism (spell) grants Heroism (effect)
+ * In this fork only Rogues and Rangers have the spell and it always
+ * grants heroism.
  */
 int borg_heroism_level(void)
 {
-    if (borg.trait[BI_CLASS] == CLASS_PRIEST)
-        return 20;
-    if (borg.trait[BI_CLASS] == CLASS_PALADIN)
-        return 15;
-    return 99;
+    return 0;
 }
 
 /*
@@ -441,17 +401,11 @@ bool borg_spell_okay(const enum borg_spells spell)
     case CLASS_ROGUE:
         reserve_mana = 20;
         break;
-    case CLASS_NECROMANCER:
-        reserve_mana = 10;
-        break;
     case CLASS_PRIEST:
         reserve_mana = 8;
         break;
     case CLASS_PALADIN:
         reserve_mana = 20;
-        break;
-    case CLASS_BLACKGUARD:
-        reserve_mana = 0;
         break;
     }
 
@@ -739,22 +693,71 @@ static int borg_get_book_offset(int index)
 }
 
 /*
+ * Some spells have a different name in this fork than the one the borg
+ * knows them by.
+ */
+static const struct {
+    const char *name;
+    const char *borg_name;
+} borg_spell_aliases[] = {
+    { "Light Area", "Light Room" },
+    { "Lesser Recharging", "Recharging" },
+    { "Greater Recharging", "Recharging" },
+    { "Enchant Armor", "Enchant Armour" },
+    { "Cure Light Wounds", "Minor Healing" },
+    { "Heal", "Healing" },
+    { "Blink", "Phase Door" }
+};
+
+static struct {
+    const borg_spell_rating *ratings;
+    size_t                   count;
+} borg_rating_tables[4];
+static size_t borg_rating_table_count;
+
+static void borg_add_rating_table(
+    size_t *n, const borg_spell_rating *ratings, size_t count)
+{
+    borg_rating_tables[*n].ratings = ratings;
+    borg_rating_tables[*n].count   = count;
+    (*n)++;
+}
+
+/*
+ * Find the borg's rating for a spell by name.  Tables are searched in the
+ * order they were added so the class's own table wins.
+ */
+static const borg_spell_rating *borg_find_spell_rating(const char *name)
+{
+    for (size_t a = 0; a < N_ELEMENTS(borg_spell_aliases); a++) {
+        if (streq(name, borg_spell_aliases[a].name)) {
+            name = borg_spell_aliases[a].borg_name;
+            break;
+        }
+    }
+
+    for (size_t t = 0; t < borg_rating_table_count; t++) {
+        for (size_t i = 0; i < borg_rating_tables[t].count; i++) {
+            if (streq(name, borg_rating_tables[t].ratings[i].name))
+                return &borg_rating_tables[t].ratings[i];
+        }
+    }
+    return NULL;
+}
+
+/*
  * initialize the spell data
  */
 static void borg_init_spell(borg_magic *spells, int spell_num)
 {
     borg_magic               *spell  = &spells[spell_num];
     const struct class_spell *cspell = spell_by_index(player, spell_num);
-    if (strcmp(cspell->name, borg_spell_ratings[spell_num].name)) {
-        borg_note(format("**STARTUP FAILURE** spell definition mismatch. "
-                         "<%s> not the same as <%s>",
-            cspell->name, borg_spell_ratings[spell_num].name));
-        borg_init_failure = true;
-        return;
-    }
-    spell->rating       = borg_spell_ratings[spell_num].rating;
-    spell->name         = borg_spell_ratings[spell_num].name;
-    spell->spell_enum   = borg_spell_ratings[spell_num].spell_enum;
+    const borg_spell_rating  *rating = borg_find_spell_rating(cspell->name);
+
+    /* Spells the borg has no code for get no rating and are never cast */
+    spell->rating       = rating ? rating->rating : 0;
+    spell->name         = cspell->name;
+    spell->spell_enum   = rating ? rating->spell_enum : NO_SPELL;
     spell->level        = cspell->slevel;
     spell->book_offset  = borg_get_book_offset(cspell->sidx);
     spell->effect_index = cspell->effect->index;
@@ -770,38 +773,63 @@ static void borg_init_spell(borg_magic *spells, int spell_num)
  */
 void borg_prepare_book_info(void)
 {
+    size_t n = 0;
+
     switch (player->class->cidx) {
     case CLASS_MAGE:
-        borg_spell_ratings = borg_spell_ratings_MAGE;
-        break;
-    case CLASS_DRUID:
-        borg_spell_ratings = borg_spell_ratings_DRUID;
-        break;
-    case CLASS_PRIEST:
-        borg_spell_ratings = borg_spell_ratings_PRIEST;
-        break;
-    case CLASS_NECROMANCER:
-        borg_spell_ratings = borg_spell_ratings_NECROMANCER;
-        break;
-    case CLASS_PALADIN:
-        borg_spell_ratings = borg_spell_ratings_PALADIN;
+        borg_add_rating_table(&n, borg_spell_ratings_MAGE,
+            N_ELEMENTS(borg_spell_ratings_MAGE));
+        borg_add_rating_table(&n, borg_spell_ratings_DRUID,
+            N_ELEMENTS(borg_spell_ratings_DRUID));
         break;
     case CLASS_ROGUE:
-        borg_spell_ratings = borg_spell_ratings_ROGUE;
+        borg_add_rating_table(&n, borg_spell_ratings_ROGUE,
+            N_ELEMENTS(borg_spell_ratings_ROGUE));
+        borg_add_rating_table(&n, borg_spell_ratings_MAGE,
+            N_ELEMENTS(borg_spell_ratings_MAGE));
+        borg_add_rating_table(&n, borg_spell_ratings_DRUID,
+            N_ELEMENTS(borg_spell_ratings_DRUID));
         break;
     case CLASS_RANGER:
-        borg_spell_ratings = borg_spell_ratings_RANGER;
+        borg_add_rating_table(&n, borg_spell_ratings_RANGER,
+            N_ELEMENTS(borg_spell_ratings_RANGER));
+        borg_add_rating_table(&n, borg_spell_ratings_MAGE,
+            N_ELEMENTS(borg_spell_ratings_MAGE));
+        borg_add_rating_table(&n, borg_spell_ratings_DRUID,
+            N_ELEMENTS(borg_spell_ratings_DRUID));
         break;
-    case CLASS_BLACKGUARD:
-        borg_spell_ratings = borg_spell_ratings_BLACKGUARD;
+    case CLASS_PRIEST:
+        borg_add_rating_table(&n, borg_spell_ratings_PRIEST,
+            N_ELEMENTS(borg_spell_ratings_PRIEST));
+        borg_add_rating_table(&n, borg_spell_ratings_PALADIN,
+            N_ELEMENTS(borg_spell_ratings_PALADIN));
+        borg_add_rating_table(&n, borg_spell_ratings_MAGE,
+            N_ELEMENTS(borg_spell_ratings_MAGE));
+        borg_add_rating_table(&n, borg_spell_ratings_DRUID,
+            N_ELEMENTS(borg_spell_ratings_DRUID));
+        break;
+    case CLASS_PALADIN:
+        borg_add_rating_table(&n, borg_spell_ratings_PALADIN,
+            N_ELEMENTS(borg_spell_ratings_PALADIN));
+        borg_add_rating_table(&n, borg_spell_ratings_PRIEST,
+            N_ELEMENTS(borg_spell_ratings_PRIEST));
+        borg_add_rating_table(&n, borg_spell_ratings_MAGE,
+            N_ELEMENTS(borg_spell_ratings_MAGE));
+        borg_add_rating_table(&n, borg_spell_ratings_DRUID,
+            N_ELEMENTS(borg_spell_ratings_DRUID));
         break;
     default:
-        borg_spell_ratings = NULL;
-        return;
+        break;
+    }
+    borg_rating_table_count = n;
+
+    if (borg_magics) {
+        mem_free(borg_magics);
+        borg_magics = NULL;
     }
 
-    if (borg_magics)
-        mem_free(borg_magics);
+    if (player->class->magic.total_spells == 0)
+        return;
 
     borg_magics
         = mem_zalloc(player->class->magic.total_spells * sizeof(borg_magic));

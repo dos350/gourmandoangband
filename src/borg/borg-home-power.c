@@ -415,7 +415,7 @@ static int32_t borg_power_home_aux2(void)
         value += 500L - k * 10L;
 
     /* Reward Resistance Potions for Warriors */
-    if (borg.trait[BI_CLASS] == CLASS_WARRIOR && borg.trait[BI_MAXDEPTH] > 20
+    if (CLASS_IS_FIGHTER(borg.trait[BI_CLASS]) && borg.trait[BI_MAXDEPTH] > 20
         && borg.trait[BI_MAXDEPTH] < 80) {
         k = 0;
         for (; k < kb_info[TV_POTION].max_stack && k < num_pot_rheat; k++)

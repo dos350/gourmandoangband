@@ -51,7 +51,7 @@ Features that do not block line of sight
 ``'``   A broken door              ``6``    Entrance to Magic Shop
 ``<``   A staircase up             ``7``    Entrance to the Black Market
 ``>``   A staircase down           ``8``    Entrance to your Home
-``#``   A pool of lava
+``#``   A pool of lava             ``9``    Entrance to the Mystery Diner
 ===== =========================    =====  ================================== 
 
 Features that block line of sight
@@ -246,6 +246,15 @@ The Black Market (``7``)
   However it occasionally has **very** good items in it. With the exception
   of artifacts, every item found in the dungeon may appear in the black
   market.
+
+.. index::
+   single: mystery diner
+   seealso: store; mystery diner
+
+The Mystery Diner (``9``)
+  Always found a short walk north of the town crossroads. Every plate costs
+  350 gold and is a random food; you only learn what it was once you have
+  paid. The diner does not buy anything.
 
 .. index::
    single: home

@@ -460,6 +460,16 @@ static const char *comment_accept[] =
 	"Taken!"
 };
 
+static const char *comment_diner[] =
+{
+	"Bon appetit!",
+	"Enjoy your mystery meal!",
+	"The cook grins. \"Don't ask what's in it.\"",
+	"Dig in!",
+	"The cook slides the plate over with a wink.",
+	"Chef's special! Eat up!"
+};
+
 static const char *comment_good[] =
 {
 	"Cool!",
@@ -528,6 +538,9 @@ static bool store_will_buy(struct store *store, const struct object *obj)
 	/* Home accepts anything */
 	if (store->feat == FEAT_HOME) return true;
 
+	/* The diner only serves */
+	if (store->feat == FEAT_STORE_DINER) return false;
+
 	/* Ignore apparently worthless items, except no-selling {??} items */
 	if (object_value(obj, 1) <= 0 && !(OPT(player, birth_no_selling) &&
 									   tval_has_variable_power(obj) &&
@@ -588,6 +601,11 @@ int price_item(struct store *store, const struct object *obj,
 	}
 
 	proprietor = store->owner;
+
+	/* Flat-rate mystery meals: one price however many are on the plate */
+	if (store->feat == FEAT_STORE_DINER) {
+		return store_buying ? 0 : DINER_MEAL_COST;
+	}
 
 	/* Get the value of the stack of wands, or a single item */
 	if (tval_can_have_charges(obj)) {
@@ -1645,6 +1663,39 @@ int find_inven(const struct object *obj)
 
 
 /**
+ * Cook up a random food for the Mystery Diner.
+ */
+static struct object *diner_make_meal(void)
+{
+	struct object_kind *kind = NULL;
+	struct object *obj, *known_obj;
+	int i, n = 0;
+
+	/* Pick uniformly among all edible kinds, mushrooms (and the bad ones) included */
+	for (i = 0; i < z_info->k_max; i++) {
+		struct object_kind *k = &k_info[i];
+
+		if (!k->name || !(tval_is_food_k(k) || tval_is_mushroom_k(k)))
+			continue;
+		if (one_in_(++n)) kind = k;
+	}
+	if (!kind) return NULL;
+
+	obj = object_new();
+	object_prep(obj, kind, 0, RANDOMISE);
+	obj->number = randint1(3);
+
+	known_obj = object_new();
+	obj->known = known_obj;
+	obj->known->notice |= OBJ_NOTICE_ASSESSED;
+	object_set_base_known(player, obj);
+	obj->known->notice |= OBJ_NOTICE_ASSESSED;
+	player_know_object(player, obj);
+
+	return obj;
+}
+
+/**
  * Buy the item with the given index from the current store's inventory.
  */
 void do_cmd_buy(struct command *cmd)
@@ -1677,8 +1728,18 @@ void do_cmd_buy(struct command *cmd)
 		return;
 
 	/* Get desired object */
-	bought = object_new();
-	object_copy_amt(bought, obj, amt);
+	if (store->feat == FEAT_STORE_DINER) {
+		/* One mystery meal per order */
+		amt = 1;
+		bought = diner_make_meal();
+		if (!bought) {
+			msg("The cook has nothing to serve.");
+			return;
+		}
+	} else {
+		bought = object_new();
+		object_copy_amt(bought, obj, amt);
+	}
 
 	/* Ensure we have room */
 	if (bought->number > inven_carry_num(player, bought)) {
@@ -1714,7 +1775,10 @@ void do_cmd_buy(struct command *cmd)
 		player);
 
 	/* Message */
-	if (one_in_(3)) msgt(MSG_STORE5, "%s", ONE_OF(comment_accept));
+	if (store->feat == FEAT_STORE_DINER)
+		msgt(MSG_STORE5, "%s", ONE_OF(comment_diner));
+	else if (one_in_(3))
+		msgt(MSG_STORE5, "%s", ONE_OF(comment_accept));
 	msg("You bought %s for %d gold.", o_name, price);
 
 	/* Erase the inscription */
@@ -1729,9 +1793,11 @@ void do_cmd_buy(struct command *cmd)
 		obj->pval -= bought->pval;
 
 	/* Make a known object */
-	known_obj = object_new();
-	object_copy(known_obj, obj->known);
-	bought->known = known_obj;
+	if (store->feat != FEAT_STORE_DINER) {
+		known_obj = object_new();
+		object_copy(known_obj, obj->known);
+		bought->known = known_obj;
+	}
 
 	/* Learn flavor, any effect and all the runes */
 	object_flavor_aware(player, bought);

@@ -2809,6 +2809,13 @@ static void borg_notice_inventory(void)
     borg.trait[BI_FOOD] += borg.trait[BI_FOOD_HI];
     borg.trait[BI_FOOD] += borg.trait[BI_FOOD_LO];
 
+    /*
+     * Gourmands burn food twice as fast, so each item is worth half as
+     * much.  Values of 1000 or more mean a food spell, which is unaffected.
+     */
+    if (player_has(player, PF_GOURMAND) && borg.trait[BI_FOOD] < 1000)
+        borg.trait[BI_FOOD] = (borg.trait[BI_FOOD] + 1) / 2;
+
     /* If weak, do not count food spells */
     if (borg.trait[BI_ISWEAK] && (borg.trait[BI_FOOD] >= 1000))
         borg.trait[BI_FOOD] -= 1000;

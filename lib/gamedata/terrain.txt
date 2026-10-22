@@ -234,6 +234,16 @@ look-in-preposition:at
 desc:Watch your back and hold onto your purse as you enter this disreputable
 desc: haunt - and do not expect friendly service or good bargains.
 
+code:STORE_DINER
+name:Mystery Diner
+graphics:9:o
+priority:20
+flags:SHOP | LOS | PROJECT | PASSABLE | PERMANENT | INTERESTING | EASY
+look-prefix:the entrance to the
+look-in-preposition:at
+desc:A tiny roadside diner north of town.  The cook serves a mystery meal and
+desc: will not say what is in it.
+
 code:HOME
 name:Home
 graphics:8:y

@@ -348,7 +348,7 @@ bool borg_drop_junk(void)
                 || (item->tval == TV_ROD && item->sval == sv_rod_drain_life)
                 || (item->tval == TV_ROD && item->sval == sv_rod_healing)
                 || (item->tval == TV_ROD && item->sval == sv_rod_mapping
-                    && borg.trait[BI_CLASS] == CLASS_WARRIOR)
+                    && CLASS_IS_FIGHTER(borg.trait[BI_CLASS]))
                 || (item->tval == TV_STAFF
                     && item->sval == sv_staff_dispel_evil)
                 || (item->tval == TV_STAFF && item->sval == sv_staff_power)
@@ -356,7 +356,7 @@ bool borg_drop_junk(void)
                 || (item->tval == TV_WAND && item->sval == sv_wand_drain_life)
                 || (item->tval == TV_WAND && item->sval == sv_wand_annihilation)
                 || (item->tval == TV_WAND && item->sval == sv_wand_teleport_away
-                    && borg.trait[BI_CLASS] == CLASS_WARRIOR)
+                    && CLASS_IS_FIGHTER(borg.trait[BI_CLASS]))
                 || (item->ego_idx
                     && borg_ego_has_random_power(&e_info[item->ego_idx]))
                 || (item->tval == TV_SCROLL
@@ -627,11 +627,11 @@ bool borg_drop_hole(bool desperate)
                 if (item->tval == TV_ROD
                     && (item->sval == sv_rod_healing
                         || (item->sval == sv_rod_mapping
-                            && borg.trait[BI_CLASS] == CLASS_WARRIOR))
+                            && CLASS_IS_FIGHTER(borg.trait[BI_CLASS])))
                     && item->iqty <= 5)
                     continue;
                 if (item->tval == TV_WAND && item->sval == sv_wand_teleport_away
-                    && borg.trait[BI_CLASS] == CLASS_WARRIOR
+                    && CLASS_IS_FIGHTER(borg.trait[BI_CLASS])
                     && borg.trait[BI_ATPORTOTHER] <= 8)
                     continue;
                 if (item->tval == TV_ROD
@@ -1180,7 +1180,7 @@ bool borg_dump_quiver(void)
 
     /* How many should I carry */
     if (borg.trait[BI_CLASS] == CLASS_RANGER
-        || borg.trait[BI_CLASS] == CLASS_WARRIOR)
+        || CLASS_IS_FIGHTER(borg.trait[BI_CLASS]))
         quiver_capacity = (kb_info[TV_ARROW].max_stack - 1) * 2;
     else
         quiver_capacity = kb_info[TV_ARROW].max_stack - 1;

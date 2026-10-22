@@ -20,6 +20,9 @@
 #ifndef INCLUDED_STORE_H
 #define INCLUDED_STORE_H
 
+/** Flat price of one meal at the Mystery Diner */
+#define DINER_MEAL_COST 350
+
 #include "cave.h"
 #include "cmd-core.h"
 #include "datafile.h"

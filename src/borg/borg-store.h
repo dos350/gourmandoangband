@@ -28,7 +28,7 @@
 /*
  * the store number of HOME
  */
-#define BORG_HOME 7
+#define BORG_HOME 8
 
 extern const char *SHOP_MENU_ITEMS;
 

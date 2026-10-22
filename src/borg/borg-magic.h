@@ -178,7 +178,14 @@ enum borg_spells {
     BLOODLUST,
     UNHOLY_REPRIEVE,
     FORCEFUL_BLOW,
-    QUAKE
+    QUAKE,
+    LIGHTNING_BOLT,
+    FIRE_BOLT,
+    ACID_BOLT,
+    FROST_BALL,
+    ACID_BALL,
+    CLOUD_KILL,
+    NO_SPELL /* spell the borg has no code for */
 };
 
 /*

@@ -2431,12 +2431,12 @@ int borg_attack_aux_spell_bolt(const enum borg_spells spell, int rad, int dam,
         primary_spell_for_class = STINKING_CLOUD;
         break;
     case CLASS_PRIEST:
+    case CLASS_PALADIN:
         primary_spell_for_class = ORB_OF_DRAINING;
         break;
     case CLASS_NECROMANCER:
         primary_spell_for_class = NETHER_BOLT;
         break;
-    case CLASS_PALADIN:
     case CLASS_ROGUE:
     case CLASS_RANGER:
     case CLASS_BLACKGUARD:
@@ -3837,7 +3837,7 @@ int borg_calculate_attack_effectiveness(int attack_type)
     /* Spell -- cold bolt */
     case BF_SPELL_COLD_BOLT:
         rad = 0;
-        dam = ((((borg.trait[BI_CLEVEL] - 5) / 3) + 6) * (8 + 1)) / 2;
+        dam = ((((borg.trait[BI_CLEVEL] - 5) / 4) + 5) * (8 + 1)) / 2;
         return (borg_attack_aux_spell_bolt(
             FROST_BOLT, rad, dam, BORG_ATTACK_COLD, z_info->max_range, false));
 
@@ -3865,15 +3865,16 @@ int borg_calculate_attack_effectiveness(int attack_type)
     /* Spell -- fire ball */
     case BF_SPELL_FIRE_BALL:
         rad = 2;
-        dam = (borg.trait[BI_CLEVEL] * 2);
-        return (borg_attack_aux_spell_bolt(
-            FIRE_BALL, rad, dam, BORG_ATTACK_FIRE, z_info->max_range, false));
+        dam = (borg.trait[BI_CLEVEL] + 55);
+        return (borg_attack_aux_spell_bolt(FIRE_BALL, rad, dam,
+            BORG_ATTACK_FIRE, z_info->max_range, false));
 
-    /* Spell -- Ice Storm */
+    /* Spell -- Ice Storm (an aimed radius-3 ball in this fork) */
     case BF_SPELL_COLD_STORM:
-        dam = (3 * ((borg.trait[BI_CLEVEL] * 3) + 1)) / 2;
-        return (borg_attack_aux_spell_dispel(
-            ICE_STORM, dam, BORG_ATTACK_ICE));
+        rad = 3;
+        dam = (borg.trait[BI_CLEVEL] * 2) + 50;
+        return (borg_attack_aux_spell_bolt(ICE_STORM, rad, dam,
+            BORG_ATTACK_ICE, z_info->max_range, false));
 
     /* Spell -- Meteor Swarm */
     case BF_SPELL_METEOR_SWARM:
@@ -3916,7 +3917,10 @@ int borg_calculate_attack_effectiveness(int attack_type)
     /* Prayer -- orb of draining */
     case BF_PRAYER_HOLY_ORB_BALL:
         rad = ((borg.trait[BI_CLEVEL] >= 30) ? 3 : 2);
-        dam = ((borg.trait[BI_CLEVEL] * 3) / 2) + (3 * (6 + 1)) / 2;
+        if (borg.trait[BI_CLASS] == CLASS_PALADIN)
+            dam = ((borg.trait[BI_CLEVEL] * 5) / 4) + (3 * (6 + 1)) / 2;
+        else
+            dam = ((borg.trait[BI_CLEVEL] * 3) / 2) + (3 * (6 + 1)) / 2;
         return (borg_attack_aux_spell_bolt(ORB_OF_DRAINING, rad, dam,
             BORG_ATTACK_HOLY_ORB, z_info->max_range, false));
 
@@ -3933,13 +3937,13 @@ int borg_calculate_attack_effectiveness(int attack_type)
 
     /* Prayer -- Dispel Undead */
     case BF_PRAYER_DISP_UNDEAD:
-        dam = (((borg.trait[BI_CLEVEL] * 5) + 1) / 2);
+        dam = borg.trait[BI_CLEVEL] * 3;
         return (borg_attack_aux_spell_dispel(
             DISPEL_UNDEAD, dam, BORG_ATTACK_DISP_UNDEAD));
 
     /* Prayer -- Dispel Evil */
     case BF_PRAYER_DISP_EVIL:
-        dam = (((borg.trait[BI_CLEVEL] * 5) + 1) / 2);
+        dam = borg.trait[BI_CLEVEL] * 3;
         return (borg_attack_aux_spell_dispel(
             DISPEL_EVIL, dam, BORG_ATTACK_DISP_EVIL));
 
@@ -4150,6 +4154,48 @@ int borg_calculate_attack_effectiveness(int attack_type)
         dam = borg.trait[BI_CLEVEL];
         return (borg_attack_aux_spell_dispel(
             HOWL_OF_THE_DAMNED, dam, BORG_ATTACK_TURN_ALL));
+
+    /* Spell -- lightning bolt (a beam) */
+    case BF_SPELL_LIGHTNING_BOLT:
+        rad = -1;
+        dam = ((((borg.trait[BI_CLEVEL] - 5) / 6) + 3) * (6 + 1)) / 2;
+        return (borg_attack_aux_spell_bolt(LIGHTNING_BOLT, rad, dam,
+            BORG_ATTACK_ELEC, z_info->max_range, false));
+
+    /* Spell -- fire bolt */
+    case BF_SPELL_FIRE_BOLT:
+        rad = 0;
+        dam = ((((borg.trait[BI_CLEVEL] - 5) / 4) + 6) * (8 + 1)) / 2;
+        return (borg_attack_aux_spell_bolt(FIRE_BOLT, rad, dam,
+            BORG_ATTACK_FIRE, z_info->max_range, false));
+
+    /* Spell -- acid bolt */
+    case BF_SPELL_ACID_BOLT:
+        rad = 0;
+        dam = ((((borg.trait[BI_CLEVEL] - 5) / 4) + 8) * (8 + 1)) / 2;
+        return (borg_attack_aux_spell_bolt(ACID_BOLT, rad, dam,
+            BORG_ATTACK_ACID, z_info->max_range, false));
+
+    /* Spell -- frost ball */
+    case BF_SPELL_FROST_BALL:
+        rad = 2;
+        dam = borg.trait[BI_CLEVEL] + 30;
+        return (borg_attack_aux_spell_bolt(FROST_BALL, rad, dam,
+            BORG_ATTACK_COLD, z_info->max_range, false));
+
+    /* Spell -- acid ball */
+    case BF_SPELL_ACID_BALL:
+        rad = 2;
+        dam = borg.trait[BI_CLEVEL] + 40;
+        return (borg_attack_aux_spell_bolt(ACID_BALL, rad, dam,
+            BORG_ATTACK_ACID, z_info->max_range, false));
+
+    /* Spell -- cloud kill */
+    case BF_SPELL_CLOUD_KILL:
+        rad = 3;
+        dam = borg.trait[BI_CLEVEL] / 2 + 40;
+        return (borg_attack_aux_spell_bolt(CLOUD_KILL, rad, dam,
+            BORG_ATTACK_POIS, z_info->max_range, false));
 
     /* ROD -- slow monster */
     case BF_ROD_SLOW_MONSTER:

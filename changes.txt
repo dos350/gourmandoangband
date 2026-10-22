@@ -14,3 +14,5 @@ randarts is default [dev note - its more fun this way]
 added some gourmand themed uniques and food
 changes to message log text colors
 added character display to inventory and equip page (visual reference)
+wrestled the borg into running with the classic (+ gourmand) classes
+added the mystery diner shop [dev note - to help satisfy the gourmand's appetite]

@@ -124,7 +124,7 @@ static bool borg_heal(int danger)
         stats_needing_fix++;
     if (borg.trait[BI_CLASS] == CLASS_NECROMANCER && borg.trait[BI_ISFIXINT])
         stats_needing_fix++;
-    if (borg.trait[BI_CLASS] == CLASS_WARRIOR && borg.trait[BI_ISFIXCON])
+    if (CLASS_IS_FIGHTER(borg.trait[BI_CLASS]) && borg.trait[BI_ISFIXCON])
         stats_needing_fix++;
     if (borg.trait[BI_MAXHP] <= 850 && borg.trait[BI_ISFIXCON])
         stats_needing_fix++;
@@ -213,7 +213,7 @@ static bool borg_heal(int danger)
             return true;
         }
         /* Warriors with ESP won't need it so quickly */
-        if (!(borg.trait[BI_CLASS] == CLASS_WARRIOR
+        if (!(CLASS_IS_FIGHTER(borg.trait[BI_CLASS])
                 && borg.trait[BI_CURHP] > borg.trait[BI_MAXHP] / 4
                 && borg.trait[BI_ESP])) {
             if (borg_eat(TV_MUSHROOM, sv_mush_fast_recovery)
@@ -1871,7 +1871,7 @@ bool borg_caution(void)
     /* Cure fear when afraid */
     if ((borg.trait[BI_ISAFRAID] && !borg.trait[BI_CRSFEAR])
         && (randint0(100) < 70
-            || (borg.trait[BI_CLASS] == CLASS_WARRIOR
+            || (CLASS_IS_FIGHTER(borg.trait[BI_CLASS])
                 && borg.trait[BI_AMISSILES] <= 0))) {
         if (borg_eat(TV_MUSHROOM, sv_mush_cure_mind)
             || borg_quaff_potion(sv_potion_boldness)

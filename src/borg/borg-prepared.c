@@ -95,6 +95,7 @@ static const char *borg_prepared_aux(int depth)
         /* class specific requirement */
         switch (borg.trait[BI_CLASS]) {
         case CLASS_WARRIOR:
+        case CLASS_GOURMAND:
         case CLASS_BLACKGUARD:
             if (borg.trait[BI_MAXHP] < 50)
                 return ("50 hp");
@@ -152,6 +153,7 @@ static const char *borg_prepared_aux(int depth)
         if (borg.trait[BI_CDEPTH]) {
             switch (borg.trait[BI_CLASS]) {
             case CLASS_WARRIOR:
+            case CLASS_GOURMAND:
             case CLASS_BLACKGUARD:
                 if (borg.trait[BI_MAXHP] < 60)
                     return ("60 hp");
@@ -222,6 +224,7 @@ static const char *borg_prepared_aux(int depth)
         /* class specific requirement */
         switch (borg.trait[BI_CLASS]) {
         case CLASS_WARRIOR:
+        case CLASS_GOURMAND:
         case CLASS_BLACKGUARD:
             if (borg.trait[BI_MAXCLEVEL] < (depth - 4) && depth <= 19)
                 return ("dlevel - 4 >= clevel");
@@ -305,6 +308,7 @@ static const char *borg_prepared_aux(int depth)
         /* class specific requirement */
         switch (borg.trait[BI_CLASS]) {
         case CLASS_WARRIOR:
+        case CLASS_GOURMAND:
         case CLASS_BLACKGUARD:
             if (borg.trait[BI_MAXCLEVEL] < (depth + 5)
                 && borg.trait[BI_MAXCLEVEL] <= 38)

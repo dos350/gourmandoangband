@@ -353,17 +353,27 @@ extern int16_t borg_game_ratio; /* the ratio of borg time to game time */
 extern const char *prefix_pref[];
 
 /* Mega-Hack - indices of the player classes */
-#define CLASS_WARRIOR     0
-#define CLASS_MAGE        1
-#define CLASS_DRUID       2
-#define CLASS_PRIEST      3
-#define CLASS_NECROMANCER 4
-#define CLASS_PALADIN     5
-#define CLASS_ROGUE       6
-#define CLASS_RANGER      7
-#define CLASS_BLACKGUARD  8
+/* These must match the order of the classes in class.txt */
+#define CLASS_MAGE        0
+#define CLASS_PRIEST      1
+#define CLASS_ROGUE       2
+#define CLASS_RANGER      3
+#define CLASS_PALADIN     4
+#define CLASS_WARRIOR     5
+#define CLASS_GOURMAND    6
 
-#define MAX_CLASSES 9 /* Max # of classes 0 = warrior, 5 = Paladin */
+/*
+ * Classes this fork does not have.  They keep unique values beyond
+ * MAX_CLASSES so the borg's per-class code still compiles but never matches.
+ */
+#define CLASS_DRUID       100
+#define CLASS_NECROMANCER 101
+#define CLASS_BLACKGUARD  102
+
+#define MAX_CLASSES 7 /* Max # of classes in class.txt */
+
+/* Classes that fight without spells and are judged by Warrior rules */
+#define CLASS_IS_FIGHTER(c) ((c) == CLASS_WARRIOR || (c) == CLASS_GOURMAND)
 
 /*
  * helper to determine if swaps are being used.

@@ -2528,6 +2528,75 @@ static void build_ruin(struct chunk *c, struct loc xroads, struct loc lot, int l
 }
 
 /**
+ * Pick a clear lot for the Mystery Diner: never more than three lots north
+ * of the crossroads, on either street.
+ * \param c is the current chunk
+ * \param xroads is the location of the town crossroads
+ * \param lot is filled in with the chosen lot
+ * \return true if a lot was found
+ */
+static bool find_diner_lot(struct chunk *c, struct loc xroads, int lot_min_x,
+		int lot_max_x, int lot_min_y, int lot_wid, int lot_hgt,
+		struct loc *lot)
+{
+	struct loc cands[64];
+	size_t n = 0;
+	int x, y;
+
+	/* north side of the east-west street */
+	for (x = lot_min_x; x <= lot_max_x; x++) {
+		if (x == 0) continue;
+		if (n < N_ELEMENTS(cands)
+				&& lot_is_clear(c, xroads, loc(x, -1), lot_wid, lot_hgt)) {
+			cands[n++] = loc(x, -1);
+		}
+	}
+
+	/* both sides of the north-south street */
+	for (y = MAX(lot_min_y, -3); y <= -2; y++) {
+		for (x = -1; x <= 1; x += 2) {
+			if (n < N_ELEMENTS(cands)
+					&& lot_is_clear(c, xroads, loc(x, y), lot_wid, lot_hgt)) {
+				cands[n++] = loc(x, y);
+			}
+		}
+	}
+
+	if (!n) return false;
+	*lot = cands[randint0((int) n)];
+	return true;
+}
+
+/**
+ * Scatter passable rubble around the Mystery Diner, keeping its door clear.
+ */
+static void decorate_diner(struct chunk *c, struct loc xroads, struct loc lot,
+		int lot_wid, int lot_hgt)
+{
+	struct loc grid, door = loc(-1, -1);
+	int west, north, east, south;
+
+	get_lot_bounds(xroads, lot, lot_wid, lot_hgt, &west, &north, &east,
+		&south);
+
+	for (grid.y = north; grid.y <= south; grid.y++) {
+		for (grid.x = west; grid.x <= east; grid.x++) {
+			if (square_feat(c, grid)->fidx == FEAT_STORE_DINER) door = grid;
+		}
+	}
+	if (door.x < 0) return;
+
+	for (grid.y = north; grid.y <= south; grid.y++) {
+		for (grid.x = west; grid.x <= east; grid.x++) {
+			if (square_isfloor(c, grid) && distance(grid, door) > 1
+					&& one_in_(4)) {
+				square_set_feat(c, grid, FEAT_PASS_RUBBLE);
+			}
+		}
+	}
+}
+
+/**
  * Generate the town for the first time, and place the player
  * \param c is the current chunk
  * \param p is the player
@@ -2547,7 +2616,8 @@ static void town_gen_layout(struct chunk *c, struct player *p)
 	int max_store_y = 0;
 	int min_store_x = z_info->town_wid;
 	int max_store_x = 0;
-
+	int diner_n;
+	struct loc diner_lot;
 	/* divide the town into lots */
 	uint16_t lot_hgt = 4, lot_wid = 6;
 
@@ -2609,31 +2679,48 @@ static void town_gen_layout(struct chunk *c, struct player *p)
 
 		/* place stores along the streets */
 		num_attempts = 0;
-		for (n = 0; n < z_info->store_max; n++) {
+		diner_n = f_info[FEAT_STORE_DINER].shopnum - 1;
+		diner_lot = loc(0, 0);
+		for (n = -1; n < (int) z_info->store_max; n++) {
 			struct loc store_lot;
 			bool found_spot = false;
-			while (!found_spot && num_attempts < max_attempts) {
-				num_attempts++;
-				if (randint0(2)) {
-					/* east-west street */
-					store_lot.x = rand_range(lot_min_x, lot_max_x);
-					store_lot.y = randint0(2) ? 1 : -1;
-				} else {
-					/* north-south street */
-					store_lot.x = randint0(2) ? 1 : -1;
-					store_lot.y = rand_range(lot_min_y, lot_max_y);
+			int store_idx = n;
+
+			if (n < 0) {
+				/* The diner is placed first, always north of the crossroads */
+				store_idx = diner_n;
+				if (!find_diner_lot(c, xroads, lot_min_x, lot_max_x,
+						lot_min_y, lot_wid, lot_hgt, &store_lot)) {
+					num_attempts = max_attempts;
+					break;
 				}
-				if (store_lot.y == 0 || store_lot.x == 0) continue;
-				found_spot = lot_is_clear(c, xroads, store_lot,
-					lot_wid, lot_hgt);
+				diner_lot = store_lot;
+			} else if (n == diner_n) {
+				continue;
+			} else {
+				while (!found_spot && num_attempts < max_attempts) {
+					num_attempts++;
+					if (randint0(2)) {
+						/* east-west street */
+						store_lot.x = rand_range(lot_min_x, lot_max_x);
+						store_lot.y = randint0(2) ? 1 : -1;
+					} else {
+						/* north-south street */
+						store_lot.x = randint0(2) ? 1 : -1;
+						store_lot.y = rand_range(lot_min_y, lot_max_y);
+					}
+					if (store_lot.y == 0 || store_lot.x == 0) continue;
+					found_spot = lot_is_clear(c, xroads, store_lot,
+						lot_wid, lot_hgt);
+				}
+				if (num_attempts >= max_attempts) break;
 			}
-			if (num_attempts >= max_attempts) break;
 
 			max_store_y = MAX(max_store_y, xroads.y + lot_hgt * store_lot.y);
 			min_store_x = MIN(min_store_x, xroads.x + lot_wid * store_lot.x);
 			max_store_x = MAX(max_store_x, xroads.x + lot_wid * store_lot.x);
 
-			build_store(c, n, xroads, store_lot, lot_wid, lot_hgt);
+			build_store(c, store_idx, xroads, store_lot, lot_wid, lot_hgt);
 		}
 		if (num_attempts >= max_attempts) continue;
 
@@ -2649,6 +2736,8 @@ static void town_gen_layout(struct chunk *c, struct player *p)
 				}
 			}
 		}
+
+		decorate_diner(c, xroads, diner_lot, lot_wid, lot_hgt);
 		success = true;
 	}
 

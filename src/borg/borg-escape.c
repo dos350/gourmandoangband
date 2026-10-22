@@ -900,7 +900,7 @@ bool borg_escape(int b_q)
         || ((b_q > borg.avoidance * (10 + risky_boost) / 10)
             && borg.trait[BI_ISAFRAID]
             && (borg.trait[BI_AMISSILES] <= 0
-                && borg.trait[BI_CLASS] == CLASS_WARRIOR))) {
+                && CLASS_IS_FIGHTER(borg.trait[BI_CLASS])))) {
         /* Phase door, if useful */
         if ((borg_escape_stair() || borg_caution_phase(25, 2))
             && borg_timer(borg.time.antisummon) > 50
