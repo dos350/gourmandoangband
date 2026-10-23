@@ -718,7 +718,7 @@ const char *ignore_name_for_type(ignore_type_t type)
 	size_t i;
 
 	for (i = ITYPE_NONE + 1; i < ITYPE_MAX; i++) {
-		if (quality_choices[i].enum_val == type)
+		if (quality_choices[i].enum_val == (unsigned int)type)
 			return quality_choices[i].name;
 	}
 

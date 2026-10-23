@@ -21,8 +21,8 @@
 
 #ifdef ALLOW_BORG
 
-#include "../effect-handler.h"
 #include "../effects.h"
+#include "../player-spell.h"
 #include "../ui-menu.h"
 
 #include "borg.h"
@@ -31,15 +31,6 @@
 #include "borg-io.h"
 #include "borg-magic.h"
 #include "borg-trait.h"
-
-static const struct effect_kind effects[]
-    = { { EF_NONE, false, NULL, NULL, NULL, NULL },
-#define F(x)                        effect_handler_##x
-#define EFFECT(x, a, b, c, d, e, f) { EF_##x, a, b, F(x), e, f },
-#include "../list-effects.h"
-#undef EFFECT
-#undef F
-          { EF_MAX, false, NULL, NULL, NULL, NULL } };
 
 /* Check if a spell can be cast just to test it */
 static bool borg_can_play_spell(borg_magic *as)
@@ -182,6 +173,10 @@ bool borg_play_magic(bool bored)
         if (as->status != BORG_MAGIC_TEST)
             continue;
 
+        /* Spells without Borg support have no enum to pass to borg_spell(). */
+        if (as->spell_enum == NO_SPELL)
+            continue;
+
         /* some spells can't be "played with" in town */
         if (!borg_can_play_spell(as))
             continue;
@@ -204,14 +199,10 @@ bool borg_play_magic(bool bored)
 
         /* Use spell or prayer */
         if (borg_spell(as->spell_enum)) {
-            /* Allow attack spells */
-            /* MEGAHACK -- assume "Random" is shooting.  */
-            if (effects[as->effect_index].aim || as->effect_index == EF_RANDOM
-                || as->effect_index == EF_TELEPORT_TO) {
-                /* Target self */
+            if (spell_needs_aim(spell_num)
+                || as->effect_index == EF_RANDOM
+                || as->effect_index == EF_TELEPORT_TO)
                 borg_queue_direction('*');
-                borg_keypress('t');
-            }
 
             /* Allow spells that require selection of a monster type */
             if (as->effect_index == EF_BANISH) {

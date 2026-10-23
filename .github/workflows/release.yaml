@@ -276,10 +276,9 @@ jobs:
         run: |
           clang-cl --version
           llvm-rc --version
-          # Command handlers intentionally leave some parameters unused.
           cmake -S . -B build -G Ninja `
             -DCMAKE_BUILD_TYPE=Release `
-            "-DCMAKE_C_FLAGS_RELEASE=-O2 -DNDEBUG -Werror -Wno-unused-parameter" `
+            "-DCMAKE_C_FLAGS_RELEASE=-O2 -DNDEBUG -Werror" `
             -DCMAKE_C_COMPILER=clang-cl `
             -DCMAKE_RC_COMPILER=llvm-rc `
             "-DCMAKE_TOOLCHAIN_FILE=$env:VCPKG_INSTALLATION_ROOT/scripts/buildsystems/vcpkg.cmake" `

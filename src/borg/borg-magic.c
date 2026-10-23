@@ -322,6 +322,9 @@ static int borg_get_spell_number(const enum borg_spells spell)
 {
     int first_match = -1;
 
+    if (spell == NO_SPELL)
+        return -1;
+
     /* The borg must be able to "cast" spells */
     if (borg_magics == NULL)
         return -1;

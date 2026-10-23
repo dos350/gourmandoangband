@@ -163,6 +163,10 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/game")
 # Global compiler settings
 if(MSVC)
     add_compile_options(/W4 /utf-8)
+    if(CMAKE_C_COMPILER_ID STREQUAL "Clang")
+        # Some command handlers intentionally leave callback parameters unused.
+        add_compile_options(-Wno-unused-parameter)
+    endif()
 else()
     add_compile_options(-Wall -Wextra -pedantic -Wno-unused-parameter)
 endif()

@@ -195,7 +195,7 @@ static void init_rune(void)
 /**
  * Get a rune by variety and index
  */
-static int rune_index(size_t variety, int index)
+static int rune_index(enum rune_variety variety, int index)
 {
 	size_t i;
 
