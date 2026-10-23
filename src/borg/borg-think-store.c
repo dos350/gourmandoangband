@@ -98,6 +98,10 @@ bool borg_choose_shop(void)
     if (borg.antibounce_count > 1350)
         return false;
 
+    /* Do not continue a stale goal that targets the forbidden diner. */
+    if (borg_store_is_diner(borg.goal.shop))
+        borg.goal.shop = borg.goal.ware = borg.goal.item = -1;
+
     /* Already flowing to a store to sell something */
     if (borg.goal.shop != -1 && borg.goal.ware != -1)
         return true;
@@ -292,6 +296,17 @@ bool borg_think_store(void)
 
     /* Recheck spells */
     borg_do_spell = true;
+
+    /* Leave immediately if the Borg has somehow entered the forbidden diner. */
+    if (borg_store_is_diner(shop_num)) {
+        borg.in_shop = true;
+        borg.goal.shop = borg.goal.ware = borg.goal.item = -1;
+        borg_keypress(ESCAPE);
+        borg_keypress(ESCAPE);
+        borg_keypress(ESCAPE);
+        borg_keypress(ESCAPE);
+        return true;
+    }
 
     /* Allow user abort */
     if (borg.status.cancel)

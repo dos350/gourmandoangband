@@ -396,6 +396,10 @@ void borg_flow_spread(int depth, bool optimize, bool avoid, bool tunneling,
                     continue;
             }
 
+            /* Never enter the Mystery Diner. */
+            if (ag->feat == FEAT_STORE_DINER)
+                continue;
+
             /* Avoid shop entry points if I am not heading to that shop */
             if (borg.goal.shop >= 0 && feat_is_shop(ag->feat)
                 && (ag->store != borg.goal.shop) && y != borg.c.y

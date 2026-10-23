@@ -58,6 +58,9 @@ extern borg_shop *borg_safe_shops;
 /* read store items rather than scraping the screen */
 extern void borg_notice_store(void);
 
+/* check if a store is the Mystery Diner */
+extern bool borg_store_is_diner(int store_num);
+
 /* check for the a full home */
 extern bool borg_home_full(void);
 

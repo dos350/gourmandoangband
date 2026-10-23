@@ -1,0 +1,8 @@
+{
+  "name": "gourmandoangband",
+  "version-string": "1.0.0",
+  "dependencies": [
+    "libpng"
+  ],
+  "builtin-baseline": "a073c28e52d920cb2465a17512324b3b6684d03a"
+}

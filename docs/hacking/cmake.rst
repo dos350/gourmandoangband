@@ -82,6 +82,22 @@ Of course, you would have to adjust the path to vcvars32.bat and, perhaps, the
 name of the generator to be compatible with the version of Visual Studio you
 have installed.
 
+For a 64-bit Windows build with LLVM's ``clang-cl`` and the MSVC toolchain,
+open a Visual Studio Developer Command Prompt for x64 and run these commands
+from the top-level directory of the game's source files::
+
+cmake -G Ninja ^
+    -DCMAKE_C_COMPILER=clang-cl ^
+    -DCMAKE_RC_COMPILER=llvm-rc ^
+    -DCMAKE_TOOLCHAIN_FILE="%VCPKG_ROOT%\scripts\buildsystems\vcpkg.cmake" ^
+    -DVCPKG_TARGET_TRIPLET=x64-windows-static ^
+    -DSUPPORT_WINDOWS_FRONTEND=ON -B build
+    cmake --build build
+
+The ``vcpkg.json`` manifest supplies the MSVC-compatible libpng dependency.
+This uses the Windows SDK and MSVC runtime libraries from Visual Studio, but
+does not require MSYS2 or MinGW.
+
 Adjusting the Configuration with Environment Variables
 ------------------------------------------------------
 

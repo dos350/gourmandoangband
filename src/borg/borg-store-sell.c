@@ -962,6 +962,9 @@ bool borg_think_shop_sell_useless(void)
 
     /* Check each shop */
     for (k = 0; k < (z_info->store_max - 1); k++) {
+        if (borg_store_is_diner(k))
+            continue;
+
         /* Skip "full" shops */
         if (borg_shops[k].ware[icky].iqty)
             continue;

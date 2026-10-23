@@ -38,6 +38,11 @@ const char *SHOP_MENU_ITEMS = "acfhjmnoqruvyzABDFGHJKLMNOPQRSTUVWXYZ";
 borg_shop *borg_shops; /* Current "shops" */
 borg_shop *borg_safe_shops; /* Safety (save) "shops" */
 
+bool borg_store_is_diner(int store_num)
+{
+    return store_num >= 0 && store_num < z_info->store_max
+        && stores[store_num].feat == FEAT_STORE_DINER;
+}
 
 /* check for the a full home */
 bool borg_home_full(void)

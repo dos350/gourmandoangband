@@ -246,6 +246,8 @@ bool borg_think_shop_buy_useful(void)
 
     /* Check the shops */
     for (k = 0; k < (z_info->store_max - 1); k++) {
+        if (borg_store_is_diner(k))
+            continue;
 
         /* If I am bad shape up, only see certain stores */
         if ((borg.trait[BI_LIGHT] == 0 || borg.trait[BI_FOOD] == 0) && k != 0
@@ -752,6 +754,9 @@ bool borg_think_shop_grab_interesting(void)
 
     /* Check the shops (max -1 to skip home) */
     for (k = 0; k < (z_info->store_max - 1); k++) {
+        if (borg_store_is_diner(k))
+            continue;
+
         /* Scan the wares */
         for (n = 0; n < z_info->store_inven_max; n++) {
             borg_item *item = &borg_shops[k].ware[n];

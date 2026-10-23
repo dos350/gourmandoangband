@@ -1,4 +1,4 @@
-name: CMake on Windows
+name: CMake with Clang on Windows
 
 on:
   push:
@@ -13,10 +13,10 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
-    - name: Install Windows libpng
-      shell: pwsh
-      run: |
-        & "$env:VCPKG_INSTALLATION_ROOT\vcpkg.exe" install libpng:x64-windows
+    - name: Set up Visual Studio developer environment
+      uses: ilammy/msvc-dev-cmd@v1
+      with:
+        arch: x64
 
     - name: Set reusable strings
       id: strings
@@ -25,9 +25,13 @@ jobs:
         echo "build-output-dir=${{ github.workspace }}/build" >> "$GITHUB_OUTPUT"
 
     - name: Configure CMake (Windows x64)
+      shell: pwsh
       run: >
         cmake -B ${{ steps.strings.outputs.build-output-dir }}
-        -A x64
+        -G Ninja
+        -DCMAKE_BUILD_TYPE=Release
+        -DCMAKE_C_COMPILER=clang-cl
+        -DCMAKE_RC_COMPILER=llvm-rc
         -DCMAKE_TOOLCHAIN_FILE="$env:VCPKG_INSTALLATION_ROOT/scripts/buildsystems/vcpkg.cmake"
         -DVCPKG_TARGET_TRIPLET=x64-windows
         -S ${{ github.workspace }}

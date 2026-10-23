@@ -162,7 +162,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/game")
 
 # Global compiler settings
 if(MSVC)
-    add_compile_options(/W4 /utf8)
+    add_compile_options(/W4 /utf-8)
 else()
     add_compile_options(-Wall -Wextra -pedantic -Wno-unused-parameter)
 endif()
