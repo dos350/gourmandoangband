@@ -24,6 +24,14 @@ jobs:
       run: |
         echo "build-output-dir=${{ github.workspace }}/build" >> "$GITHUB_OUTPUT"
 
+    - name: Fetch vcpkg manifest baseline
+      shell: pwsh
+      run: |
+        $manifest = Get-Content vcpkg.json -Raw | ConvertFrom-Json
+        $baseline = $manifest.'builtin-baseline'
+        git -C $env:VCPKG_INSTALLATION_ROOT fetch --no-tags --depth=1 origin $baseline
+        if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
     - name: Configure CMake (Windows x64)
       shell: pwsh
       run: >

@@ -40,8 +40,9 @@ borg_shop *borg_safe_shops; /* Safety (save) "shops" */
 
 bool borg_store_is_diner(int store_num)
 {
-    return store_num >= 0 && store_num < z_info->store_max
-        && stores[store_num].feat == FEAT_STORE_DINER;
+    int diner_num = f_info[FEAT_STORE_DINER].shopnum - 1;
+
+    return f_info[FEAT_STORE_DINER].shopnum > 0 && store_num == diner_num;
 }
 
 /* check for the a full home */

@@ -662,14 +662,14 @@ Power
 	condition(value(activation, loskill)): reward(700 * value(activation, loskill));
 	condition(value(activation, arrow)): reward(700 * value(activation, arrow));
 	condition((value(class, mage) or value(class, priest)) and value(activation, rem_fear_pois)): reward(500 * value(activation, rem_fear_pois));
-	condition((!value(class, mage) and !value(class, priest) and !value(class, druid)) and value(activation, rem_fear_pois)): reward(700 * value(activation, rem_fear_pois));
+	condition((!value(class, mage) and !value(class, priest)) and value(activation, rem_fear_pois)): reward(700 * value(activation, rem_fear_pois));
 	condition(value(activation, tele_phase)): reward(500 * value(activation, tele_phase));
 	condition(value(activation, destroy_doors)): reward(50 * value(activation, destroy_doors));
 	condition(value(activation, banishment)): reward(1000 * value(activation, banishment));
 	condition(value(activation, resist_all)): reward(650 * value(activation, resist_all));
 	condition(!value(class, mage) and value(activation, resist_all)): reward(25000 * value(activation, resist_all));
 	condition(value(activation, sleepii)): reward(500 * value(activation, sleepii));
-	condition(!value(class, druid) and value(activation, sleepii)): reward(200 * value(activation, sleepii));
+	condition(value(activation, sleepii)): reward(200 * value(activation, sleepii));
 	condition(value(activation, recharge)): reward(500 * value(activation, recharge));
 	condition(!value(class, mage) and !value(class, rogue) and value(activation, recharge)): reward(100 * value(activation, recharge));
 	condition(value(activation, tele_long)): reward(300 * value(activation, tele_long));
@@ -894,7 +894,7 @@ Power
 	value(trait, amt magic map): range(1, 1): reward(4000);
 
 # call lite
-	value(trait, amt call lite): condition(!value(class, necromancer)): range(1, 1): reward(1000);
+	value(trait, amt call lite): condition(1): range(1, 1): reward(1000);
 
 # genocide
 	value(scroll, mass banishment): range(1, 10): condition(value(trait, max depth) >= 100): reward(10000);

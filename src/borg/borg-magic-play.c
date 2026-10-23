@@ -209,7 +209,7 @@ bool borg_play_magic(bool bored)
             if (effects[as->effect_index].aim || as->effect_index == EF_RANDOM
                 || as->effect_index == EF_TELEPORT_TO) {
                 /* Target self */
-                borg_keypress('*');
+                borg_queue_direction('*');
                 borg_keypress('t');
             }
 
