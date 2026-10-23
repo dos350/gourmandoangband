@@ -33,8 +33,13 @@
 #include "borg-trait.h"
 
 /* Check if a spell can be cast just to test it */
-static bool borg_can_play_spell(borg_magic *as)
+static bool borg_can_play_spell(borg_magic *as, int spell_num)
 {
+    /* The probe does not select targets for aimed spells. */
+    if (spell_needs_aim(spell_num) || as->effect_index == EF_RANDOM
+        || as->effect_index == EF_TELEPORT_TO)
+        return false;
+
     /* There are some spells not worth testing */
     /* they can just be used when the borg is ready to use it. */
     switch (as->spell_enum) {
@@ -178,7 +183,7 @@ bool borg_play_magic(bool bored)
             continue;
 
         /* some spells can't be "played with" in town */
-        if (!borg_can_play_spell(as))
+        if (!borg_can_play_spell(as, spell_num))
             continue;
 
         /* Some spells should not be tested in munchkin mode */
@@ -199,11 +204,6 @@ bool borg_play_magic(bool bored)
 
         /* Use spell or prayer */
         if (borg_spell(as->spell_enum)) {
-            if (spell_needs_aim(spell_num)
-                || as->effect_index == EF_RANDOM
-                || as->effect_index == EF_TELEPORT_TO)
-                borg_queue_direction('*');
-
             /* Allow spells that require selection of a monster type */
             if (as->effect_index == EF_BANISH) {
                 /* Target Maggot */
