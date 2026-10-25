@@ -405,7 +405,6 @@ static int test_calc_inventory_equipped_pack_quiver(void *state) {
 			{ TV_ARROW, 2, 7, true, false },
 			{ TV_SHOT, 1, 13, true, false },
 			{ TV_ARROW, 1, 15, true, false },
-			{ TV_NATURE_BOOK, 1, 1, false, false },
 			{ TV_SCROLL, 1, 3, false, false },
 			{ TV_POTION, 3, 1, true, false },
 			{ TV_PRAYER_BOOK, 1, 1, false, false },
@@ -419,7 +418,6 @@ static int test_calc_inventory_equipped_pack_quiver(void *state) {
 		},
 		{
 			{ TV_MAGIC_BOOK, 1, 1 },
-			{ TV_NATURE_BOOK, 1, 1 },
 			{ TV_PRAYER_BOOK, 1, 1 },
 			{ TV_POTION, 3, 1 },
 			{ TV_POTION, 5, 2 },
