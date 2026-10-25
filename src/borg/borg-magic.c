@@ -23,6 +23,8 @@
 
 #include "../effects.h"
 #include "../player-spell.h"
+#include "../player-timed.h"
+#include "../project.h"
 #include "../ui-menu.h"
 
 #include "borg.h"
@@ -57,11 +59,9 @@ static borg_spell_rating borg_spell_ratings_MAGE[] =
     { "Disable Traps, Destroy Doors", 95, DISABLE_TRAPS_DESTROY_DOORS },
     { "Teleport Self", 95, TELEPORT_SELF },
     { "Teleport Other", 75, TELEPORT_OTHER },
-    { "Resistance", 90, RESISTANCE },
     { "Resist Cold", 85, RESIST_COLD_SPELL },
     { "Resist Fire", 85, RESIST_FIRE_SPELL },
     { "Shield", 85, SHIELD_SPELL },
-    { "Hold Monster", 55, HOLD_MONSTER },
     { "Tap Magical Energy", 5, TAP_MAGICAL_ENERGY }, /* need to figure out when to cast this one */
     { "Mana Channel", 95, MANA_CHANNEL },
     { "Door Creation", 65, DOOR_CREATION },
@@ -82,13 +82,12 @@ static borg_spell_rating borg_spell_ratings_MAGE[] =
     { "Acid Ball", 80, ACID_BALL },
     { "Cloud Kill", 75, CLOUD_KILL }
 };
-static borg_spell_rating borg_spell_ratings_DRUID[] =
+static borg_spell_rating borg_spell_ratings_SHARED_FALLBACK[] =
 {
     { "Detect Life", 95,  DETECT_LIFE },
     { "Fox Form", 5, FOX_FORM }, // !FIX !TODO need to know when to cast any of the shapechanges
     { "Remove Hunger", 85, REMOVE_HUNGER },
     { "Stinking Cloud", 95, STINKING_CLOUD },
-    { "Confuse Monster", 55, CONFUSE_MONSTER },
     { "Slow Monster", 65, SLOW_MONSTER },
     { "Cure Poison", 55, CURE_POISON },
     { "Resist Poison", 60, RESIST_POISON },
@@ -97,12 +96,10 @@ static borg_spell_rating borg_spell_ratings_DRUID[] =
     { "Lightning Strike", 85, LIGHTNING_STRIKE },
     { "Earth Rising", 70, EARTH_RISING },
     { "Trance", 55, TRANCE },
-    { "Mass Sleep", 80, MASS_SLEEP },
     { "Become Pukel-man", 5, BECOME_PUKEL_MAN }, // !FIX !TODO shapechange
     { "Eagle's Flight", 5, EAGLES_FLIGHT }, // !FIX !TODO shapechange
     { "Bear Form", 5, BEAR_FORM }, // !FIX !TODO shapechange
     { "Tremor", 80, TREMOR },
-    { "Haste Self", 90, HASTE_SELF },
     { "Revitalize", 95, REVITALIZE },
     { "Rapid Regeneration", 55, RAPID_REGENERATION },
     { "Herbal Curing", 90, HERBAL_CURING },
@@ -395,16 +392,23 @@ bool borg_spell_legal(const enum borg_spells spell)
 /*
  * check a spell for a given effect
  */
-static bool borg_spell_has_effect(int spell_num, uint16_t effect)
+static bool borg_class_spell_has_effect(
+    const struct class_spell *cspell, uint16_t effect, int subtype)
 {
-    const struct class_spell *cspell = spell_by_index(player, spell_num);
-    struct effect            *eff    = cspell->effect;
+    const struct effect *eff = cspell->effect;
     while (eff != NULL) {
-        if (eff->index == effect)
+        if (eff->index == effect
+            && (subtype < 0 || eff->subtype == subtype))
             return true;
         eff = eff->next;
     }
     return false;
+}
+
+static bool borg_spell_has_effect(int spell_num, uint16_t effect)
+{
+    const struct class_spell *cspell = spell_by_index(player, spell_num);
+    return borg_class_spell_has_effect(cspell, effect, -1);
 }
 
 /*
@@ -412,46 +416,33 @@ static bool borg_spell_has_effect(int spell_num, uint16_t effect)
  */
 int borg_get_mana_reserve(void)
 {
-    int reserve_mana = 0;
-    int teleport_spell_num;
-
-    switch (borg.trait[BI_CLASS]) {
-    case CLASS_MAGE:
-        reserve_mana = 6;
-        break;
-    case CLASS_RANGER:
-        reserve_mana = 22;
-        break;
-    case CLASS_ROGUE:
-        reserve_mana = 20;
-        break;
-    case CLASS_PRIEST:
-        reserve_mana = 8;
-        break;
-    case CLASS_PALADIN:
-        reserve_mana = 20;
-        break;
-    }
+    static const enum borg_spells escape_spells[] = {
+        TELEPORT_SELF, PORTAL, PHASE_DOOR
+    };
 
     /* Low-level spellcasters should not reserve mana yet. */
     if (borg.trait[BI_CLEVEL] < 35)
         return 0;
 
-    /* Prefer the live cost when Teleport Self is available. */
-    teleport_spell_num = borg_get_spell_number(TELEPORT_SELF);
-    if (borg_spell_entry_legal(teleport_spell_num))
-        return borg_magics[teleport_spell_num].power;
+    /* Reserve the live cost of the best available teleport escape. */
+    for (size_t i = 0; i < N_ELEMENTS(escape_spells); i++) {
+        int spell_num = borg_get_spell_number(escape_spells[i]);
 
-    return reserve_mana;
+        if (borg_spell_entry_legal(spell_num)
+            && borg_spell_has_effect(spell_num, EF_TELEPORT))
+            return borg_magics[spell_num].power;
+    }
+
+    return 0;
 }
 
 /*
- * Determine if borg can cast a given spell (right now)
+ * Determine if borg can cast a specific spell entry right now
  */
-bool borg_spell_okay(const enum borg_spells spell)
+static bool borg_spell_entry_okay(int spell_num)
 {
-    int spell_num    = borg_get_spell_number(spell);
-    if (spell_num < 0)
+    if (spell_num < 0 || borg_magics == NULL
+        || spell_num >= player->class->magic.total_spells)
         return false;
 
     borg_magic *as = &borg_magics[spell_num];
@@ -485,7 +476,7 @@ bool borg_spell_okay(const enum borg_spells spell)
             return true;
 
         /* Magic Missile OK */
-        if (MAGIC_MISSILE == spell && borg.trait[BI_CDEPTH] <= 35)
+        if (MAGIC_MISSILE == as->spell_enum && borg.trait[BI_CDEPTH] <= 35)
             return true;
 
         /* others are rejected */
@@ -494,6 +485,14 @@ bool borg_spell_okay(const enum borg_spells spell)
 
     /* Success */
     return true;
+}
+
+/*
+ * Determine if borg can cast a given spell (right now)
+ */
+bool borg_spell_okay(const enum borg_spells spell)
+{
+    return borg_spell_entry_okay(borg_get_spell_number(spell));
 }
 
 /*
@@ -594,21 +593,16 @@ bool borg_spell_legal_fail(const enum borg_spells spell, int allow_fail)
 }
 
 /*
- * Attempt to cast a spell
+ * Attempt to cast a specific spell entry
  */
-bool borg_spell(const enum borg_spells spell)
+bool borg_spell_by_index(int spell_num)
 {
     int i;
 
-    int spell_num = borg_get_spell_number(spell);
-    if (spell_num < 0)
+    if (!borg_spell_entry_okay(spell_num))
         return false;
 
     borg_magic *as = &borg_magics[spell_num];
-
-    /* Require ability (right now) */
-    if (!borg_spell_okay(spell))
-        return false;
 
     /* Look for the book */
     i = borg.book_idx[as->book];
@@ -630,6 +624,14 @@ bool borg_spell(const enum borg_spells spell)
 
     /* Success */
     return true;
+}
+
+/*
+ * Attempt to cast a spell
+ */
+bool borg_spell(const enum borg_spells spell)
+{
+    return borg_spell_by_index(borg_get_spell_number(spell));
 }
 
 /*
@@ -764,6 +766,37 @@ static struct {
 } borg_rating_tables[4];
 static size_t borg_rating_table_count;
 
+static const struct {
+    uint16_t         effect;
+    int              subtype;
+    uint8_t          rating;
+    enum borg_spells spell;
+} borg_spell_effect_ratings[] = {
+    { EF_TIMED_INC, TMD_BLESSED, 85, BLESS },
+    { EF_TIMED_INC, TMD_FAST, 90, HASTE_SELF },
+    { EF_TIMED_INC, TMD_HERO, 80, HEROISM },
+    { EF_TIMED_INC, TMD_SHERO, 75, BERSERK_STRENGTH },
+    { EF_TIMED_INC, TMD_SINVIS, 70, SENSE_INVISIBLE },
+    { EF_TIMED_INC, TMD_PROTEVIL, 85, PROTECTION_FROM_EVIL },
+    { EF_TIMED_INC, TMD_SHIELD, 80, SHIELD_SPELL },
+    { EF_TIMED_INC, TMD_OPP_POIS, 75, RESIST_POISON },
+    { EF_TIMED_INC, TMD_OPP_FIRE, 80, RESIST_FIRE_SPELL },
+    { EF_TIMED_INC, TMD_OPP_COLD, 80, RESIST_COLD_SPELL },
+    { EF_CURE, TMD_AFRAID, 75, REMOVE_FEAR },
+    { EF_CURE, TMD_POISONED, 75, CURE_POISON },
+    { EF_BOLT_AWARE, PROJ_TURN_ALL, 65, FRIGHTEN },
+    { EF_BOLT_AWARE, PROJ_MON_CONF, 55, CONFUSE_MONSTER },
+    { EF_BOLT_AWARE, PROJ_MON_HOLD, 55, HOLD_MONSTER },
+    { EF_TOUCH_AWARE, PROJ_SLEEP_ALL, 70, SANCTUARY },
+    { EF_PROJECT_LOS, PROJ_SLEEP_ALL, 80, MASS_SLEEP },
+    { EF_PROJECT_LOS_AWARE, PROJ_SLEEP_ALL, 80, MASS_SLEEP },
+    { EF_PROJECT_LOS_AWARE, PROJ_TURN_UNDEAD, 65, TURN_UNDEAD },
+    { EF_PROJECT_LOS_AWARE, PROJ_DISP_UNDEAD, 65, DISPEL_UNDEAD },
+    { EF_PROJECT_LOS_AWARE, PROJ_DISP_EVIL, 65, DISPEL_EVIL },
+    { EF_PROJECT_LOS_AWARE, PROJ_AWAY_EVIL, 85, BANISH_EVIL },
+    { EF_PROJECT_LOS_AWARE, PROJ_TURN_ALL, 65, HOWL_OF_THE_DAMNED }
+};
+
 static void borg_add_rating_table(
     size_t *n, const borg_spell_rating *ratings, size_t count)
 {
@@ -794,6 +827,37 @@ static const borg_spell_rating *borg_find_spell_rating(const char *name)
     return NULL;
 }
 
+static bool borg_find_spell_effect_rating(const struct class_spell *spell,
+    uint8_t *rating, enum borg_spells *spell_enum)
+{
+    if (borg_class_spell_has_effect(spell, EF_TIMED_INC, TMD_OPP_ACID)
+        && borg_class_spell_has_effect(spell, EF_TIMED_INC, TMD_OPP_ELEC)
+        && borg_class_spell_has_effect(spell, EF_TIMED_INC, TMD_OPP_FIRE)
+        && borg_class_spell_has_effect(spell, EF_TIMED_INC, TMD_OPP_COLD)
+        && borg_class_spell_has_effect(spell, EF_TIMED_INC, TMD_OPP_POIS)) {
+        *rating     = 90;
+        *spell_enum = RESISTANCE;
+        return true;
+    }
+    if (borg_class_spell_has_effect(spell, EF_TIMED_INC, TMD_OPP_FIRE)
+        && borg_class_spell_has_effect(spell, EF_TIMED_INC, TMD_OPP_COLD)) {
+        *rating     = 85;
+        *spell_enum = RESIST_HEAT_AND_COLD;
+        return true;
+    }
+
+    for (size_t i = 0; i < N_ELEMENTS(borg_spell_effect_ratings); i++) {
+        const uint16_t effect  = borg_spell_effect_ratings[i].effect;
+        const int      subtype = borg_spell_effect_ratings[i].subtype;
+        if (borg_class_spell_has_effect(spell, effect, subtype)) {
+            *rating     = borg_spell_effect_ratings[i].rating;
+            *spell_enum = borg_spell_effect_ratings[i].spell;
+            return true;
+        }
+    }
+    return false;
+}
+
 /*
  * initialize the spell data
  */
@@ -802,11 +866,17 @@ static void borg_init_spell(borg_magic *spells, int spell_num)
     borg_magic               *spell  = &spells[spell_num];
     const struct class_spell *cspell = spell_by_index(player, spell_num);
     const borg_spell_rating  *rating = borg_find_spell_rating(cspell->name);
+    uint8_t                   effect_rating;
+    enum borg_spells          effect_spell;
+    bool                      has_effect_rating
+        = !rating && borg_find_spell_effect_rating(
+                         cspell, &effect_rating, &effect_spell);
 
     /* Spells the borg has no code for get no rating and are never cast */
-    spell->rating       = rating ? rating->rating : 0;
+    spell->rating = rating ? rating->rating : (has_effect_rating ? effect_rating : 0);
     spell->name         = cspell->name;
-    spell->spell_enum   = rating ? rating->spell_enum : NO_SPELL;
+    spell->spell_enum
+        = rating ? rating->spell_enum : (has_effect_rating ? effect_spell : NO_SPELL);
     spell->level        = cspell->slevel;
     spell->book_offset  = borg_get_book_offset(cspell->sidx);
     spell->effect_index = cspell->effect->index;
@@ -814,6 +884,7 @@ static void borg_init_spell(borg_magic *spells, int spell_num)
     spell->sfail        = cspell->sfail;
     spell->status       = spell_okay_to_cast(player, spell_num);
     spell->times        = 0;
+    spell->probe_fail_rate = 100;
     spell->book         = cspell->bidx;
 }
 
@@ -828,24 +899,24 @@ void borg_prepare_book_info(void)
     case CLASS_MAGE:
         borg_add_rating_table(&n, borg_spell_ratings_MAGE,
             N_ELEMENTS(borg_spell_ratings_MAGE));
-        borg_add_rating_table(&n, borg_spell_ratings_DRUID,
-            N_ELEMENTS(borg_spell_ratings_DRUID));
+        borg_add_rating_table(&n, borg_spell_ratings_SHARED_FALLBACK,
+            N_ELEMENTS(borg_spell_ratings_SHARED_FALLBACK));
         break;
     case CLASS_ROGUE:
         borg_add_rating_table(&n, borg_spell_ratings_ROGUE,
             N_ELEMENTS(borg_spell_ratings_ROGUE));
         borg_add_rating_table(&n, borg_spell_ratings_MAGE,
             N_ELEMENTS(borg_spell_ratings_MAGE));
-        borg_add_rating_table(&n, borg_spell_ratings_DRUID,
-            N_ELEMENTS(borg_spell_ratings_DRUID));
+        borg_add_rating_table(&n, borg_spell_ratings_SHARED_FALLBACK,
+            N_ELEMENTS(borg_spell_ratings_SHARED_FALLBACK));
         break;
     case CLASS_RANGER:
         borg_add_rating_table(&n, borg_spell_ratings_RANGER,
             N_ELEMENTS(borg_spell_ratings_RANGER));
         borg_add_rating_table(&n, borg_spell_ratings_MAGE,
             N_ELEMENTS(borg_spell_ratings_MAGE));
-        borg_add_rating_table(&n, borg_spell_ratings_DRUID,
-            N_ELEMENTS(borg_spell_ratings_DRUID));
+        borg_add_rating_table(&n, borg_spell_ratings_SHARED_FALLBACK,
+            N_ELEMENTS(borg_spell_ratings_SHARED_FALLBACK));
         break;
     case CLASS_PRIEST:
         borg_add_rating_table(&n, borg_spell_ratings_PRIEST,
@@ -854,8 +925,8 @@ void borg_prepare_book_info(void)
             N_ELEMENTS(borg_spell_ratings_PALADIN));
         borg_add_rating_table(&n, borg_spell_ratings_MAGE,
             N_ELEMENTS(borg_spell_ratings_MAGE));
-        borg_add_rating_table(&n, borg_spell_ratings_DRUID,
-            N_ELEMENTS(borg_spell_ratings_DRUID));
+        borg_add_rating_table(&n, borg_spell_ratings_SHARED_FALLBACK,
+            N_ELEMENTS(borg_spell_ratings_SHARED_FALLBACK));
         break;
     case CLASS_PALADIN:
         borg_add_rating_table(&n, borg_spell_ratings_PALADIN,
@@ -864,8 +935,8 @@ void borg_prepare_book_info(void)
             N_ELEMENTS(borg_spell_ratings_PRIEST));
         borg_add_rating_table(&n, borg_spell_ratings_MAGE,
             N_ELEMENTS(borg_spell_ratings_MAGE));
-        borg_add_rating_table(&n, borg_spell_ratings_DRUID,
-            N_ELEMENTS(borg_spell_ratings_DRUID));
+        borg_add_rating_table(&n, borg_spell_ratings_SHARED_FALLBACK,
+            N_ELEMENTS(borg_spell_ratings_SHARED_FALLBACK));
         break;
     default:
         break;

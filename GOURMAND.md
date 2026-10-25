@@ -14,6 +14,8 @@ he may be a bit overtuned but honestly it seems pretty fair
 - Gourmands digest food twice as quickly, including while `Full`. Below the
   `Hungry` threshold they take periodic hunger damage, with more damage below
   `Starving`.
+- Gourmands get distinct messages as their food status changes, from a
+  satisfied stride when `Fed` to an impatient growl when hunger returns.
 - After successfully eating food or a mushroom, a Gourmand gains experience
   based on the item's gold value. The amount gently decreases with character
   level, but is at least 1 for food with a positive value.
@@ -38,6 +40,7 @@ he may be a bit overtuned but honestly it seems pretty fair
 - `src/player-calcs.c`: apply class speed and remove the penalty when Fed or
   Full.
 - `src/game-world.c`: faster digestion and periodic hunger damage.
+- `src/player-timed.c`: Gourmand-specific food-status messages.
 - `src/cmd-cave.c`: damage from climbing upstairs.
 - `src/cmd-obj.c`: food experience, food bonuses, and the monster-sensing
   command.

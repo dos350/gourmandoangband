@@ -2635,7 +2635,7 @@ static int borg_attack_aux_spell_bolt_reserve(
  *  Simulate/Apply the optimal result of using a "dispel" attack spell
  */
 static int borg_attack_aux_spell_dispel(
-    const enum borg_spells spell, int dam, int typ)
+    const enum borg_spells spell, int dam, int typ, int max_range)
 {
     int b_n;
 
@@ -2660,7 +2660,7 @@ static int borg_attack_aux_spell_dispel(
         return 0;
 
     /* Choose optimal location--radius defined as 10 */
-    b_n             = borg_launch_bolt(10, dam, typ, z_info->max_range, 0);
+    b_n             = borg_launch_bolt(10, dam, typ, max_range, 0);
 
     int spell_power = borg_get_spell_power(spell);
 
@@ -3790,7 +3790,7 @@ int borg_calculate_attack_effectiveness(int attack_type)
     case BF_SPELL_SLEEP_III:
         dam = 10;
         return (borg_attack_aux_spell_dispel(
-            MASS_SLEEP, dam, BORG_ATTACK_OLD_SLEEP));
+            MASS_SLEEP, dam, BORG_ATTACK_OLD_SLEEP, z_info->max_range));
 
     /* Spell -- magic missile */
     case BF_SPELL_MAGIC_MISSILE:
@@ -3911,19 +3911,29 @@ int borg_calculate_attack_effectiveness(int attack_type)
     case BF_PRAYER_DISP_UNDEAD:
         dam = borg.trait[BI_CLEVEL] * 3;
         return (borg_attack_aux_spell_dispel(
-            DISPEL_UNDEAD, dam, BORG_ATTACK_DISP_UNDEAD));
+            DISPEL_UNDEAD, dam, BORG_ATTACK_DISP_UNDEAD, z_info->max_range));
+
+    case BF_PRAYER_TURN_UNDEAD:
+        dam = borg.trait[BI_CLEVEL];
+        return (borg_attack_aux_spell_dispel(
+            TURN_UNDEAD, dam, BORG_ATTACK_TURN_UNDEAD, z_info->max_range));
+
+    case BF_PRAYER_SANCTUARY:
+        dam = borg.trait[BI_CLEVEL] * 10 + 500;
+        return (borg_attack_aux_spell_dispel(
+            SANCTUARY, dam, BORG_ATTACK_OLD_SLEEP, 1));
 
     /* Prayer -- Dispel Evil */
     case BF_PRAYER_DISP_EVIL:
         dam = borg.trait[BI_CLEVEL] * 3;
         return (borg_attack_aux_spell_dispel(
-            DISPEL_EVIL, dam, BORG_ATTACK_DISP_EVIL));
+            DISPEL_EVIL, dam, BORG_ATTACK_DISP_EVIL, z_info->max_range));
 
     /* Prayer -- Dispel Undead */
     case BF_PRAYER_DISP_SPIRITS:
         dam = (100);
         return (borg_attack_aux_spell_dispel(
-            BANISH_SPIRITS, dam, BORG_ATTACK_DISP_SPIRITS));
+            BANISH_SPIRITS, dam, BORG_ATTACK_DISP_SPIRITS, z_info->max_range));
 
     /* Prayer -- Banishment (teleport evil away)*/
     /* This is a defense spell:  done in borg_defense() */
@@ -3938,13 +3948,13 @@ int borg_calculate_attack_effectiveness(int attack_type)
         {
             dam = ((borg.trait[BI_CLEVEL] * 10));
             return (borg_attack_aux_spell_dispel(
-                HOLY_WORD, dam, BORG_ATTACK_DISP_EVIL));
+                HOLY_WORD, dam, BORG_ATTACK_DISP_EVIL, z_info->max_range));
         } else /* If he is not wounded don't cast this, use Disp Evil instead.
                 */
         {
             dam = ((borg.trait[BI_CLEVEL] * 3) / 2) - 50;
             return (borg_attack_aux_spell_dispel(
-                DISPEL_EVIL, dam, BORG_ATTACK_DISP_EVIL));
+                DISPEL_EVIL, dam, BORG_ATTACK_DISP_EVIL, z_info->max_range));
         }
 
     /* Prayer -- Annihilate */
@@ -4040,7 +4050,7 @@ int borg_calculate_attack_effectiveness(int attack_type)
     case BF_SPELL_TAP_UNLIFE:
         dam = ((((borg.trait[BI_CLEVEL] / 4) + 3) * (4 + 1)) / 2);
         return (borg_attack_aux_spell_dispel(
-            TAP_UNLIFE, dam, BORG_ATTACK_TAP_UNLIFE));
+            TAP_UNLIFE, dam, BORG_ATTACK_TAP_UNLIFE, z_info->max_range));
 
     /* Spell - Crush */
     case BF_SPELL_CRUSH:
@@ -4049,7 +4059,7 @@ int borg_calculate_attack_effectiveness(int attack_type)
     case BF_SPELL_SLEEP_EVIL:
         dam = borg.trait[BI_CLEVEL] * 10 + 500;
         return (borg_attack_aux_spell_dispel(
-            SLEEP_EVIL, dam, BORG_ATTACK_SLEEP_EVIL));
+            SLEEP_EVIL, dam, BORG_ATTACK_SLEEP_EVIL, z_info->max_range));
 
     /* spell -- Disenchant */
     case BF_SPELL_DISENCHANT:
@@ -4125,7 +4135,7 @@ int borg_calculate_attack_effectiveness(int attack_type)
     case BF_SPELL_HOWL_OF_THE_DAMNED:
         dam = borg.trait[BI_CLEVEL];
         return (borg_attack_aux_spell_dispel(
-            HOWL_OF_THE_DAMNED, dam, BORG_ATTACK_TURN_ALL));
+            HOWL_OF_THE_DAMNED, dam, BORG_ATTACK_TURN_ALL, z_info->max_range));
 
     /* Spell -- lightning bolt (a beam) */
     case BF_SPELL_LIGHTNING_BOLT:

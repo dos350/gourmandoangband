@@ -571,6 +571,7 @@ static int borg_defend_aux_resist_f(int p1)
 
     if (!borg_spell_okay_fail(RESISTANCE, fail_allowed)
         && !borg_spell_okay_fail(RESIST_FIRE_SPELL, fail_allowed)
+        && !borg_spell_okay_fail(RESIST_HEAT_AND_COLD, fail_allowed)
         && !borg_equips_item(act_resist_all, true)
         && !borg_equips_item(act_resist_fire, true)
         && !borg_equips_item(act_rage_bless_resist, true)
@@ -620,6 +621,7 @@ static int borg_defend_aux_resist_f(int p1)
             || borg_activate_item(act_rage_bless_resist)
             || borg_spell_fail(RESISTANCE, fail_allowed)
             || borg_spell_fail(RESIST_FIRE_SPELL, fail_allowed)
+            || borg_spell_fail(RESIST_HEAT_AND_COLD, fail_allowed)
             || borg_quaff_potion(sv_potion_resist_heat))
 
             /* No resting to recoup mana */
@@ -662,6 +664,7 @@ static int borg_defend_aux_resist_c(int p1)
 
     if (!borg_spell_okay_fail(RESISTANCE, fail_allowed)
         && !borg_spell_okay_fail(RESIST_COLD_SPELL, fail_allowed)
+        && !borg_spell_okay_fail(RESIST_HEAT_AND_COLD, fail_allowed)
         && !borg_equips_item(act_resist_all, true)
         && !borg_equips_item(act_rage_bless_resist, true)
         && !borg_equips_item(act_resist_cold, true)
@@ -713,6 +716,7 @@ static int borg_defend_aux_resist_c(int p1)
             || borg_activate_item(act_resist_cold)
             || borg_spell_fail(RESISTANCE, fail_allowed)
             || borg_spell_fail(RESIST_COLD_SPELL, fail_allowed)
+            || borg_spell_fail(RESIST_HEAT_AND_COLD, fail_allowed)
             || borg_quaff_potion(sv_potion_resist_cold))
 
             /* No resting to recoup mana */

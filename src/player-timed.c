@@ -766,6 +766,41 @@ static bool player_of_has_not_timed(struct player *p, int flag)
  * ------------------------------------------------------------------------
  * Setting, increasing, decreasing and clearing timed effects
  * ------------------------------------------------------------------------ */
+static const char *gourmand_food_grade_message(
+	const struct timed_grade *grade, bool going_up)
+{
+	if (!grade->name) {
+		return NULL;
+	}
+
+	if (going_up) {
+		if (streq(grade->name, "Fed")) {
+			return "You feel comfortably fed, and your stride comes easily.";
+		}
+		if (streq(grade->name, "Full")) {
+			return "A proper feast! You are stuffed to the brim.";
+		}
+	} else {
+		if (streq(grade->name, "Fed")) {
+			return "The feast is fading, but you remain comfortably fed.";
+		}
+		if (streq(grade->name, "Hungry")) {
+			return "Your stomach gives an impatient growl.";
+		}
+		if (streq(grade->name, "Weak")) {
+			return "Your belly rumbles, and your strength begins to flag.";
+		}
+		if (streq(grade->name, "Faint")) {
+			return "Hunger leaves you light-headed.";
+		}
+		if (streq(grade->name, "Starving")) {
+			return "Your stomach gnaws at you. Find food soon.";
+		}
+	}
+
+	return NULL;
+}
+
 /**
  * Set a timed effect.
  *
@@ -840,12 +875,28 @@ bool player_set_timed(struct player *p, int idx, int v, bool notify,
 
 	/* Always mention going up a grade, otherwise on request */
 	if (new_grade->grade > current_grade->grade) {
-		print_custom_message(weapon, new_grade->up_msg,
+		const char *message = new_grade->up_msg;
+
+		if ((idx == TMD_FOOD) && player_has(p, PF_GOURMAND)) {
+			const char *gourmand_message =
+				gourmand_food_grade_message(new_grade, true);
+
+			if (gourmand_message) message = gourmand_message;
+		}
+		print_custom_message(weapon, message,
 			effect->msgt, p);
 		notify = true;
 	} else if ((new_grade->grade < current_grade->grade) &&
 			(new_grade->down_msg)) {
-		print_custom_message(weapon, new_grade->down_msg,
+		const char *message = new_grade->down_msg;
+
+		if ((idx == TMD_FOOD) && player_has(p, PF_GOURMAND)) {
+			const char *gourmand_message =
+				gourmand_food_grade_message(new_grade, false);
+
+			if (gourmand_message) message = gourmand_message;
+		}
+		print_custom_message(weapon, message,
 			effect->msgt, p);
 		notify = true;
 	} else if (notify) {
@@ -1128,4 +1179,3 @@ bool player_clear_timed(struct player *p, int idx, bool notify,
 
 	return player_set_timed(p, idx, 0, notify, can_disturb);
 }
-

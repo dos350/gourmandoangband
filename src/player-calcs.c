@@ -1852,6 +1852,28 @@ static void calc_shapechange(struct player_state *state, bool vuln[ELEM_MAX],
 	}
 }
 
+int player_class_food_speed_modifier(struct player *p)
+{
+	bool fed = player_timed_grade_eq(p, TMD_FOOD, "Fed");
+	int modifier = p->class->speed;
+
+	if (pf_has(p->class->pflags, PF_GOURMAND)
+			&& (fed || player_timed_grade_eq(p, TMD_FOOD, "Full"))
+			&& (modifier < 0)) {
+		modifier = 0;
+	}
+
+	if (!fed) {
+		int excess = p->timed[TMD_FOOD] - PY_FOOD_FULL;
+		if ((excess > 0) && !p->timed[TMD_ATT_VAMP]) {
+			excess = (excess * 10) / (PY_FOOD_MAX - PY_FOOD_FULL);
+			modifier -= excess;
+		}
+	}
+
+	return modifier;
+}
+
 /**
  * Calculate the players current "state", taking into account
  * not only race/class intrinsics, but also objects being worn
@@ -1896,14 +1918,7 @@ void calc_bonuses(struct player *p, struct player_state *state, bool known_only,
 	memset(state, 0, sizeof *state);
 
 	/* Set various defaults */
-	state->speed = 110;
-	state->speed += p->class->speed;
-	if (pf_has(p->class->pflags, PF_GOURMAND)
-			&& (player_timed_grade_eq(p, TMD_FOOD, "Fed")
-				|| player_timed_grade_eq(p, TMD_FOOD, "Full"))
-			&& (p->class->speed < 0)) {
-		state->speed -= p->class->speed;
-	}
+	state->speed = 110 + player_class_food_speed_modifier(p);
 	state->num_blows = 100;
 
 	/* Extract race/class info */
@@ -2100,13 +2115,8 @@ void calc_bonuses(struct player *p, struct player_state *state, bool known_only,
 
 	/* Effects of food outside the "Fed" range */
 	if (!player_timed_grade_eq(p, TMD_FOOD, "Fed")) {
-		int excess = p->timed[TMD_FOOD] - PY_FOOD_FULL;
 		int lack = PY_FOOD_HUNGRY - p->timed[TMD_FOOD];
-		if ((excess > 0) && !p->timed[TMD_ATT_VAMP]) {
-			/* Scale to units 1/10 of the range and subtract from speed */
-			excess = (excess * 10) / (PY_FOOD_MAX - PY_FOOD_FULL);
-			state->speed -= excess;
-		} else if (lack > 0) {
+		if (lack > 0) {
 			/* Scale to units 1/20 of the range */
 			lack = (lack * 20) / PY_FOOD_HUNGRY;
 

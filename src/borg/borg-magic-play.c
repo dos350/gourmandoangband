@@ -199,11 +199,20 @@ bool borg_play_magic(bool bored)
                 continue;
         }
 
+        /* Avoid repeating failed probes unless the live failure rate improves. */
+        int fail_rate = spell_chance(spell_num);
+        if (fail_rate > 15
+            || (as->probe_fail_rate < 100
+                && fail_rate + 5 > as->probe_fail_rate))
+            continue;
+
         /* Note */
         borg_note("# Testing untried spell/prayer");
 
         /* Use spell or prayer */
-        if (borg_spell(as->spell_enum)) {
+        if (borg_spell_by_index(spell_num)) {
+            as->probe_fail_rate = fail_rate;
+
             /* Allow spells that require selection of a monster type */
             if (as->effect_index == EF_BANISH) {
                 /* Target Maggot */

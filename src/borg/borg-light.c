@@ -427,6 +427,14 @@ bool borg_check_light(void)
 
             return true;
         }
+        if (borg.trait[BI_CLASS] == CLASS_GOURMAND
+            && borg.trait[BI_CLEVEL] >= 5 && borg.trait[BI_CDEPTH]) {
+            borg_note("# Sniffing for nearby monsters.");
+            borg_keypress('N');
+            borg.time.detect_evil = borg.time.now;
+
+            return true;
+        }
     }
 
     /* Find traps and doors (and stairs) */

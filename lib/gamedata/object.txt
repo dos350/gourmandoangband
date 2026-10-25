@@ -281,7 +281,8 @@ power:0
 effect:NOURISH:INC_BY
 dice:10
 effect:CRUNCH
-desc:A filling if tooth-breaking biscuit made mostly of rye.
+desc:A dense rye biscuit baked hard for the road; its rough crust puts up a
+desc:fight before it gives way.
 
 name:& Apple~
 type:food
@@ -295,7 +296,7 @@ power:0
 msg:That tastes good.
 effect:NOURISH:INC_BY
 dice:10
-desc:Wrinkled, but sound and sweet.
+desc:Its skin is bruised, but the flesh is crisp and pleasantly sweet.
 
 name:& Handful~ of Dried Fruits
 type:food
@@ -380,8 +381,8 @@ effect:NOURISH:SET_TO
 dice:1d4
 effect:NOURISH:SET_TO
 dice:5+1d4
-desc:A grey-looking piece of dried flesh of you dare not guess what creature.
-desc:  You would have to be desperate to eat this.
+desc:A grey, fibrous strip of dried meat; its source is best left unguessed.
+desc:It would take real desperation to eat this.
 
 
 name:& Slice~ of Meat
@@ -452,7 +453,7 @@ effect:CURE:CUT
 effect:CURE:POISONED
 effect:CURE:STUN
 effect:CURE:CONFUSED
-desc:A hearty cheeseburger that leaves you feeling refreshed.
+desc:A thick patty with sharp cheese and a toasted bun, wrapped up for the road.
 
 name:& Flask~ of Whisky
 type:food
@@ -550,6 +551,7 @@ effect:TIMED_INC:TELEPATHY
 dice:50+7d7
 effect:NOURISH:INC_BY
 dice:5
+desc:A pale, glassy cap whose tiny spots catch the light like watchful eyes.
 
 name:Fast Recovery
 type:mushroom
@@ -585,6 +587,7 @@ effect:RESTORE_STAT:DEX
 effect:RESTORE_STAT:CON
 effect:NOURISH:INC_BY
 dice:5
+desc:A thick russet cap with bright gills and a hearty, nutty scent.
 
 name:Clear Mind
 type:mushroom
@@ -604,6 +607,7 @@ effect:TIMED_INC:OPP_CONF
 dice:50+7d7
 effect:NOURISH:INC_BY
 dice:5
+desc:A blue-grey mushroom with a clean, earthy aroma.
 
 name:Emergency
 type:mushroom
@@ -5371,4 +5375,3 @@ flags:INSTA_ART | QUEST_ART
 
 
 #The "Special Artifacts" are now automatically generated from artifact.txt
-

@@ -515,7 +515,11 @@ static const char *comment_diner[] =
 	"The cook grins. \"Don't ask what's in it.\"",
 	"Dig in!",
 	"The cook slides the plate over with a wink.",
-	"Chef's special! Eat up!"
+	"Chef's special! Eat up!",
+	"The cook murmurs, \"The trolls below will eat anything that doesn't eat them first.\"",
+	"A regular swears a dragon's hoard could buy this whole town a lifetime of meals.",
+	"Word from the road: the best meals are always found at the end of the worst journey.",
+	"A miner insists there's a cavern below where mushrooms grow as tall as a dwarf."
 };
 
 static const char *comment_good[] =

@@ -1436,6 +1436,8 @@ static uint8_t flicker = 0;
  */
 static void do_animation(void)
 {
+
+	if(!cave) return; // gourmando note; hit a crash here on cocoa with animate flicker on; hits only on debug build, but maybe could hit release on a lucky hit;
 	int i;
 
 	for (i = 1; i < cave_monster_max(cave); i++) {

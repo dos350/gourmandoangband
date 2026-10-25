@@ -192,6 +192,10 @@ enum borg_spells {
     FROST_BALL,
     ACID_BALL,
     CLOUD_KILL,
+    SANCTUARY,
+    TURN_UNDEAD,
+    REMOVE_FEAR,
+    RESIST_HEAT_AND_COLD,
     NO_SPELL /* spell the borg has no code for */
 };
 
@@ -224,6 +228,7 @@ struct borg_magic {
     int         book_offset; /* offset of this spell in the book it is in */
     int         book; /* book index */
     int32_t     times; /* Times this spell was cast */
+    uint8_t     probe_fail_rate; /* Last failure rate when tested; 100 means never */
     enum borg_spells spell_enum;
 };
 
@@ -296,6 +301,11 @@ extern borg_magic *borg_get_spell_entry(int book, int what);
  * Attempt to cast a spell
  */
 extern bool borg_spell(const enum borg_spells spell);
+
+/*
+ * Attempt to cast a specific spell entry
+ */
+extern bool borg_spell_by_index(int spell_num);
 
 /*
  * Attempt to cast a spell if not above fail rate

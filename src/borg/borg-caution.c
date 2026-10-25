@@ -116,13 +116,9 @@ static bool borg_heal(int danger)
         stats_needing_fix++;
 
     /* Special cases get a second vote */
-    if (borg.trait[BI_CLASS] == CLASS_MAGE && borg.trait[BI_ISFIXINT])
-        stats_needing_fix++;
-    if (borg.trait[BI_CLASS] == CLASS_PRIEST && borg.trait[BI_ISFIXWIS])
-        stats_needing_fix++;
-    if (borg.trait[BI_CLASS] == CLASS_DRUID && borg.trait[BI_ISFIXWIS])
-        stats_needing_fix++;
-    if (borg.trait[BI_CLASS] == CLASS_NECROMANCER && borg.trait[BI_ISFIXINT])
+    int spell_stat = borg_spell_stat();
+    if (spell_stat >= STAT_STR && spell_stat <= STAT_CON
+        && borg.trait[BI_ISFIXSTR + spell_stat])
         stats_needing_fix++;
     if (CLASS_IS_FIGHTER(borg.trait[BI_CLASS]) && borg.trait[BI_ISFIXCON])
         stats_needing_fix++;
@@ -130,11 +126,9 @@ static bool borg_heal(int danger)
         stats_needing_fix++;
     if (borg.trait[BI_MAXHP] <= 700 && borg.trait[BI_ISFIXCON])
         stats_needing_fix += 3;
-    if (borg.trait[BI_CLASS] == CLASS_PRIEST && borg.trait[BI_MAXSP] < 100
-        && borg.trait[BI_ISFIXWIS])
-        stats_needing_fix += 5;
-    if (borg.trait[BI_CLASS] == CLASS_MAGE && borg.trait[BI_MAXSP] < 100
-        && borg.trait[BI_ISFIXINT])
+    if (spell_stat >= STAT_STR && spell_stat <= STAT_CON
+        && borg.trait[BI_MAXSP] < 100
+        && borg.trait[BI_ISFIXSTR + spell_stat])
         stats_needing_fix += 5;
 
     /* Heal when confused. This is deadly. */
@@ -1903,6 +1897,7 @@ bool borg_caution(void)
             || borg_quaff_potion(sv_potion_boldness)
             || borg_quaff_potion(sv_potion_heroism)
             || borg_quaff_potion(sv_potion_berserk)
+            || borg_spell_fail(REMOVE_FEAR, 25)
             || borg_spell_fail(BERSERK_STRENGTH, 25) || /* berserk */
             borg_spell_fail(HEROISM, 25) || /* hero */
             borg_activate_item(act_cure_paranoia)
@@ -2009,7 +2004,7 @@ bool borg_caution(void)
     if (borg.goal.recalling && (pos_danger > borg.avoidance * 2)) {
         if (!borg.trait[BI_ISCONFUSED] && !borg.trait[BI_ISBLIND]
             && borg.trait[BI_MAXSP] > 60
-            && borg.trait[BI_CURSP] < (borg.trait[BI_CURSP] / 4)
+            && borg.trait[BI_CURSP] < (borg.trait[BI_MAXSP] / 4)
             && (borg_quaff_potion(sv_potion_restore_mana)
                 || borg_activate_item(act_restore_mana))) {
             borg_note("# Buying time waiting for Recall.(1)");

@@ -257,7 +257,8 @@ The Mystery Diner (``9``)
   The 500-gold Meal Deal adds 1-3 random potions. The gourmando special ~
   Super Size costs 1000 gold and gets u 1-6 random food items and 1-6 random
   potions. u only find out what the food is after u pay; the diner doesn't
-  buy anything.
+  buy anything. The cook and regulars sometimes trade rumors from the road
+  while serving a meal.
 
 .. index::
    single: home

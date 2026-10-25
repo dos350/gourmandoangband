@@ -2835,14 +2835,7 @@ void borg_notice(bool notice_swap)
     /* Start with a single blow per turn */
     borg.trait[BI_BLOWS] = 1;
 
-    /* Match the class speed handling in player-calcs.c. */
-    borg.trait[BI_SPEED] = 110 + player->class->speed;
-    if (pf_has(player->class->pflags, PF_GOURMAND)
-        && (player_timed_grade_eq(player, TMD_FOOD, "Fed")
-            || player_timed_grade_eq(player, TMD_FOOD, "Full"))
-        && (player->class->speed < 0)) {
-        borg.trait[BI_SPEED] -= player->class->speed;
-    }
+    borg.trait[BI_SPEED] = 110 + player_class_food_speed_modifier(player);
 
     /* Reset the "ammo" attributes */
     borg.trait[BI_AMMO_TVAL] = -1;

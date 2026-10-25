@@ -18,6 +18,7 @@
 #include "obj-util.h"
 #include "player.h"
 #include "player-birth.h"
+#include "player-calcs.h"
 #include "player-timed.h"
 #include "z-color.h"
 #include "z-rand.h"
@@ -861,6 +862,67 @@ static int test_set_timed2(void *state) {
 			}
 		}
 	}
+	ok;
+}
+
+static int test_gourmand_speed_modifier(void *state)
+{
+	const struct player_class *saved_class = player->class;
+	const struct player_class *gourmand = classes;
+	const struct player_class *mage = classes;
+	int saved_food = player->timed[TMD_FOOD];
+	int saved_vamp = player->timed[TMD_ATT_VAMP];
+	int hungry_food = -1;
+	int fed_food = -1;
+	int hungry_modifier, fed_modifier, full_modifier, max_modifier;
+	int vamp_modifier, mage_modifier, expected_gourmand;
+	struct timed_grade *grade;
+
+	(void)state;
+
+	while (gourmand && !streq(gourmand->name, "Gourmand"))
+		gourmand = gourmand->next;
+	while (mage && !streq(mage->name, "Mage"))
+		mage = mage->next;
+	require(gourmand && mage);
+	for (grade = timed_effects[TMD_FOOD].grade; grade; grade = grade->next) {
+		if (streq(grade->name, "Hungry"))
+			hungry_food = grade->max;
+		else if (streq(grade->name, "Fed"))
+			fed_food = grade->max;
+	}
+	require(hungry_food >= 0 && fed_food >= 0);
+	require(PY_FOOD_MAX > PY_FOOD_FULL);
+
+	player->class = gourmand;
+	player->timed[TMD_ATT_VAMP] = 0;
+	player->timed[TMD_FOOD] = hungry_food;
+	hungry_modifier = player_class_food_speed_modifier(player);
+	player->timed[TMD_FOOD] = fed_food;
+	fed_modifier = player_class_food_speed_modifier(player);
+	player->timed[TMD_FOOD] = PY_FOOD_FULL + 1;
+	full_modifier = player_class_food_speed_modifier(player);
+	player->timed[TMD_FOOD] = PY_FOOD_MAX;
+	max_modifier = player_class_food_speed_modifier(player);
+	player->timed[TMD_ATT_VAMP] = 1;
+	vamp_modifier = player_class_food_speed_modifier(player);
+
+	player->class = mage;
+	player->timed[TMD_ATT_VAMP] = 0;
+	mage_modifier = player_class_food_speed_modifier(player);
+
+	player->class = saved_class;
+	player->timed[TMD_FOOD] = saved_food;
+	player->timed[TMD_ATT_VAMP] = saved_vamp;
+
+	expected_gourmand = (gourmand->speed < 0) ? 0 : gourmand->speed;
+	eq(hungry_modifier, gourmand->speed);
+	eq(fed_modifier, expected_gourmand);
+	eq(full_modifier,
+		expected_gourmand - (10 / (PY_FOOD_MAX - PY_FOOD_FULL)));
+	eq(max_modifier, expected_gourmand - 10);
+	eq(vamp_modifier, expected_gourmand);
+	eq(mage_modifier, mage->speed - 10);
 	ok;
 }
 
@@ -2601,6 +2663,7 @@ struct test tests[] = {
 	{ "set_timed0", test_set_timed0 },
 	{ "set_timed1", test_set_timed1 },
 	{ "set_timed2", test_set_timed2 },
+	{ "gourmand_speed_modifier", test_gourmand_speed_modifier },
 	{ "set_timed3", test_set_timed3 },
 	{ "set_timed4", test_set_timed4 },
 	{ "set_timed5", test_set_timed5 },
