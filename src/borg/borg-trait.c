@@ -1847,10 +1847,6 @@ static void borg_notice_equipment(void)
             borg_adj_mag_fail[borg.trait[BI_STR_INDEX + spell_stat]];
     }
 
-    /* Bloating slows the player down (a little) */
-    if (borg.trait[BI_ISGORGED])
-        borg.trait[BI_SPEED] -= 10;
-
     /* Actual Modifier Bonuses */
     borg.trait[BI_ARMOR] += borg_adj_dex_ta[borg.trait[BI_DEX_INDEX]];
     borg.trait[BI_TODAM] += borg_adj_str_td[borg.trait[BI_STR_INDEX]];

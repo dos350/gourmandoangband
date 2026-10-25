@@ -867,15 +867,14 @@ static int test_set_timed2(void *state) {
 
 static int test_gourmand_speed_modifier(void *state)
 {
-	const struct player_class *saved_class = player->class;
+	struct player test_player = *player;
 	const struct player_class *gourmand = classes;
 	const struct player_class *mage = classes;
-	int saved_food = player->timed[TMD_FOOD];
-	int saved_vamp = player->timed[TMD_ATT_VAMP];
 	int hungry_food = -1;
 	int fed_food = -1;
-	int hungry_modifier, fed_modifier, full_modifier, max_modifier;
-	int vamp_modifier, mage_modifier, expected_gourmand;
+	int hungry_modifier, starving_modifier, fed_modifier, full_modifier;
+	int max_modifier, vamp_modifier, mage_modifier;
+	int expected_gourmand;
 	struct timed_grade *grade;
 
 	(void)state;
@@ -894,29 +893,29 @@ static int test_gourmand_speed_modifier(void *state)
 	require(hungry_food >= 0 && fed_food >= 0);
 	require(PY_FOOD_MAX > PY_FOOD_FULL);
 
-	player->class = gourmand;
-	player->timed[TMD_ATT_VAMP] = 0;
-	player->timed[TMD_FOOD] = hungry_food;
-	hungry_modifier = player_class_food_speed_modifier(player);
-	player->timed[TMD_FOOD] = fed_food;
-	fed_modifier = player_class_food_speed_modifier(player);
-	player->timed[TMD_FOOD] = PY_FOOD_FULL + 1;
-	full_modifier = player_class_food_speed_modifier(player);
-	player->timed[TMD_FOOD] = PY_FOOD_MAX;
-	max_modifier = player_class_food_speed_modifier(player);
-	player->timed[TMD_ATT_VAMP] = 1;
-	vamp_modifier = player_class_food_speed_modifier(player);
+	test_player.class = gourmand;
+	test_player.timed[TMD_ATT_VAMP] = 0;
+	test_player.timed[TMD_FOOD] = hungry_food;
+	hungry_modifier = player_class_food_speed_modifier(&test_player);
+	test_player.timed[TMD_FOOD] = 0;
+	starving_modifier = player_class_food_speed_modifier(&test_player);
+	test_player.timed[TMD_FOOD] = fed_food;
+	fed_modifier = player_class_food_speed_modifier(&test_player);
+	test_player.timed[TMD_FOOD] = PY_FOOD_FULL + 1;
+	full_modifier = player_class_food_speed_modifier(&test_player);
+	test_player.timed[TMD_FOOD] = PY_FOOD_MAX;
+	max_modifier = player_class_food_speed_modifier(&test_player);
+	test_player.timed[TMD_ATT_VAMP] = 1;
+	vamp_modifier = player_class_food_speed_modifier(&test_player);
 
-	player->class = mage;
-	player->timed[TMD_ATT_VAMP] = 0;
-	mage_modifier = player_class_food_speed_modifier(player);
-
-	player->class = saved_class;
-	player->timed[TMD_FOOD] = saved_food;
-	player->timed[TMD_ATT_VAMP] = saved_vamp;
+	test_player.class = mage;
+	test_player.timed[TMD_ATT_VAMP] = 0;
+	test_player.timed[TMD_FOOD] = PY_FOOD_MAX;
+	mage_modifier = player_class_food_speed_modifier(&test_player);
 
 	expected_gourmand = (gourmand->speed < 0) ? 0 : gourmand->speed;
 	eq(hungry_modifier, gourmand->speed);
+	eq(starving_modifier, gourmand->speed);
 	eq(fed_modifier, expected_gourmand);
 	eq(full_modifier,
 		expected_gourmand - (10 / (PY_FOOD_MAX - PY_FOOD_FULL)));
