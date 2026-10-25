@@ -868,6 +868,7 @@ static int test_set_timed2(void *state) {
 static int test_gourmand_speed_modifier(void *state)
 {
 	struct player test_player = *player;
+	int16_t test_timed[TMD_MAX] = { 0 };
 	const struct player_class *gourmand = classes;
 	const struct player_class *mage = classes;
 	int hungry_food = -1;
@@ -878,6 +879,7 @@ static int test_gourmand_speed_modifier(void *state)
 	struct timed_grade *grade;
 
 	(void)state;
+	test_player.timed = test_timed;
 
 	while (gourmand && !streq(gourmand->name, "Gourmand"))
 		gourmand = gourmand->next;
@@ -885,6 +887,8 @@ static int test_gourmand_speed_modifier(void *state)
 		mage = mage->next;
 	require(gourmand && mage);
 	for (grade = timed_effects[TMD_FOOD].grade; grade; grade = grade->next) {
+		if (!grade->name)
+			continue;
 		if (streq(grade->name, "Hungry"))
 			hungry_food = grade->max;
 		else if (streq(grade->name, "Fed"))
