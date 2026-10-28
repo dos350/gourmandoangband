@@ -27,7 +27,6 @@
 #include "init.h"
 #include "mon-lore.h"
 #include "mon-make.h"
-#include "obj-knowledge.h"
 #include "obj-util.h"
 #include "player-attack.h"
 #include "player-calcs.h"
@@ -138,7 +137,7 @@ struct cmd_info cmd_item[] =
  */
 struct cmd_info cmd_action[] =
 {
-	{ "Disarm a trap or chest", { 'D' }, CMD_DISARM, NULL, NULL, 0, NULL, NULL, NULL, 0 },
+	{ "Disarm a trap/chest; lock door", { 'D' }, CMD_DISARM, NULL, NULL, 0, NULL, NULL, NULL, 0 },
 	{ "Rest for a while", { 'R' }, CMD_NULL, textui_cmd_rest, NULL, 0, NULL, NULL, NULL, 0 },
 	{ "Look around", { 'l', 'x' }, CMD_NULL, do_cmd_look, NULL, 0, NULL, NULL, NULL, 0 },
 	{ "Target monster or location", { '*' }, CMD_NULL, textui_target, NULL, 0, NULL, NULL, NULL, 0 },
@@ -740,24 +739,6 @@ static bool start_game(bool new_game)
 	if (player->is_dead || new_game) {
 		character_generated = false;
 		textui_do_birth();
-	} else {
-		/*
-		 * Bring the stock curse objects up-to-date with what the
-		 * player knows.
-		 */
-		update_player_object_knowledge(player);
-
-		/*
-		 * Reset the dungeon noise to what it was when the game was
-		 * saved.  Can skip that if the noise had not been calculated
-		 * yet:  the noise levels were all zero when the save happened
-		 * and that is what they are after the load calls cave_new().
-		 */
-		if ((player->noise_grid.x || player->noise_grid.y)
-				&& square_in_bounds(cave, player->noise_grid)) {
-			make_noise(player, &player->noise_grid,
-				&player->noise_falloff);
-		}
 	}
 
 	/* Tell the UI we've started. */
