@@ -8,6 +8,7 @@ on:
 jobs:
   tests:
     name: Unit and integration tests
+    if: contains(github.event.head_commit.message, '[ci]')
     runs-on: ubuntu-latest
     steps:
       - name: Install build dependencies
