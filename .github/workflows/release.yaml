@@ -108,6 +108,7 @@ jobs:
 
   docconvert:
     name: Document Conversion
+    if: contains(github.event.head_commit.message, '[ci]')
     runs-on: ubuntu-latest
     steps:
       # Need commit history and tags for scripts/version.sh to work as expected
@@ -128,6 +129,7 @@ jobs:
       # environment for compatibility with "externally managed environments"
       # like GitHub's runner for Ubuntu 24.04.
       - name: Install Build Dependencies
+      
         run: |
           sudo apt-get update
           sudo apt-get install cmake gcc ninja-build libx11-dev sphinx-common git
@@ -253,6 +255,7 @@ jobs:
 
   windows-build:
     name: Build Windows with Clang
+    if: contains(github.event.head_commit.message, '[ci]')
     runs-on: windows-latest
     steps:
       - name: Clone Project
