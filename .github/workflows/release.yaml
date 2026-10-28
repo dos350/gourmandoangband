@@ -3,7 +3,6 @@ name: create-github-release
 on:
   push:
     branches: [ master ]
-  pull_request:
 
 env:
     # Used as the name when uploading or downloading the artifact for passing
@@ -45,9 +44,7 @@ env:
 jobs:
   setup:
     name: Setup
-    if: |
-      github.event_name == 'pull_request' ||
-      (github.event_name == 'push' && contains(github.event.head_commit.message, '[ci]'))
+    if: contains(github.event.head_commit.message, '[ci]')
     runs-on: ubuntu-latest
     steps:
       # Need commit history and tags for scripts/version.sh to work as expected
@@ -443,7 +440,6 @@ jobs:
           retention-days: 1
 
   release:
-    if: github.event_name == 'push'
     needs: [ setup, source, windows, mac ]
     name: Create GitHub Release
     # gh release create needs write access; the default token is read-only.
