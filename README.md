@@ -5,7 +5,7 @@
   <img src="screenshots/game.png" width="425"/>
 </p>
 
-gourmandoAngband is an Angband varinant with classic sensibilities. It
+gourmandoAngband is an Angband variant with classic sensibilities. It
 starts from Angband 4.2.6, whose features and history are the baseline for this
 fork. [changes.txt](changes.txt) lists changes made specifically for gourmandoAngband.
 
