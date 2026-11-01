@@ -2614,7 +2614,7 @@ type:scroll
 graphics:?:w
 level:1
 weight:5
-cost:15
+cost:23
 alloc:50:1 to 100
 pile:100:2d3
 power:5
@@ -2903,7 +2903,7 @@ type:scroll
 graphics:?:w
 level:5
 weight:5
-cost:125
+cost:188
 alloc:50:5 to 100
 pile:35:2d3
 power:15
@@ -3199,7 +3199,7 @@ type:potion
 graphics:!:d
 level:0
 weight:4
-cost:20
+cost:30
 alloc:80:1 to 15
 pile:90:2d3
 power:3
@@ -3218,7 +3218,7 @@ type:potion
 graphics:!:d
 level:3
 weight:4
-cost:70
+cost:105
 alloc:80:5 to 40
 pile:80:2d3
 power:6

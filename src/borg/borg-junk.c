@@ -33,10 +33,28 @@
 #include "borg-item-id.h"
 #include "borg-item-use.h"
 #include "borg-item-val.h"
+#include "borg-magic.h"
 #include "borg-power.h"
 #include "borg-think-dungeon-util.h"
 #include "borg-trait.h"
 #include "borg.h"
+
+static bool borg_consume_stat_gain_potion(int stat, int current, int sval)
+{
+    int spell_stat = borg_spell_stat();
+
+    if (current >= 118)
+        return false;
+
+    if (spell_stat >= 0) {
+        if (stat != spell_stat)
+            return false;
+    } else if (stat != STAT_STR && stat != STAT_DEX && stat != STAT_CON) {
+        return false;
+    }
+
+    return borg_quaff_potion(sval);
+}
 
 /*
  * Check if there is an object that needs to be trashed under the borg
@@ -110,82 +128,21 @@ static bool borg_consume(int i)
         }
 
         /* Gain one/lose one potions */
-        if (item->sval == sv_potion_inc_str2) {
-            /* Maxed out no need. Don't lose another stat */
-            if (borg.trait[BI_CSTR] >= 118)
-                return false;
-
-            /* This class does not want to risk losing a different stat */
-            if (borg.trait[BI_CLASS] == CLASS_MAGE
-                || borg.trait[BI_CLASS] == CLASS_DRUID
-                || borg.trait[BI_CLASS] == CLASS_NECROMANCER)
-                return false;
-
-            /* Otherwise, it should be ok */
-            if (borg_quaff_potion(item->sval))
-                return true;
-        }
-
-        if (item->sval == sv_potion_inc_int2) {
-            /* Maxed out no need. Don't lose another stat */
-            if (borg.trait[BI_CINT] >= 118)
-                return false;
-
-            /* This class does not want to risk losing a different stat */
-            if (borg.trait[BI_CLASS] != CLASS_MAGE
-                && borg.trait[BI_CLASS] != CLASS_NECROMANCER)
-                return false;
-
-            /* Otherwise, it should be ok */
-            if (borg_quaff_potion(item->sval))
-                return true;
-            break;
-        }
-
-        if (item->sval == sv_potion_inc_wis2) {
-            /* Maxed out no need. Don't lose another stat */
-            if (borg.trait[BI_CWIS] >= 118)
-                return false;
-
-            /* This class does not want to risk losing a different stat */
-            if (borg.trait[BI_CLASS] != CLASS_PRIEST
-                && borg.trait[BI_CLASS] != CLASS_DRUID)
-                return false;
-
-            /* Otherwise, it should be ok */
-            if (borg_quaff_potion(item->sval))
-                return true;
-            break;
-        }
-
-        if (item->sval == sv_potion_inc_dex2) {
-            /* Maxed out no need. Don't lose another stat */
-            if (borg.trait[BI_CDEX] >= 118)
-                return false;
-
-            /* This class does not want to risk losing a different stat */
-            if (borg.trait[BI_CLASS] == CLASS_MAGE
-                || borg.trait[BI_CLASS] == CLASS_PRIEST
-                || borg.trait[BI_CLASS] == CLASS_DRUID
-                || borg.trait[BI_CLASS] == CLASS_NECROMANCER)
-                return false;
-
-            /* Otherwise, it should be ok */
-            if (borg_quaff_potion(item->sval))
-                return true;
-            break;
-        }
-
-        if (item->sval == sv_potion_inc_con2) {
-            /* Maxed out no need. Don't lose another stat */
-            if (borg.trait[BI_CCON] >= 118)
-                return false;
-
-            /* Otherwise, it should be ok */
-            if (borg_quaff_potion(item->sval))
-                return true;
-            break;
-        }
+        if (item->sval == sv_potion_inc_str2)
+            return borg_consume_stat_gain_potion(STAT_STR,
+                borg.trait[BI_CSTR], item->sval);
+        if (item->sval == sv_potion_inc_int2)
+            return borg_consume_stat_gain_potion(STAT_INT,
+                borg.trait[BI_CINT], item->sval);
+        if (item->sval == sv_potion_inc_wis2)
+            return borg_consume_stat_gain_potion(STAT_WIS,
+                borg.trait[BI_CWIS], item->sval);
+        if (item->sval == sv_potion_inc_dex2)
+            return borg_consume_stat_gain_potion(STAT_DEX,
+                borg.trait[BI_CDEX], item->sval);
+        if (item->sval == sv_potion_inc_con2)
+            return borg_consume_stat_gain_potion(STAT_CON,
+                borg.trait[BI_CCON], item->sval);
 
         break;
 

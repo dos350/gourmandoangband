@@ -29,6 +29,9 @@
 #include "borg-io.h"
 
 int sv_food_apple;
+int sv_food_biscuit;
+int sv_food_cheeseburger;
+int sv_food_escargot;
 int sv_food_ration;
 int sv_food_slime_mold;
 int sv_food_draught;
@@ -262,6 +265,10 @@ void borg_init_item_val(void)
 {
     int tval           = tval_find_idx("food");
     sv_food_apple      = borg_lookup_sval_fail(tval, "Apple");
+    sv_food_biscuit    = borg_lookup_sval_fail(tval, "Hard Biscuit");
+    sv_food_cheeseburger
+        = borg_lookup_sval_fail(tval, "Cheeseburger");
+    sv_food_escargot   = borg_lookup_sval_fail(tval, "Escargot");
     sv_food_ration     = borg_lookup_sval_fail(tval, "Ration of Food");
     sv_food_slime_mold = borg_lookup_sval_fail(tval, "Slime Mold");
     sv_food_draught    = borg_lookup_sval_fail(tval, "Draught of the Ents");

@@ -21,10 +21,12 @@
 
 #ifdef ALLOW_BORG
 
+#include "../effect-handler.h"
 #include "../effects.h"
 #include "../player-spell.h"
 #include "../player-timed.h"
 #include "../project.h"
+#include "../trap.h"
 #include "../ui-menu.h"
 
 #include "borg.h"
@@ -45,31 +47,21 @@ static borg_spell_rating borg_spell_ratings_MAGE[] =
 {
     { "Magic Missile", 95, MAGIC_MISSILE },
     { "Light Room", 65, LIGHT_ROOM },
-    { "Find Traps, Doors & Stairs", 85, FIND_TRAPS_DOORS_STAIRS },
     { "Phase Door", 95, PHASE_DOOR },
-    { "Electric Arc", 85, ELECTRIC_ARC },
-    { "Detect Monsters", 85, DETECT_MONSTERS },
     { "Fire Ball", 75, FIRE_BALL },
     { "Recharging", 65, RECHARGING },
     { "Identify Rune", 95, IDENTIFY_RUNE },
     { "Treasure Detection", 5, TREASURE_DETECTION }, /* borg never uses this */
     { "Frost Bolt", 75, FROST_BOLT },
-    { "Reveal Monsters", 85, REVEAL_MONSTERS },
-    { "Acid Spray", 75, ACID_SPRAY },
     { "Disable Traps, Destroy Doors", 95, DISABLE_TRAPS_DESTROY_DOORS },
     { "Teleport Self", 95, TELEPORT_SELF },
     { "Teleport Other", 75, TELEPORT_OTHER },
     { "Resist Cold", 85, RESIST_COLD_SPELL },
     { "Resist Fire", 85, RESIST_FIRE_SPELL },
     { "Shield", 85, SHIELD_SPELL },
-    { "Tap Magical Energy", 5, TAP_MAGICAL_ENERGY }, /* need to figure out when to cast this one */
-    { "Mana Channel", 95, MANA_CHANNEL },
     { "Door Creation", 65, DOOR_CREATION },
-    { "Mana Bolt", 95, MANA_BOLT },
     { "Teleport Level", 65, TELEPORT_LEVEL },
     { "Detection", 95, DETECTION },
-    { "Dimension Door", 95, DIMENSION_DOOR },
-    { "Thrust Away", 55, THRUST_AWAY },
     { "Shock Wave", 85, SHOCK_WAVE },
     { "Explosion", 85, EXPLOSION },
     { "Banishment", 75, BANISHMENT },
@@ -84,8 +76,7 @@ static borg_spell_rating borg_spell_ratings_MAGE[] =
 };
 static borg_spell_rating borg_spell_ratings_SHARED_FALLBACK[] =
 {
-    { "Detect Life", 95,  DETECT_LIFE },
-    { "Fox Form", 5, FOX_FORM }, // !FIX !TODO need to know when to cast any of the shapechanges
+    { "Minor Healing", 65, MINOR_HEALING },
     { "Remove Hunger", 85, REMOVE_HUNGER },
     { "Stinking Cloud", 95, STINKING_CLOUD },
     { "Slow Monster", 65, SLOW_MONSTER },
@@ -93,28 +84,15 @@ static borg_spell_rating borg_spell_ratings_SHARED_FALLBACK[] =
     { "Resist Poison", 60, RESIST_POISON },
     { "Turn Stone to Mud", 80, TURN_STONE_TO_MUD },
     { "Sense Surroundings", 80, SENSE_SURROUNDINGS },
-    { "Lightning Strike", 85, LIGHTNING_STRIKE },
-    { "Earth Rising", 70, EARTH_RISING },
-    { "Trance", 55, TRANCE },
-    { "Become Pukel-man", 5, BECOME_PUKEL_MAN }, // !FIX !TODO shapechange
-    { "Eagle's Flight", 5, EAGLES_FLIGHT }, // !FIX !TODO shapechange
-    { "Bear Form", 5, BEAR_FORM }, // !FIX !TODO shapechange
-    { "Tremor", 80, TREMOR },
-    { "Revitalize", 95, REVITALIZE },
-    { "Rapid Regeneration", 55, RAPID_REGENERATION },
-    { "Herbal Curing", 90, HERBAL_CURING },
     { "Meteor Swarm", 90, METEOR_SWARM },
     { "Rift", 90, RIFT },
-    { "Ice Storm", 85, ICE_STORM },
-    { "Volcanic Eruption", 60, VOLCANIC_ERUPTION },
-    { "River of Lightning", 90, RIVER_OF_LIGHTNING }
+    { "Ice Storm", 85, ICE_STORM }
 };
 
 static borg_spell_rating borg_spell_ratings_PRIEST[] =
 {
     { "Call Light", 65, CALL_LIGHT },
     { "Detect Evil", 85, DETECT_EVIL },
-    { "Minor Healing", 65, MINOR_HEALING },
     { "Cure Serious Wounds", 65, CURE_SERIOUS_WOUNDS },
     { "Cure Critical Wounds", 75, CURE_CRITICAL_WOUNDS },
     { "Cure Mortal Wounds", 85, CURE_MORTAL_WOUNDS },
@@ -135,14 +113,10 @@ static borg_spell_rating borg_spell_ratings_PRIEST[] =
     { "Clairvoyance", 85, CLAIRVOYANCE },
     { "Enchant Weapon", 75, ENCHANT_WEAPON },
     { "Enchant Armour", 75, ENCHANT_ARMOUR },
-    { "Smite Evil", 75, SMITE_EVIL },
     { "Glyph of Warding", 95, GLYPH_OF_WARDING },
-    { "Demon Bane", 85, DEMON_BANE },
     { "Banish Evil", 85, BANISH_EVIL },
     { "Word of Destruction", 75, WORD_OF_DESTRUCTION },
-    { "Holy Word", 85, HOLY_WORD },
-    { "Spear of Orom\xC3\xab", 85, SPEAR_OF_OROME }, /* "Spear of Orom(e + diaresis)" */
-    { "Light of Varda", 85, LIGHT_OF_VARDA } /* "Light of Varda"*/
+    { "Holy Word", 85, HOLY_WORD }
 };
 static borg_spell_rating borg_spell_ratings_PALADIN[] =
 {
@@ -160,22 +134,16 @@ static borg_spell_rating borg_spell_ratings_PALADIN[] =
     { "Word of Recall", 95, WORD_OF_RECALL },
     { "Healing", 95, HEALING },
     { "Clairvoyance", 85, CLAIRVOYANCE },
-    { "Smite Evil", 55, SMITE_EVIL },
-    { "Demon Bane", 55, DEMON_BANE },
     { "Enchant Weapon", 75, ENCHANT_WEAPON },
-    { "Enchant Armour", 85, ENCHANT_ARMOUR },
-    { "Single Combat", 95, SINGLE_COMBAT } // !FIX !TODO defense?  not sure how to code.
+    { "Enchant Armour", 85, ENCHANT_ARMOUR }
 };
 static borg_spell_rating borg_spell_ratings_ROGUE[] =
 {
-    { "Detect Monsters", 85, DETECT_MONSTERS },
     { "Phase Door", 95, PHASE_DOOR },
     { "Object Detection", 55, OBJECT_DETECTION },
     { "Detect Stairs", 55, DETECT_STAIRS },
     { "Recharging", 85, RECHARGING },
-    { "Reveal Monsters", 85, REVEAL_MONSTERS },
     { "Teleport Self", 95, TELEPORT_SELF },
-    { "Hit and Run", 15, HIT_AND_RUN }, // !FIX !TODO not sure how to code this
     { "Teleport Other", 85, TELEPORT_OTHER },
     { "Teleport Level", 75, TELEPORT_LEVEL },
     { "Spear of Light", 75, SPEAR_OF_LIGHT },
@@ -188,16 +156,10 @@ static borg_spell_rating borg_spell_ratings_ROGUE[] =
 static borg_spell_rating borg_spell_ratings_RANGER[] =
 {
     { "Remove Hunger", 95, REMOVE_HUNGER },
-    { "Detect Life", 85, DETECT_LIFE },
-    { "Herbal Curing", 95, HERBAL_CURING },
     { "Resist Poison", 85, RESIST_POISON },
     { "Turn Stone to Mud", 85, TURN_STONE_TO_MUD },
     { "Sense Surroundings", 75, SENSE_SURROUNDINGS },
-    { "Cover Tracks", 25, COVER_TRACKS }, // !FIX !TODO prep?
-    { "Create Arrows", 85, CREATE_ARROWS }, // !FIX !TODO
     { "Haste Self", 95, HASTE_SELF },
-    { "Decoy", 5, DECOY }, // !FIX !TODO not sure what to do with this
-    { "Brand Ammunition", 95, BRAND_AMMUNITION },
     { "Spear of Light", 75, SPEAR_OF_LIGHT },
     { "Heroism", 85, HEROISM },
     { "Berserker", 75, BERSERK_STRENGTH },
@@ -206,17 +168,21 @@ static borg_spell_rating borg_spell_ratings_RANGER[] =
     { "Shield", 85, SHIELD_SPELL }
 };
 
-/*
- * get the stat used for casting spells
- *
- * Assumes the first spell determines the realm thus stat for all spells
- */
+/* Get the stat used for casting spells from the first live spell record. */
 int borg_spell_stat(void)
 {
-    if (borg_can_cast()) {
-        struct class_spell *spell = &(player->class->magic.books[0].spells[0]);
-        if (spell != NULL) {
-            return spell->realm->stat;
+    const struct class_magic *magic = &player->class->magic;
+    int book_num;
+
+    for (book_num = 0; book_num < magic->num_books; book_num++) {
+        const struct class_book *book = &magic->books[book_num];
+        int spell_num;
+
+        for (spell_num = 0; spell_num < book->num_spells; spell_num++) {
+            const struct class_spell *spell = &book->spells[spell_num];
+
+            if (spell->realm)
+                return spell->realm->stat;
         }
     }
 
@@ -229,17 +195,6 @@ int borg_spell_stat(void)
 bool borg_can_cast(void)
 {
     return player->class->magic.total_spells != 0;
-}
-
-/*
- * Does this player mostly cast spells
- * HACK: Rather than hard code classes, assume any class with
- * more than three books is primarily casting
- * !FIX !TODO consider adding is_primary_caster to class struct
- */
-bool borg_primarily_caster(void)
-{
-    return player->class->magic.num_books > 3;
 }
 
 /*
@@ -530,14 +485,6 @@ int borg_spell_fail_rate(const enum borg_spells spell)
             minfail = 5;
     }
 
-    /* Necromancers are punished by being on lit squares */
-    /* necromancers like the dark */
-    if (borg.trait[BI_CLASS] == CLASS_NECROMANCER &&
-        borg_grids[borg.c.y][borg.c.x].info & BORG_LIGHT) {
-        chance += 25;
-
-    }
-
     /* Minimum failure rate and max */
     if (chance < minfail)
         chance = minfail;
@@ -772,6 +719,13 @@ static const struct {
     uint8_t          rating;
     enum borg_spells spell;
 } borg_spell_effect_ratings[] = {
+    { EF_GLYPH, GLYPH_WARDING, 95, GLYPH_OF_WARDING },
+    { EF_BRAND_AMMO, -1, 70, BRAND_AMMUNITION },
+    { EF_ENCHANT, ENCH_TOBOTH, 75, ENCHANT_WEAPON },
+    { EF_ENCHANT, ENCH_TOAC, 75, ENCHANT_ARMOUR },
+    { EF_IDENTIFY, -1, 95, IDENTIFY_RUNE },
+    { EF_REMOVE_CURSE, -1, 85, REMOVE_CURSE },
+    { EF_RECHARGE, -1, 65, RECHARGING },
     { EF_TIMED_INC, TMD_BLESSED, 85, BLESS },
     { EF_TIMED_INC, TMD_FAST, 90, HASTE_SELF },
     { EF_TIMED_INC, TMD_HERO, 80, HEROISM },
@@ -830,6 +784,33 @@ static const borg_spell_rating *borg_find_spell_rating(const char *name)
 static bool borg_find_spell_effect_rating(const struct class_spell *spell,
     uint8_t *rating, enum borg_spells *spell_enum)
 {
+    if (borg_class_spell_has_effect(spell, EF_DETECT_VISIBLE_MONSTERS, -1)
+        && (borg_class_spell_has_effect(spell, EF_DETECT_ORE, -1)
+            || borg_class_spell_has_effect(spell, EF_SENSE_GOLD, -1)
+            || borg_class_spell_has_effect(spell, EF_SENSE_OBJECTS, -1))) {
+        *rating     = 95;
+        *spell_enum = DETECTION;
+        return true;
+    }
+
+    if (borg_class_spell_has_effect(spell, EF_DETECT_TRAPS, -1)
+        && borg_class_spell_has_effect(spell, EF_DETECT_DOORS, -1)
+        && borg_class_spell_has_effect(spell, EF_DETECT_STAIRS, -1)) {
+        *rating     = 85;
+        *spell_enum = FIND_TRAPS_DOORS_STAIRS;
+        return true;
+    }
+
+    if (borg_class_spell_has_effect(spell, EF_DETECT_VISIBLE_MONSTERS, -1)) {
+        *rating = 85;
+        *spell_enum
+            = borg_class_spell_has_effect(
+                  spell, EF_DETECT_INVISIBLE_MONSTERS, -1)
+            ? REVEAL_MONSTERS
+            : DETECT_MONSTERS;
+        return true;
+    }
+
     if (borg_class_spell_has_effect(spell, EF_TIMED_INC, TMD_OPP_ACID)
         && borg_class_spell_has_effect(spell, EF_TIMED_INC, TMD_OPP_ELEC)
         && borg_class_spell_has_effect(spell, EF_TIMED_INC, TMD_OPP_FIRE)

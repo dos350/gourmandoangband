@@ -1374,7 +1374,8 @@ static int32_t borg_power_inventory(void)
             }
         }
 
-        if (borg.trait[BI_CLASS] == CLASS_PALADIN) {
+        if (borg.trait[BI_CLASS] == CLASS_PALADIN
+            && !borg_spell_legal(HEALING)) {
             /* Reward heal potions */
             k = 0;
             for (; k < 3 && k < borg.has[kv_potion_healing]; k++)

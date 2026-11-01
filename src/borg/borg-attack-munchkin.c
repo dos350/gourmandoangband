@@ -198,8 +198,7 @@ bool borg_munchkin_melee(void)
     borg_grid *ag;
 
     /* No Mages for now */
-    if ((borg.trait[BI_CLASS] == CLASS_MAGE
-            || borg.trait[BI_CLASS] == CLASS_NECROMANCER))
+    if (borg.trait[BI_CLASS] == CLASS_MAGE)
         return false;
 
     /* Must be standing on a stair */

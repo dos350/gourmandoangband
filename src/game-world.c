@@ -593,11 +593,11 @@ void process_world(struct chunk *c)
 			/* Slow digestion takes less food */
 			if (player_of_has(player, OF_SLOW_DIGEST)) i /= 2;
 
-			/* Gourmands have a faster metabolism */
-			if (player_has(player, PF_GOURMAND)) i *= 2;
-
 			/* Minimal digestion */
 			if (i < 1) i = 1;
+
+			/* Gourmands have a faster metabolism */
+			if (player_has(player, PF_GOURMAND)) i *= 3;
 
 			/* Digest some food */
 			player_dec_timed(player, TMD_FOOD, i, false, true);
@@ -615,7 +615,7 @@ void process_world(struct chunk *c)
 	} else {
 		/* Digest quickly when gorged */
 		i = 5000 / z_info->food_value;
-		if (player_has(player, PF_GOURMAND)) i *= 2;
+		if (player_has(player, PF_GOURMAND)) i *= 3;
 		player_dec_timed(player, TMD_FOOD, i, false, true);
 		player->upkeep->update |= PU_BONUS;
 	}

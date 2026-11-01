@@ -1,11 +1,17 @@
+gourmandoAngband 0.0.1
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 gourmandoAngband is based off Angband 4.2.6
+
+this is a new variant and i will bump it to 0.0.2 at some point,
+for now this version is a rolling work in progress
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 changes for the initial release of gourmandoAngband:
 
 added Gourmand class [dev note - its a food powered warrior type class]
-oldclass.txt is now default [dev note - the new classes were unneeded and yeah kind of whatever]
+old_class.txt is now default [dev note - the new classes were unneeded and yeah kind of whatever]
 scooped monster names and lore to pre-3.4 style; [dev note - the traditional names/lore were superior]
 some tweaks to default interface options [dev note - these options should have been default 15 years ago]
 randarts is default [dev note - its more fun this way]
@@ -15,3 +21,6 @@ added character display to inventory and equip page (visual reference)
 wrestled the borg into running with the classic (+ gourmand) classes
 added the mystery diner shop [dev note - to help satisfy the gourmand's appetite]
 did a pass on the tiles to account for the new (old) monster names [dev note - i dont play with tiles so i wont be testing this]
+lowered gold multiplier with no selling to *3, capped max gold drop to 12k
+increased basic item prices (phase door, etc)
+greatly increased how much gold mobs can steal

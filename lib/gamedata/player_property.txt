@@ -138,8 +138,9 @@ desc: you are, the bigger these health gains will be.
 type:player
 code:GOURMAND
 name:Gourmand
-desc:You digest food twice as quickly and lose health when hungry.
-desc:At level 5, you can sniff out nearby monsters.
+desc:You digest food three times as quickly and lose health when hungry.
+desc:You are encumbered as though carrying an extra 20 pounds.
+desc:At level 5, you can sniff out nearby monsters and food.
 desc:Going up stairs hurts and deals 1d4 damage.
 
 

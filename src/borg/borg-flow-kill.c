@@ -1673,8 +1673,7 @@ bool borg_flow_kill(bool viewable, int nearness)
         return false;
 
     /* YOU ARE NOT A WARRIOR!! DON'T ACT LIKE ONE!! */
-    if ((borg.trait[BI_CLASS] == CLASS_MAGE
-            || borg.trait[BI_CLASS] == CLASS_NECROMANCER)
+    if (borg.trait[BI_CLASS] == CLASS_MAGE
         && borg.trait[BI_CLEVEL] < (borg.trait[BI_CDEPTH] ? 35 : 25))
         return false;
 
@@ -2916,8 +2915,8 @@ bool borg_shoot_scoot_safe(int emergency, int turns, int b_p)
 
     /*** Need Missiles or cheap spells ***/
 
-    /* classes that are mainly spellcaster */
-    if (borg_primarily_caster()) {
+    /* Players who can cast spells */
+    if (borg_can_cast()) {
         /* Low mana */
         if (borg.trait[BI_CLEVEL] >= 45 && borg.trait[BI_CURSP] < 15)
             return false;

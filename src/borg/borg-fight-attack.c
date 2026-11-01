@@ -180,8 +180,7 @@ static int borg_thrust_damage_one(int i)
         chance += 10;
 
     /* Mages with Mana do not get that bonus, they should cast */
-    if ((borg.trait[BI_CLASS] == CLASS_MAGE
-            || borg.trait[BI_CLASS] == CLASS_NECROMANCER)
+    if (borg.trait[BI_CLASS] == CLASS_MAGE
         && borg.trait[BI_CURSP] > 1)
         chance -= 10;
 
@@ -199,8 +198,7 @@ static int borg_thrust_damage_one(int i)
     /*
      * Reduce the damage if a mage, they should not melee if they can avoid it
      */
-    if ((borg.trait[BI_CLASS] == CLASS_MAGE
-            || borg.trait[BI_CLASS] == CLASS_NECROMANCER)
+    if (borg.trait[BI_CLASS] == CLASS_MAGE
         && borg.trait[BI_MAXCLEVEL] < 40 && borg.trait[BI_CURSP] > 1)
         dam = (dam * 8 / 10) + 1;
 
@@ -2413,8 +2411,7 @@ int borg_attack_aux_spell_bolt(const enum borg_spells spell, int rad, int dam,
 
     /* Paranoia */
     if (borg_simulate
-        && ((borg.trait[BI_CLASS] != CLASS_MAGE
-                && borg.trait[BI_CLASS] != CLASS_NECROMANCER)
+        && (borg.trait[BI_CLASS] != CLASS_MAGE
             && borg.trait[BI_CLEVEL] <= 2)
         && (randint0(100) < 1))
         return 0;
@@ -2441,19 +2438,11 @@ int borg_attack_aux_spell_bolt(const enum borg_spells spell, int rad, int dam,
     case CLASS_MAGE:
         primary_spell_for_class = MAGIC_MISSILE;
         break;
-    case CLASS_DRUID:
-        primary_spell_for_class = STINKING_CLOUD;
-        break;
     case CLASS_PRIEST:
     case CLASS_PALADIN:
         primary_spell_for_class = ORB_OF_DRAINING;
         break;
-    case CLASS_NECROMANCER:
-        primary_spell_for_class = NETHER_BOLT;
-        break;
-    case CLASS_ROGUE:
-    case CLASS_RANGER:
-    case CLASS_BLACKGUARD:
+    default:
         break;
     }
 

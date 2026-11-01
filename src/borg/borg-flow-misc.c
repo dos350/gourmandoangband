@@ -241,7 +241,7 @@ bool borg_flow_recover(int dist)
         return false;
 
     /* Mana for spell casters */
-    if (borg_primarily_caster()) {
+    if (borg_can_cast()) {
         if (borg.trait[BI_CURHP] > borg.trait[BI_MAXHP] / 3
             && ((borg.trait[BI_CURSP] > borg.trait[BI_MAXSP] / 4)
                 || borg.trait[BI_MAXSP] == 0)

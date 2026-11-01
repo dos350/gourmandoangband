@@ -1155,8 +1155,15 @@ bool borg_use_things(void)
     /* Eat food */
     if (borg.trait[BI_ISHUNGRY]) {
         /* Attempt to satisfy hunger */
-        if (borg_spell(REMOVE_HUNGER) || borg_spell(HERBAL_CURING)
-            || borg_quaff_potion(sv_potion_slime_mold)
+        if (borg_spell(REMOVE_HUNGER) || borg_spell(HERBAL_CURING)) {
+            return true;
+        }
+        if (borg.trait[BI_CLASS] == CLASS_GOURMAND
+            && sv_food_cheeseburger > sv_food_ration
+            && borg_eat(TV_FOOD, sv_food_cheeseburger)) {
+            return true;
+        }
+        if (borg_quaff_potion(sv_potion_slime_mold)
             || borg_eat(TV_FOOD, sv_food_slime_mold)
             || borg_eat(TV_FOOD, sv_food_slice)
             || borg_eat(TV_FOOD, sv_food_apple)
@@ -1166,6 +1173,10 @@ bool borg_use_things(void)
             || borg_eat(TV_FOOD, sv_food_ration)
             || borg_eat(TV_FOOD, sv_food_waybread)
             || borg_eat(TV_FOOD, sv_food_draught)
+            || borg_eat(TV_FOOD, sv_food_cheeseburger)
+            || borg_eat(TV_FOOD, sv_food_biscuit)
+            || borg_eat(TV_FOOD, sv_food_escargot)
+            || borg_eat(TV_FOOD, sv_food_sip)
             || borg_activate_item(act_food_waybread)) {
             return true;
         }

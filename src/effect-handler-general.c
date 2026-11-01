@@ -1761,6 +1761,24 @@ bool effect_handler_DETECT_OBJECTS(effect_handler_context_t *context)
 }
 
 /**
+ * Detect food on the floor around the player.
+ */
+bool effect_handler_DETECT_FOOD(effect_handler_context_t *context)
+{
+	bool food = detect_stuff(context, tval_is_edible);
+
+	if (food) {
+		msg("You detect the presence of food!");
+	} else if (context->aware) {
+		msg("You detect no food.");
+	}
+
+	player->upkeep->redraw |= PR_ITEMLIST;
+	context->ident = true;
+	return true;
+}
+
+/**
  * Detect monsters which satisfy the given predicate around the player.
  * The height to detect above and below the player is y_dist,
  * the width either side of the player x_dist.

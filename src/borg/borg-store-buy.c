@@ -115,20 +115,14 @@ static bool borg_good_buy(borg_item *item, int who, int ware)
                         && borg.trait[BI_CCON] < (18 + 100))))
             || (item->tval == TV_ROD
                 && ((item->sval == sv_rod_healing) ||
-                    /* priests and paladins can cast recall */
                     (item->sval == sv_rod_recall
-                        && borg.trait[BI_CLASS] != CLASS_PRIEST
-                        && borg.trait[BI_CLASS] != CLASS_PALADIN)
+                        && !borg_spell_legal(WORD_OF_RECALL))
                     ||
-                    /* druid and ranger can cast haste*/
                     (item->sval == sv_rod_speed
-                        && borg.trait[BI_CLASS] != CLASS_DRUID
-                        && borg.trait[BI_CLASS] != CLASS_RANGER)
+                        && !borg_spell_legal(HASTE_SELF))
                     ||
-                    /* mage and rogue can cast teleport away */
                     (item->sval == sv_rod_teleport_other
-                        && borg.trait[BI_CLASS] != CLASS_MAGE
-                        && borg.trait[BI_CLASS] == CLASS_ROGUE)
+                        && !borg_spell_legal(TELEPORT_OTHER))
                     || (item->sval == sv_rod_illumination
                         && (!borg.trait[BI_ALITE]))))
             || (obj_kind_can_browse(&k_info[item->kind])
@@ -205,9 +199,8 @@ static bool borg_good_buy(borg_item *item, int who, int ware)
             return false;
     }
 
-    /* Not direct spell casters and the extra books */
-    /* classes that are direct spell casters get more than 3 books */
-    if (!borg_primarily_caster() && borg.trait[BI_MAXCLEVEL] <= 8) {
+    /* Avoid buying advanced books before a non-caster is ready */
+    if (!borg_can_cast() && borg.trait[BI_MAXCLEVEL] <= 8) {
         if (obj_kind_can_browse(&k_info[item->kind]) && item->sval >= 1)
             return false;
     }

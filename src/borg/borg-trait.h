@@ -325,7 +325,7 @@ enum {
     BI_GOOD_W_CHG,
     BI_MULTIPLE_BONUSES,
     BI_DINV, /* See Inv Spell Legal */
-    BI_WEIGHT, /* weight of all inventory and equipment */
+    BI_WEIGHT, /* weight of inventory and equipment, plus class encumbrance */
     BI_CARRY, /* carry capacity */
     BI_EMPTY, /* number of empty slots */
     BI_SAURON_DEAD,
@@ -362,14 +362,6 @@ extern const char *prefix_pref[];
 #define CLASS_PALADIN     4
 #define CLASS_WARRIOR     5
 #define CLASS_GOURMAND    6
-
-/*
- * Classes this fork does not have.  They keep unique values beyond
- * MAX_CLASSES so the borg's per-class code still compiles but never matches.
- */
-#define CLASS_DRUID       100
-#define CLASS_NECROMANCER 101
-#define CLASS_BLACKGUARD  102
 
 #define MAX_CLASSES 7 /* Max # of classes in class.txt */
 

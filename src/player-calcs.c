@@ -1760,6 +1760,7 @@ int weight_remaining(struct player *p)
 	/* Weight limit based only on strength */
 	i = 60 * adj_str_wgt[p->state.stat_ind[STAT_STR]]
 		- p->upkeep->total_weight - 1;
+	if (player_has(p, PF_GOURMAND)) i -= GOURMAND_ENCUMBRANCE;
 
 	/* Return the result */
 	return (i);
@@ -1870,6 +1871,18 @@ int player_class_food_speed_modifier(struct player *p)
 			modifier -= excess;
 		}
 	}
+
+	return modifier;
+}
+
+int player_timed_speed_modifier(const struct player *p)
+{
+	int modifier = 0;
+
+	if (p->timed[TMD_FAST] || p->timed[TMD_SPRINT]) modifier += 10;
+	if (p->timed[TMD_SLOW]) modifier -= 10;
+	if (p->timed[TMD_TERROR]) modifier += 10;
+	if (p->timed[TMD_STONESKIN]) modifier -= 5;
 
 	return modifier;
 }
@@ -2179,7 +2192,6 @@ void calc_bonuses(struct player *p, struct player_state *state, bool known_only,
 	}
 	if (p->timed[TMD_STONESKIN]) {
 		state->to_a += 40;
-		state->speed -= 5;
 	}
 	if (p->timed[TMD_HERO]) {
 		state->to_h += 12;
@@ -2190,17 +2202,9 @@ void calc_bonuses(struct player *p, struct player_state *state, bool known_only,
 		state->to_a -= 10;
 		adjust_skill_scale(&state->skills[SKILL_DEVICE], -1, 10, 0);
 	}
-	if (p->timed[TMD_FAST] || p->timed[TMD_SPRINT]) {
-		state->speed += 10;
-	}
-	if (p->timed[TMD_SLOW]) {
-		state->speed -= 10;
-	}
+	state->speed += player_timed_speed_modifier(p);
 	if (p->timed[TMD_SINFRA]) {
 		state->see_infra += 5;
-	}
-	if (p->timed[TMD_TERROR]) {
-		state->speed += 10;
 	}
 	for (i = 0; i < TMD_MAX; ++i) {
 		if (p->timed[i] && timed_effects[i].temp_resist != -1
@@ -2238,6 +2242,7 @@ void calc_bonuses(struct player *p, struct player_state *state, bool known_only,
 
 	/* Analyze weight */
 	j = p->upkeep->total_weight;
+	if (pf_has(state->pflags, PF_GOURMAND)) j += GOURMAND_ENCUMBRANCE;
 	i = weight_limit(state);
 	if (j > i / 2)
 		state->speed -= ((j - (i / 2)) / (i / 10));

@@ -1068,8 +1068,7 @@ bool borg_escape(int b_q)
             borg.goal.leaving = true;
         }
         /* Emergency Phase door if a weak mage */
-        if (((borg.trait[BI_CLASS] == CLASS_MAGE
-                 || borg.trait[BI_CLASS] == CLASS_NECROMANCER)
+        if ((borg.trait[BI_CLASS] == CLASS_MAGE
                 && borg.trait[BI_CLEVEL] <= 35)
             && borg_caution_phase(65, 2)
             && borg_timer(borg.time.antisummon) > 50
@@ -1150,8 +1149,7 @@ bool borg_escape(int b_q)
             borg.goal.leaving = true;
         }
         /* Emergency Phase door if a weak mage */
-        if (((borg.trait[BI_CLASS] == CLASS_MAGE
-                 || borg.trait[BI_CLASS] == CLASS_NECROMANCER)
+        if ((borg.trait[BI_CLASS] == CLASS_MAGE
                 && borg.trait[BI_CLEVEL] <= 8)
             && borg_caution_phase(65, 2)
             && (borg_spell_fail(PHASE_DOOR, allow_fail)
@@ -1172,8 +1170,7 @@ bool borg_escape(int b_q)
 
     /* 6- not too scary but I'm out of mana  */
     if ((borg.trait[BI_CLASS] == CLASS_MAGE
-            || borg.trait[BI_CLASS] == CLASS_PRIEST
-            || borg.trait[BI_CLASS] == CLASS_NECROMANCER)
+            || borg.trait[BI_CLASS] == CLASS_PRIEST)
         && (b_q > borg.avoidance * (6 + risky_boost) / 10
             || (b_q > borg.avoidance * (8 + risky_boost) / 10
                 && borg.near.unique >= 1 && borg.near.unique <= 8))

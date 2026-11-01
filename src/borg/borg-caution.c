@@ -1247,8 +1247,9 @@ bool borg_caution(void)
         }
     }
 
-    /* Prevent starvation */
-    if (borg.trait[BI_ISWEAK]) {
+    /* Prevent starvation before there is no time left to find food. */
+    if (borg.trait[BI_ISWEAK]
+        || (borg.trait[BI_ISHUNGRY] && !borg.trait[BI_FOOD])) {
         /* Attempt to satisfy hunger */
         if (borg_eat_food_any() || borg_spell(REMOVE_HUNGER)
             || borg_spell(HERBAL_CURING)) {
@@ -1256,10 +1257,12 @@ bool borg_caution(void)
             return true;
         }
 
-        /* Try to restore mana then cast the spell next round */
-        if (borg_quaff_potion(sv_potion_restore_mana)
-            || borg_activate_item(act_restore_mana))
-            return true;
+        if (borg.trait[BI_ISWEAK]) {
+            /* Try to restore mana then cast the spell next round */
+            if (borg_quaff_potion(sv_potion_restore_mana)
+                || borg_activate_item(act_restore_mana))
+                return true;
+        }
 
         /* Flee for food */
         if (borg.trait[BI_CDEPTH]) {

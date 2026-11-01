@@ -794,9 +794,13 @@ static void melee_effect_handler_EAT_GOLD(melee_effect_handler_context_t *contex
         /* Occasional blink anyway */
         if (randint0(3)) context->blinked = true;
     } else {
+        /* Steal between ~1/10 and 1/3 of the player's gold */
+        int32_t max_gold = current_player->au / 3;
         int32_t gold = (current_player->au / 10) + randint1(25);
+        if (max_gold < 2) max_gold = 2;
+        if (gold > max_gold) gold = max_gold;
+        else gold += randint0(max_gold - gold + 1);
         if (gold < 2) gold = 2;
-        if (gold > 5000) gold = (current_player->au / 20) + randint1(3000);
         if (gold > current_player->au) gold = current_player->au;
         current_player->au -= gold;
         if (gold <= 0) {

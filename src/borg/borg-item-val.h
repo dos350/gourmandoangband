@@ -25,6 +25,9 @@
 
 /* s_val's and k_val's now dynamically loaded */
 extern int sv_food_apple;
+extern int sv_food_biscuit;
+extern int sv_food_cheeseburger;
+extern int sv_food_escargot;
 extern int sv_food_ration;
 extern int sv_food_slime_mold;
 extern int sv_food_draught;

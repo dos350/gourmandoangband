@@ -11,9 +11,12 @@ he may be a bit overtuned but honestly it seems pretty fair
 - The class has a base speed adjustment of -4. That class penalty is removed
   while the food status is `Fed` or `Full`; other speed modifiers still apply.
 - The class has a one-point stealth penalty.
-- Gourmands digest food twice as quickly, including while `Full`. Below the
+- Gourmands digest food three times as quickly, including while `Full`. Below the
   `Hungry` threshold they take periodic hunger damage, with more damage below
   `Starving`.
+- They are encumbered as if carrying an extra 20 pounds, so equipment and
+  inventory slow them down sooner. Their body and inventory weights are
+  unchanged.
 - Gourmands get distinct messages as their food status changes, from a
   satisfied stride when `Fed` to an impatient growl when hunger returns.
 - After successfully eating food or a mushroom, a Gourmand gains experience
@@ -26,19 +29,22 @@ he may be a bit overtuned but honestly it seems pretty fair
   effect to clear, that result gives 3-8 healing instead. Slime Mold and Ration
   of Food do not qualify. The subtype comparison follows the food-kind ordering
   in `lib/gamedata/object.txt`.
-- At level 5, press **N** to sniff out visible monsters up to 8 tiles away.
-  Range increases by 1 tile for every 2 levels above level 5. This is a class
-  ability, not a spell, and uses a turn.
+- At level 5, press **N** to sniff out visible monsters and food on the floor
+  up to 8 tiles away. Range increases by 1 tile for every 2 levels above level
+  5. This is a class ability, not a spell, and uses a turn.
 
 ## Implementation map
 
 - `lib/gamedata/class.txt`: class stats, base speed, starting equipment, and
   `GOURMAND` player flag.
 - `lib/gamedata/player_property.txt`: player-facing description of the
-  Gourmand flag, metabolism, hunger, and monster-sensing ability.
+  Gourmand flag, metabolism, hunger, and sensing ability.
 - `src/init.c` and `src/player.h`: parse and store the class `speed` value.
-- `src/player-calcs.c`: apply class speed and remove the penalty when Fed or
-  Full.
+- `src/player-calcs.c` and `src/player-calcs.h`: apply class and timed speed
+  modifiers, remove the penalty when Fed or Full, and account for the extra
+  encumbrance.
+- `src/borg/borg-trait.c`: account for the extra encumbrance and faster food
+  consumption in Borg decisions.
 - `src/game-world.c`: faster digestion and periodic hunger damage.
 - `src/player-timed.c`: Gourmand-specific food-status messages.
 - `src/cmd-cave.c`: damage from climbing upstairs.

@@ -1308,12 +1308,12 @@ struct object *make_gold(int lev, const char *coin_type)
 
 	/* If we're playing with no_selling, increase the value */
 	if (OPT(player, birth_no_selling) && player->depth)	{
-		value *= 5;
+		value *= 3;
 	}
 
-	/* Cap gold at max short (or alternatively make pvals int32_t) */
-	if (value >= SHRT_MAX) {
-		value = SHRT_MAX - randint0(200);
+	// that too much bros we gonna call it 12k
+	if (value >= 12000) {
+		value = 12000 - randint0(200);
 	}
 
 	new_gold->pval = value;

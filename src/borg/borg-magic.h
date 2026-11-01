@@ -139,7 +139,6 @@ enum borg_spells {
     SPEAR_OF_OROME,
     LIGHT_OF_VARDA,
     NETHER_BOLT,
-    CREATE_DARKNESS,
     BAT_FORM,
     READ_MINDS,
     TAP_UNLIFE,
@@ -246,11 +245,6 @@ extern borg_magic *borg_magics; /* Spell info */
  * Does this player cast spells
  */
 extern bool borg_can_cast(void);
-
-/*
- * Does this player mostly cast spells
- */
-extern bool borg_primarily_caster(void);
 
 /*
  * get the level at which Heroism grants Heroism

@@ -977,13 +977,15 @@ void do_cmd_gourmand_sense(struct command *cmd)
 		return;
 	}
 	if (!player_can_gourmand_sense_prereq()) {
-		msg("You are not yet able to sniff out monsters.");
+		msg("You are not yet able to sniff out monsters or food.");
 		return;
 	}
 
 	msg("You sniff the air around you.");
 	range = 8 + (player->lev - 5) / 2;
 	effect_simple(EF_DETECT_VISIBLE_MONSTERS, source_player(), "0",
+		0, 0, 0, range, range, NULL);
+	effect_simple(EF_DETECT_FOOD, source_player(), "0",
 		0, 0, 0, range, range, NULL);
 	player->upkeep->energy_use = z_info->move_energy;
 }

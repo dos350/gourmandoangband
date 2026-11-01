@@ -96,7 +96,6 @@ static const char *borg_prepared_aux(int depth)
         switch (borg.trait[BI_CLASS]) {
         case CLASS_WARRIOR:
         case CLASS_GOURMAND:
-        case CLASS_BLACKGUARD:
             if (borg.trait[BI_MAXHP] < 50)
                 return ("50 hp");
             if (borg.trait[BI_MAXCLEVEL] < 4)
@@ -109,7 +108,6 @@ static const char *borg_prepared_aux(int depth)
                 return ("8 clevel");
             break;
         case CLASS_PRIEST:
-        case CLASS_DRUID:
             if (borg.trait[BI_MAXHP] < 40)
                 return ("40 hp");
             if (borg.trait[BI_MAXCLEVEL] < 9)
@@ -128,7 +126,6 @@ static const char *borg_prepared_aux(int depth)
                 return ("4 clevel");
             break;
         case CLASS_MAGE:
-        case CLASS_NECROMANCER:
             if (borg.trait[BI_MAXHP] < 60)
                 return ("60 hp");
             if (borg.trait[BI_MAXCLEVEL] < 11)
@@ -154,7 +151,6 @@ static const char *borg_prepared_aux(int depth)
             switch (borg.trait[BI_CLASS]) {
             case CLASS_WARRIOR:
             case CLASS_GOURMAND:
-            case CLASS_BLACKGUARD:
                 if (borg.trait[BI_MAXHP] < 60)
                     return ("60 hp");
                 if (borg.trait[BI_MAXCLEVEL] < 6)
@@ -167,7 +163,6 @@ static const char *borg_prepared_aux(int depth)
                     return ("10 clevel");
                 break;
             case CLASS_PRIEST:
-            case CLASS_DRUID:
                 if (borg.trait[BI_MAXHP] < 60)
                     return ("60 hp");
                 if (borg.trait[BI_MAXCLEVEL] < 15)
@@ -186,7 +181,6 @@ static const char *borg_prepared_aux(int depth)
                     return ("6 clevel");
                 break;
             case CLASS_MAGE:
-            case CLASS_NECROMANCER:
                 if (borg.trait[BI_MAXHP] < 80)
                     return ("80 hp");
                 if (borg.trait[BI_MAXCLEVEL] < 15)
@@ -211,9 +205,8 @@ static const char *borg_prepared_aux(int depth)
 
     /*** Essential Items for Level 10 to 19 ***/
 
-    /* Require light (radius 2) */    /* necromancers like the dark */
-    if (borg.trait[BI_LIGHT] < 2
-        && (borg.trait[BI_CLASS] != CLASS_NECROMANCER))
+    /* Require light (radius 2) */
+    if (borg.trait[BI_LIGHT] < 2)
         return "2 light radius";
 
     /* Escape or Teleport */
@@ -225,7 +218,6 @@ static const char *borg_prepared_aux(int depth)
         switch (borg.trait[BI_CLASS]) {
         case CLASS_WARRIOR:
         case CLASS_GOURMAND:
-        case CLASS_BLACKGUARD:
             if (borg.trait[BI_MAXCLEVEL] < (depth - 4) && depth <= 19)
                 return ("dlevel - 4 >= clevel");
             break;
@@ -234,7 +226,6 @@ static const char *borg_prepared_aux(int depth)
                 return ("dlevel >= clevel");
             break;
         case CLASS_PRIEST:
-        case CLASS_DRUID:
             if (borg.trait[BI_MAXCLEVEL] < depth && depth <= 19)
                 return ("dlevel >= clevel");
             break;
@@ -247,7 +238,6 @@ static const char *borg_prepared_aux(int depth)
                 return ("dlevel >= clevel");
             break;
         case CLASS_MAGE:
-        case CLASS_NECROMANCER:
             if (borg.trait[BI_MAXCLEVEL] < (depth + 5)
                 && borg.trait[BI_MAXCLEVEL] <= 28)
                 return ("dlevel + 5 > = clevel");
@@ -309,7 +299,6 @@ static const char *borg_prepared_aux(int depth)
         switch (borg.trait[BI_CLASS]) {
         case CLASS_WARRIOR:
         case CLASS_GOURMAND:
-        case CLASS_BLACKGUARD:
             if (borg.trait[BI_MAXCLEVEL] < (depth + 5)
                 && borg.trait[BI_MAXCLEVEL] <= 38)
                 return ("dlevel + 5 >= clevel");
@@ -320,7 +309,6 @@ static const char *borg_prepared_aux(int depth)
                 return ("dlevel + 10 >= clevel");
             break;
         case CLASS_PRIEST:
-        case CLASS_DRUID:
             if (borg.trait[BI_MAXCLEVEL] < (depth + 13)
                 && borg.trait[BI_MAXCLEVEL] <= 46)
                 return ("dlevel + 13 >= clevel");
@@ -337,7 +325,6 @@ static const char *borg_prepared_aux(int depth)
                 return ("dlevel + 8 >= clevel");
             break;
         case CLASS_MAGE:
-        case CLASS_NECROMANCER:
             if (borg.trait[BI_MAXCLEVEL] < (depth + 8)
                 && borg.trait[BI_MAXCLEVEL] <= 38)
                 return ("dlevel + 8 >= clevel");
@@ -759,8 +746,7 @@ const char *borg_restock(int depth)
     /*** Level 10 - 19  ***/
 
     /* Must have good light */
-    if (borg.trait[BI_LIGHT] < 2
-        && (borg.trait[BI_CLASS] != CLASS_NECROMANCER))
+    if (borg.trait[BI_LIGHT] < 2)
         return "2 light radius";
 
     /* Must have "cure" */

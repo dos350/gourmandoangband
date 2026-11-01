@@ -22,6 +22,9 @@
 
 #include "player.h"
 
+/* Additional Gourmand encumbrance, in tenths of a pound. */
+#define GOURMAND_ENCUMBRANCE 200
+
 /**
  * Bit flags for the "player->upkeep->notice" variable
  */
@@ -108,6 +111,7 @@ bool earlier_object(struct object *orig, struct object *new, bool store);
 int equipped_item_slot(struct player_body body, struct object *obj);
 void calc_inventory(struct player *p);
 int player_class_food_speed_modifier(struct player *p);
+int player_timed_speed_modifier(const struct player *p);
 void calc_bonuses(struct player *p, struct player_state *state, bool known_only,
 				  bool update);
 void calc_digging_chances(struct player_state *state, int chances[DIGGING_MAX]);

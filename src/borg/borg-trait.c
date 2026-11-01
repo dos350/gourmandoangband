@@ -1384,11 +1384,7 @@ static void borg_notice_equipment(void)
     if (rf_has(f, OF_SUST_CON))
         borg.trait[BI_SCON] = true;
 
-    /* if hasting */
-    if (player->timed[TMD_FAST] || player->timed[TMD_SPRINT])
-        borg.trait[BI_SPEED] += 10;
-    else if (player->timed[TMD_TERROR])
-        borg.trait[BI_SPEED] += 5;
+    borg.trait[BI_SPEED] += player_timed_speed_modifier(player);
 
     /* I am pretty sure the CF_flags will be caught by the
      * code above when the player flags are checked
@@ -1520,11 +1516,6 @@ static void borg_notice_equipment(void)
             else if (of_has(item->flags, OF_LIGHT_3)) {
                 borg.trait[BI_LIGHT] += 3;
             }
-
-            /* people with "unlight" can use radius 1 light artifacts */
-            if ((item->modifiers[OBJ_MOD_LIGHT] > 0)
-                && (borg.trait[BI_CLASS] == CLASS_NECROMANCER))
-                borg.trait[BI_LIGHT]--;
 
             borg.trait[BI_LIGHT] += item->modifiers[OBJ_MOD_LIGHT];
         }
@@ -1756,12 +1747,6 @@ static void borg_notice_equipment(void)
         borg.trait[BI_TOHIT] += item->to_h;
         borg.trait[BI_TODAM] += item->to_d;
     }
-
-    /* if the player has unlight count them as having light if they have none */
-    if ((borg.trait[BI_CLASS] == CLASS_NECROMANCER)
-        && borg.trait[BI_LIGHT] <= 0)
-        borg.trait[BI_LIGHT] = 1;
-
 
     if (borg.trait[BI_CRSVULN]) {
         borg.trait[BI_CRSAGRV] = true;
@@ -2177,6 +2162,7 @@ static void borg_notice_equipment(void)
 static void borg_notice_inventory(void)
 {
     int i;
+    bool has_food_spell = false;
 
     borg_item *item;
 
@@ -2278,9 +2264,8 @@ static void borg_notice_inventory(void)
         case TV_FOOD:
             /* Analyze */
             {
-                /* check for food that hurts us */
-                if (borg_obj_has_effect(item->kind, EF_CRUNCH, -1)
-                    || borg_obj_has_effect(
+                /* Check for food that causes an unwanted timed effect. */
+                if (borg_obj_has_effect(
                         item->kind, EF_TIMED_INC, TMD_CONFUSED))
                     break;
 
@@ -2292,6 +2277,8 @@ static void borg_notice_inventory(void)
                 } else /* TV_FOOD */
                 {
                     if (item->sval == sv_food_apple
+                        || item->sval == sv_food_biscuit
+                        || item->sval == sv_food_escargot
                         || item->sval == sv_food_handful
                         || item->sval == sv_food_slime_mold
                         || item->sval == sv_food_pint
@@ -2299,6 +2286,7 @@ static void borg_notice_inventory(void)
                         borg.trait[BI_FOOD_LO] += item->iqty;
                     } else if (item->sval == sv_food_ration
                                || item->sval == sv_food_slice
+                               || item->sval == sv_food_cheeseburger
                                || item->sval == sv_food_honey_cake
                                || item->sval == sv_food_waybread
                                || item->sval == sv_food_draught)
@@ -2572,7 +2560,7 @@ static void borg_notice_inventory(void)
     if (borg_spell_legal_fail(REMOVE_HUNGER, 80)
         || borg_spell_legal_fail(HERBAL_CURING, 80)) /* VAMPIRE_STRIKE? */
     {
-        borg.trait[BI_FOOD] += 1000;
+        has_food_spell = true;
     }
 
     /* Handle "identify" -> infinite identifies */
@@ -2778,8 +2766,7 @@ static void borg_notice_inventory(void)
     /*** Process the Needs ***/
 
     /* No need for fuel if we know it doesn't need it */
-    if (of_has(borg_items[INVEN_LIGHT].flags, OF_NO_FUEL)
-        || (borg.trait[BI_CLASS] == CLASS_NECROMANCER))
+    if (of_has(borg_items[INVEN_LIGHT].flags, OF_NO_FUEL))
         borg.trait[BI_AFUEL] += 1000;
 
     /* No need to *buy* stat increase potions */
@@ -2807,15 +2794,15 @@ static void borg_notice_inventory(void)
     borg.trait[BI_FOOD] += borg.trait[BI_FOOD_LO];
 
     /*
-     * Gourmands burn food twice as fast, so each item is worth half as
-     * much.  Values of 1000 or more mean a food spell, which is unaffected.
+     * Gourmands burn carried food three times as fast.  Food spells are
+     * handled separately.
      */
-    if (player_has(player, PF_GOURMAND) && borg.trait[BI_FOOD] < 1000)
-        borg.trait[BI_FOOD] = (borg.trait[BI_FOOD] + 1) / 2;
+    if (player_has(player, PF_GOURMAND))
+        borg.trait[BI_FOOD] = (borg.trait[BI_FOOD] + 2) / 3;
 
-    /* If weak, do not count food spells */
-    if (borg.trait[BI_ISWEAK] && (borg.trait[BI_FOOD] >= 1000))
-        borg.trait[BI_FOOD] -= 1000;
+    /* A weak player cannot rely on a food spell. */
+    if (has_food_spell && !borg.trait[BI_ISWEAK])
+        borg.trait[BI_FOOD] += 1000;
 }
 
 /*
@@ -2854,6 +2841,9 @@ void borg_notice(bool notice_swap)
 
     /* Notice the inventory */
     borg_notice_inventory();
+
+    if (player_has(player, PF_GOURMAND))
+        borg.trait[BI_WEIGHT] += GOURMAND_ENCUMBRANCE;
 
     /* Notice and locate my swap weapon */
     if (notice_swap) {
