@@ -253,12 +253,13 @@ The Black Market (``7``)
 
 The Mystery Diner (``9``)
   tucked away along one of the town's streets, this is the hottest menu in
-  town! The Mystery Meal costs 350 gold and gets u 1-3 random food items.
-  The 500-gold Meal Deal adds 1-3 random potions. The gourmando special ~
-  Super Size costs 1000 gold and gets u 1-6 random food items and 1-6 random
-  potions. u only find out what the food is after u pay; the diner doesn't
-  buy anything. The cook and regulars sometimes trade rumors from the road
-  while serving a meal.
+  town! The 350-gold Mystery Meal serves 1-3 items of one randomly chosen
+  food or mushroom. The 500-gold Meal Deal serves the same food portion and
+  1-3 random potions. The gourmando special ~ Super Size costs 1000 gold and
+  serves 1-6 items of one randomly chosen food or mushroom, plus 1-6 random
+  potions. The diner reveals the food only after u pay and doesn't buy
+  anything. The cook and regulars sometimes trade rumors from the road while
+  serving a meal.
 
 .. index::
    single: home

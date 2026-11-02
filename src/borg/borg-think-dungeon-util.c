@@ -23,6 +23,7 @@
 
 #include "../cave.h"
 #include "../game-world.h"
+#include "../player-quest.h"
 #include "../ui-event.h"
 #include "../ui-term.h"
 
@@ -938,6 +939,21 @@ bool borg_leave_level(bool bored)
 
         /* No up stairs found. do down then back up */
         if (track_less.num == 0) {
+            bool up_stairs_guaranteed
+                = is_quest(player, player->depth)
+                || player->depth >= z_info->max_depth - 1;
+
+            if (up_stairs_guaranteed
+                && !OPT(player, birth_force_descend)
+                && !OPT(player, birth_levels_persist)
+                && !player->upkeep->arena_level
+                && square_isfloor(cave, player->grid)
+                && borg_check_rest(borg.c.y, borg.c.x)
+                && borg_spell(STAIR_CREATION)) {
+                borg_note("# Creating an up stair to escape the level.");
+                return true;
+            }
+
             borg_note("# no up stairs found, going down");
             g = 1;
         }

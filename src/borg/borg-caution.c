@@ -1329,8 +1329,8 @@ bool borg_caution(void)
             if (ag->kill)
                 continue;
 
-            /* skip the closer ones */
-            if (b_j >= j)
+            /* skip the farther ones */
+            if (b_j != -1 && b_j <= j)
                 continue;
 
             /* track it */
@@ -1351,8 +1351,8 @@ bool borg_caution(void)
             if (ag->kill)
                 continue;
 
-            /* skip the closer ones */
-            if (b_m >= m)
+            /* skip the farther ones */
+            if (b_m != -1 && b_m <= m)
                 continue;
 
             /* track it */
@@ -1427,8 +1427,11 @@ bool borg_caution(void)
             }
         }
 
-        /* If you are next to steps of the down stairs go for it */
-        if (b_m <= 2 && b_m != -1) {
+        /*
+         * If you are next to steps of the down stairs go for it, unless the
+         * up stairs are as close; heading for both makes the borg oscillate.
+         */
+        if (b_m <= 2 && b_m != -1 && (b_j == -1 || b_m < b_j || b_j > 2)) {
             borg.status.desperate = true;
             if (borg_flow_stair_more(GOAL_FLEE, false, false)) {
                 /* Note */

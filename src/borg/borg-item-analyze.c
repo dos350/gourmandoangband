@@ -21,12 +21,14 @@
 
 #ifdef ALLOW_BORG
 
+#include "../effects.h"
 #include "../init.h"
 #include "../obj-curse.h"
 #include "../obj-knowledge.h"
 #include "../obj-power.h"
 #include "../obj-slays.h"
 #include "../obj-util.h"
+#include "../player-timed.h"
 
 #include "borg-item-activation.h"
 #include "borg-item-val.h"
@@ -638,6 +640,16 @@ bool borg_obj_has_effect(uint32_t kind, int index, int subtype)
         ke = ke->next;
     }
     return false;
+}
+
+/*
+ * Check if food causes an unwanted timed effect
+ */
+bool borg_food_has_harmful_effect(uint32_t kind)
+{
+    return borg_obj_has_effect(kind, EF_TIMED_INC, TMD_CONFUSED)
+        || borg_obj_has_effect(kind, EF_TIMED_SET, TMD_STUN)
+        || borg_obj_has_effect(kind, EF_TIMED_SET, TMD_SLOW);
 }
 
 /*

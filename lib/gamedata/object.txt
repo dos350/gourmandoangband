@@ -5375,3 +5375,39 @@ flags:INSTA_ART | QUEST_ART
 
 
 #The "Special Artifacts" are now automatically generated from artifact.txt
+
+
+##### Gourmand's kitchen gear #####
+
+name:& Kitchen Knife~
+type:sword
+graphics:|:w
+level:5
+weight:8
+cost:150
+alloc:20:0 to 100
+attack:1d5:0:0
+armor:0:0
+desc:A small, sharp knife meant for preparing food.
+
+name:& Chef Hat~
+type:helm
+graphics:]:w
+level:3
+weight:5
+cost:150
+alloc:20:0 to 100
+attack:0d0:0:0
+armor:2:0
+desc:A tall white hat, favored by cooks.
+
+name:Apron~
+type:soft armor
+graphics:(:w
+level:3
+weight:10
+cost:150
+alloc:20:0 to 100
+attack:0d0:0:0
+armor:4:0
+desc:A plain cloth apron, useful for keeping food stains off your clothes.

@@ -721,11 +721,23 @@ static const struct {
 } borg_spell_effect_ratings[] = {
     { EF_GLYPH, GLYPH_WARDING, 95, GLYPH_OF_WARDING },
     { EF_BRAND_AMMO, -1, 70, BRAND_AMMUNITION },
+    { EF_BRAND_WEAPON, -1, 70, BRAND_WEAPON },
     { EF_ENCHANT, ENCH_TOBOTH, 75, ENCHANT_WEAPON },
     { EF_ENCHANT, ENCH_TOAC, 75, ENCHANT_ARMOUR },
     { EF_IDENTIFY, -1, 95, IDENTIFY_RUNE },
     { EF_REMOVE_CURSE, -1, 85, REMOVE_CURSE },
     { EF_RECHARGE, -1, 65, RECHARGING },
+    { EF_TELEPORT_LEVEL, -1, 75, TELEPORT_LEVEL },
+    { EF_RECALL, -1, 95, WORD_OF_RECALL },
+    { EF_LIGHT_LEVEL, -1, 85, CLAIRVOYANCE },
+    { EF_MAP_AREA, -1, 80, SENSE_SURROUNDINGS },
+    { EF_READ_MINDS, -1, 85, READ_MINDS },
+    { EF_DETECT_STAIRS, -1, 55, DETECT_STAIRS },
+    { EF_DETECT_EVIL, -1, 85, DETECT_EVIL },
+    { EF_DETECT_INVISIBLE_MONSTERS, -1, 85, DETECT_INVISIBLE_MONSTERS },
+    { EF_BANISH, -1, 75, BANISHMENT },
+    { EF_MASS_BANISH, -1, 65, MASS_BANISHMENT },
+    { EF_DESTRUCTION, -1, 75, WORD_OF_DESTRUCTION },
     { EF_TIMED_INC, TMD_BLESSED, 85, BLESS },
     { EF_TIMED_INC, TMD_FAST, 90, HASTE_SELF },
     { EF_TIMED_INC, TMD_HERO, 80, HEROISM },
@@ -736,8 +748,13 @@ static const struct {
     { EF_TIMED_INC, TMD_OPP_POIS, 75, RESIST_POISON },
     { EF_TIMED_INC, TMD_OPP_FIRE, 80, RESIST_FIRE_SPELL },
     { EF_TIMED_INC, TMD_OPP_COLD, 80, RESIST_COLD_SPELL },
+    { EF_TIMED_INC, TMD_TRAPSAFE, 70, TRAP_SAFETY },
+    { EF_CREATE_STAIRS, -1, 75, STAIR_CREATION },
     { EF_CURE, TMD_AFRAID, 75, REMOVE_FEAR },
     { EF_CURE, TMD_POISONED, 75, CURE_POISON },
+    { EF_TIMED_DEC, TMD_POISONED, 55, CURE_POISON },
+    { EF_BOLT_STATUS, PROJ_AWAY_ALL, 75, TELEPORT_OTHER },
+    { EF_BOLT_STATUS, PROJ_MON_SLOW, 65, SLOW_MONSTER },
     { EF_BOLT_AWARE, PROJ_TURN_ALL, 65, FRIGHTEN },
     { EF_BOLT_AWARE, PROJ_MON_CONF, 55, CONFUSE_MONSTER },
     { EF_BOLT_AWARE, PROJ_MON_HOLD, 55, HOLD_MONSTER },
@@ -784,10 +801,15 @@ static const borg_spell_rating *borg_find_spell_rating(const char *name)
 static bool borg_find_spell_effect_rating(const struct class_spell *spell,
     uint8_t *rating, enum borg_spells *spell_enum)
 {
+    bool detects_objects
+        = borg_class_spell_has_effect(spell, EF_DETECT_ORE, -1)
+        || borg_class_spell_has_effect(spell, EF_SENSE_GOLD, -1)
+        || borg_class_spell_has_effect(spell, EF_DETECT_GOLD, -1)
+        || borg_class_spell_has_effect(spell, EF_SENSE_OBJECTS, -1)
+        || borg_class_spell_has_effect(spell, EF_DETECT_OBJECTS, -1);
+
     if (borg_class_spell_has_effect(spell, EF_DETECT_VISIBLE_MONSTERS, -1)
-        && (borg_class_spell_has_effect(spell, EF_DETECT_ORE, -1)
-            || borg_class_spell_has_effect(spell, EF_SENSE_GOLD, -1)
-            || borg_class_spell_has_effect(spell, EF_SENSE_OBJECTS, -1))) {
+        && detects_objects) {
         *rating     = 95;
         *spell_enum = DETECTION;
         return true;
@@ -801,6 +823,12 @@ static bool borg_find_spell_effect_rating(const struct class_spell *spell,
         return true;
     }
 
+    if (detects_objects) {
+        *rating     = 55;
+        *spell_enum = OBJECT_DETECTION;
+        return true;
+    }
+
     if (borg_class_spell_has_effect(spell, EF_DETECT_VISIBLE_MONSTERS, -1)) {
         *rating = 85;
         *spell_enum
@@ -808,6 +836,14 @@ static bool borg_find_spell_effect_rating(const struct class_spell *spell,
                   spell, EF_DETECT_INVISIBLE_MONSTERS, -1)
             ? REVEAL_MONSTERS
             : DETECT_MONSTERS;
+        return true;
+    }
+
+    if (borg_class_spell_has_effect(spell, EF_LIGHT_AREA, -1)
+        && borg_class_spell_has_effect(
+            spell, EF_SPHERE, PROJ_LIGHT_WEAK)) {
+        *rating     = 65;
+        *spell_enum = CALL_LIGHT;
         return true;
     }
 
@@ -827,6 +863,49 @@ static bool borg_find_spell_effect_rating(const struct class_spell *spell,
         return true;
     }
 
+    if (borg_class_spell_has_effect(spell, EF_HEAL_HP, -1)
+        && borg_class_spell_has_effect(spell, EF_CURE, TMD_AFRAID)) {
+        if (borg_class_spell_has_effect(spell, EF_TIMED_INC, TMD_SHERO)) {
+            *rating     = 75;
+            *spell_enum = BERSERK_STRENGTH;
+            return true;
+        }
+        if (borg_class_spell_has_effect(spell, EF_TIMED_INC, TMD_HERO)) {
+            *rating     = 80;
+            *spell_enum = HEROISM;
+            return true;
+        }
+    }
+
+    if (borg_class_spell_has_effect(
+            spell, EF_PROJECT_LOS_AWARE, PROJ_DISP_EVIL)
+        && borg_class_spell_has_effect(spell, EF_HEAL_HP, -1)
+        && borg_class_spell_has_effect(spell, EF_CURE, TMD_AFRAID)
+        && borg_class_spell_has_effect(spell, EF_CURE, TMD_POISONED)
+        && borg_class_spell_has_effect(spell, EF_CURE, TMD_STUN)
+        && borg_class_spell_has_effect(spell, EF_CURE, TMD_CUT)) {
+        *rating     = 85;
+        *spell_enum = HOLY_WORD;
+        return true;
+    }
+
+    if (borg_class_spell_has_effect(spell, EF_RESTORE_STAT, STAT_STR)
+        && borg_class_spell_has_effect(spell, EF_RESTORE_STAT, STAT_INT)
+        && borg_class_spell_has_effect(spell, EF_RESTORE_STAT, STAT_WIS)
+        && borg_class_spell_has_effect(spell, EF_RESTORE_STAT, STAT_DEX)
+        && borg_class_spell_has_effect(spell, EF_RESTORE_STAT, STAT_CON)) {
+        *rating     = 75;
+        *spell_enum = RESTORATION;
+        return true;
+    }
+
+    if (borg_class_spell_has_effect(spell, EF_TOUCH, PROJ_KILL_DOOR)
+        && borg_class_spell_has_effect(spell, EF_TOUCH, PROJ_KILL_TRAP)) {
+        *rating     = 95;
+        *spell_enum = DISABLE_TRAPS_DESTROY_DOORS;
+        return true;
+    }
+
     for (size_t i = 0; i < N_ELEMENTS(borg_spell_effect_ratings); i++) {
         const uint16_t effect  = borg_spell_effect_ratings[i].effect;
         const int      subtype = borg_spell_effect_ratings[i].subtype;
@@ -835,6 +914,18 @@ static bool borg_find_spell_effect_rating(const struct class_spell *spell,
             *spell_enum = borg_spell_effect_ratings[i].spell;
             return true;
         }
+    }
+
+    if (borg_class_spell_has_effect(spell, EF_TOUCH, PROJ_MAKE_DOOR)) {
+        *rating     = 65;
+        *spell_enum = DOOR_CREATION;
+        return true;
+    }
+
+    if (borg_class_spell_has_effect(spell, EF_RESTORE_EXP, -1)) {
+        *rating     = 75;
+        *spell_enum = REMEMBRANCE;
+        return true;
     }
     return false;
 }

@@ -574,6 +574,33 @@ static bool borg_brand_weapon(void)
 }
 
 /*
+ * Brand a suitable wielded melee weapon.
+ */
+static bool borg_brand_melee_weapon(void)
+{
+    borg_item *item = &borg_items[INVEN_WIELD];
+
+    if (!borg_spell_legal_fail(BRAND_WEAPON, 65) || !item->iqty
+        || !item->ident || item->art_idx || item->ego_idx || item->cursed
+        || item->value <= 0
+        || (item->tval != TV_SWORD && item->tval != TV_POLEARM
+            && item->tval != TV_HAFTED))
+        return false;
+
+    for (size_t i = 0; i < z_info->brand_max; i++) {
+        if (item->brands[i])
+            return false;
+    }
+
+    for (size_t i = 0; i < RF_MAX; i++) {
+        if (item->slays[i])
+            return false;
+    }
+
+    return borg_spell_fail(BRAND_WEAPON, 65);
+}
+
+/*
  * Enchant things
  */
 bool borg_enchanting(void)
@@ -602,6 +629,8 @@ bool borg_enchanting(void)
 
     /* Enchant things */
     if (borg_brand_weapon())
+        return true;
+    if (borg_brand_melee_weapon())
         return true;
     if (borg_enchant_to_h())
         return true;

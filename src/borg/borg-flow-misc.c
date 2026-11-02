@@ -405,6 +405,11 @@ bool borg_flow_vein(bool viewable, int nearness)
         if (viewable && !(ag->info & BORG_VIEW))
             continue;
 
+        /* Skip veins that borg_play_step() would refuse to dig, otherwise
+         * the borg commits to them and loops without making progress */
+        if (!borg_can_dig(true, ag->feat))
+            continue;
+
         /* Clear the flow codes */
         borg_flow_clear();
 

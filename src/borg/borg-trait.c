@@ -2264,9 +2264,8 @@ static void borg_notice_inventory(void)
         case TV_FOOD:
             /* Analyze */
             {
-                /* Check for food that causes an unwanted timed effect. */
-                if (borg_obj_has_effect(
-                        item->kind, EF_TIMED_INC, TMD_CONFUSED))
+                /* Don't count food that causes unwanted timed effects. */
+                if (borg_food_has_harmful_effect(item->kind))
                     break;
 
                 /* check for food that gives nutrition */
@@ -2575,7 +2574,9 @@ static void borg_notice_inventory(void)
     }
 
     /* Handle "detect evil & monsters" */
-    if (borg_spell_legal(REVEAL_MONSTERS) || borg_spell_legal(DETECT_LIFE)
+    if (borg_spell_legal(REVEAL_MONSTERS)
+        || borg_spell_legal(DETECT_INVISIBLE_MONSTERS)
+        || borg_spell_legal(DETECT_LIFE)
         || borg_spell_legal(DETECT_EVIL) || borg_spell_legal(READ_MINDS)
         || borg_spell_legal(DETECT_MONSTERS) || borg_spell_legal(SEEK_BATTLE)) {
         borg.trait[BI_ADETEVIL] = 1000;

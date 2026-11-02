@@ -23,6 +23,8 @@ he may be a bit overtuned but honestly it seems pretty fair
   based on the item's gold value. The amount gently decreases with character
   level, but is at least 1 for food with a positive value.
 - Going up stairs deals 1d4 damage and displays a message about the strain.
+- Throwing a flask of oil causes a radius-3 fire explosion that deals 3d4
+  damage.
 - After successfully eating a `TV_FOOD` item whose subtype value is higher
   than Ration of Food's, a Gourmand gets one random benefit: 3-8 healing, 11-20
   turns of speed, or clearing one active harmful timed effect. If there is no
@@ -48,6 +50,7 @@ he may be a bit overtuned but honestly it seems pretty fair
 - `src/game-world.c`: faster digestion and periodic hunger damage.
 - `src/player-timed.c`: Gourmand-specific food-status messages.
 - `src/cmd-cave.c`: damage from climbing upstairs.
+- `src/player-attack.c`: oil-flask explosions when thrown by a Gourmand.
 - `src/cmd-obj.c`: food experience, food bonuses, and the monster-sensing
   command.
 - `src/cmd-core.c`, `src/cmd-core.h`, `src/cmds.h`, `src/player-util.c`,

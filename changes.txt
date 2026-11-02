@@ -16,6 +16,8 @@ scooped monster names and lore to pre-3.4 style; [dev note - the traditional nam
 some tweaks to default interface options [dev note - these options should have been default 15 years ago]
 randarts is default [dev note - its more fun this way]
 added some gourmand themed uniques and food
+added a kitchen knife, chef hat, and apron
+Gourmands make thrown flasks of oil explode in a radius-3 fire blast
 changes to message log text colors
 added character display to inventory and equip page (visual reference)
 wrestled the borg into running with the classic (+ gourmand) classes

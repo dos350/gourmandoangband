@@ -52,6 +52,9 @@ static bool borg_can_play_spell(borg_magic *as, int spell_num)
     case GRONDS_BLOW:
     case DECOY:
     case GLYPH_OF_WARDING:
+    case BRAND_WEAPON:
+    case TRAP_SAFETY:
+    case STAIR_CREATION:
     case SINGLE_COMBAT:
     case VAMPIRE_STRIKE:
     case COMMAND:

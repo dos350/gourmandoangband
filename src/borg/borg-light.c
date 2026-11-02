@@ -357,6 +357,7 @@ bool borg_check_light(void)
         /* Check for evil */
         if (borg_spell_fail(DETECT_EVIL, 40)
             || borg_spell_fail(DETECT_MONSTERS, 40)
+            || borg_spell_fail(DETECT_INVISIBLE_MONSTERS, 40)
             || borg_spell_fail(READ_MINDS, 40)
             || borg_spell_fail(SEEK_BATTLE, 40)) {
             borg_note("# Checking for monsters.");

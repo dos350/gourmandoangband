@@ -21,6 +21,7 @@
 
 #ifdef ALLOW_BORG
 
+#include "../player-util.h"
 #include "../ui-input.h"
 
 #include "borg-danger.h"
@@ -894,6 +895,13 @@ static bool borg_play_step(int y2, int x2)
     /* Traps -- disarm -- */
     /* NOTE: If a scary guy is on the level, we allow the borg to run over */
     /* the trap in order to escape this level. */
+    if (ag->trap && player_is_trapsafe(player)) {
+        borg_note("# Crossing a trap while protected.");
+        borg_keypress(I2D(dir));
+        borg.no_rest_prep = 3000;
+        return true;
+    }
+
     if (borg.trait[BI_LIGHT] && !borg.trait[BI_ISBLIND]
         && !borg.trait[BI_ISCONFUSED] && !borg.mon.scary && ag->trap) {
 
@@ -907,6 +915,12 @@ static bool borg_play_step(int y2, int x2)
 
             /* the activation needs to target the trap */
             borg_target(borg.goal.g, false);
+            return true;
+        }
+
+        /* Become trap-safe to cross the trap without triggering it. */
+        if (borg_spell(TRAP_SAFETY)) {
+            borg_note("# Becoming trap-safe to cross a trap.");
             return true;
         }
 

@@ -37,6 +37,11 @@ extern void borg_item_analyze(
 extern bool borg_obj_has_effect(uint32_t kind, int index, int subtype);
 
 /*
+ * Check if food causes an unwanted timed effect
+ */
+extern bool borg_food_has_harmful_effect(uint32_t kind);
+
+/*
  * Check if an item power is "random"
  */
 extern bool borg_ego_has_random_power(struct ego_item *e_ptr);

@@ -221,8 +221,8 @@ owner:30000:Drago the Fair (Elf)
 slots:6:18
 turnover:9
 
-# Mystery Diner - the always items are distinct menu placeholders; purchases
-# are replaced by random food and, for larger options, random potions.
+# Mystery Diner - the always items are distinct placeholders replaced by
+# random food and potions; the menu is displayed in price order.
 store:STORE_DINER
 owner:0:Mama Gruel the Cook (Human)
 owner:0:Chef Ratatosk (Gnome)

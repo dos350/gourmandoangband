@@ -326,28 +326,7 @@ bool borg_eat_food_any(void)
 {
     int i;
 
-    /* Scan the inventory for "normal" food */
-    for (i = 0; i < z_info->pack_size; i++) {
-        borg_item *item = &borg_items[i];
-
-        /* Skip empty items */
-        if (!item->iqty)
-            continue;
-
-        /* Skip unknown food */
-        if (!item->aware)
-            continue;
-
-        /* Skip non-food */
-        if (item->tval != TV_FOOD)
-            continue;
-
-        /* Eat something of that type */
-        if (borg_eat(item->tval, item->sval))
-            return true;
-    }
-
-    /* Scan the inventory for "okay" food */
+    /* Try food without harmful effects first. */
     for (i = 0; i < z_info->pack_size; i++) {
         borg_item *item = &borg_items[i];
 
@@ -363,8 +342,39 @@ bool borg_eat_food_any(void)
         if (item->tval != TV_FOOD && item->tval != TV_MUSHROOM)
             continue;
 
+        /* Mushrooms must provide nourishment. */
+        if (item->tval == TV_MUSHROOM
+            && !borg_obj_has_effect(item->kind, EF_NOURISH, 0)
+            && !borg_obj_has_effect(item->kind, EF_NOURISH, 2)
+            && !borg_obj_has_effect(item->kind, EF_NOURISH, 3))
+            continue;
+
+        if (borg_food_has_harmful_effect(item->kind))
+            continue;
+
+        /* Eat something of that type */
+        if (borg_eat(item->tval, item->sval))
+            return true;
+    }
+
+    /* If there is no safe food, use any nourishment available. */
+    for (i = 0; i < z_info->pack_size; i++) {
+        borg_item *item = &borg_items[i];
+
+        /* Skip empty items */
+        if (!item->iqty)
+            continue;
+
+        /* Skip unknown food */
+        if (!item->aware)
+            continue;
+
         /* Skip non-food */
-        if (!borg_obj_has_effect(item->kind, EF_NOURISH, 0)
+        if (item->tval != TV_FOOD && item->tval != TV_MUSHROOM)
+            continue;
+
+        if (item->tval == TV_MUSHROOM
+            && !borg_obj_has_effect(item->kind, EF_NOURISH, 0)
             && !borg_obj_has_effect(item->kind, EF_NOURISH, 2)
             && !borg_obj_has_effect(item->kind, EF_NOURISH, 3))
             continue;

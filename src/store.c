@@ -55,11 +55,13 @@ enum diner_offer {
 
 static enum diner_offer diner_menu_offer(const struct object *obj)
 {
-	if (streq(obj->kind->name, "Ration of Food"))
+	if (obj->kind->tval != TV_FOOD)
+		return DINER_OFFER_INVALID;
+	if (obj->kind->sval == lookup_sval(TV_FOOD, "Ration of Food"))
 		return DINER_OFFER_MEAL;
-	if (streq(obj->kind->name, "Hard Biscuit"))
+	if (obj->kind->sval == lookup_sval(TV_FOOD, "Hard Biscuit"))
 		return DINER_OFFER_MEAL_DEAL;
-	if (streq(obj->kind->name, "Slime Mold"))
+	if (obj->kind->sval == lookup_sval(TV_FOOD, "Slime Mold"))
 		return DINER_OFFER_SUPER_SIZE;
 
 	return DINER_OFFER_INVALID;
@@ -69,11 +71,11 @@ const char *diner_offer_name(const struct object *obj)
 {
 	switch (diner_menu_offer(obj)) {
 	case DINER_OFFER_MEAL:
-		return "Mystery Meal";
+		return "Mystery Meal (1-3 of one random food/mushroom)";
 	case DINER_OFFER_MEAL_DEAL:
-		return "Meal Deal (1-3 random potions)";
+		return "Meal Deal (1-3 of one random food/mushroom; 1-3 random potions)";
 	case DINER_OFFER_SUPER_SIZE:
-		return "Super Size (1-6 food, 1-6 random potions)";
+		return "Super Size (1-6 of one random food/mushroom; 1-6 random potions)";
 	default:
 		return "Mystery Meal";
 	}
@@ -866,7 +868,11 @@ void store_stock_list(struct store *store, struct object **list, int n)
 			/* If still possible, choose the first in order */
 			if (!possible)
 				continue;
-			else if (earlier_object(first, current, home))
+			else if (store->feat == FEAT_STORE_DINER) {
+				if (!first || diner_offer_price(current) <
+						diner_offer_price(first))
+					first = current;
+			} else if (earlier_object(first, current, home))
 				first = current;
 		}
 

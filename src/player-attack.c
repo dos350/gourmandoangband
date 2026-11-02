@@ -1206,6 +1206,14 @@ static void ranged_helper(struct player *p,	struct object *obj, int dir,
 			break;
 	}
 
+	if (attack == make_ranged_throw && player_has(p, PF_GOURMAND)
+		&& obj->kind->tval == TV_FLASK
+		&& obj->kind->sval == lookup_sval(TV_FLASK, "Flask of oil")) {
+		msg("The flask of oil explodes in a burst of flame!");
+		project(source_player(), 3, grid, damroll(3, 4), PROJ_FIRE,
+				PROJECT_GRID | PROJECT_ITEM | PROJECT_KILL, 0, 0, NULL);
+	}
+
 	/* Get the missile */
 	if (object_is_carried(p, obj)) {
 		missile = gear_object_for_use(p, obj, 1, true, &none_left);
